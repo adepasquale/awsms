@@ -108,15 +108,21 @@ public class AndroidWebSMS extends Application {
 	public void hideCaptchaLayout() {
 		composeActivity.getCaptchaLayout().setVisibility(View.GONE);
 		composeActivity.getCaptchaText().setText("");
+	}
 
-		// TODO save sent message to receiver's SMS thread
-// 		ContentValues sentSMS = new ContentValues();
-// 		sentSMS.put("address", composeActivity.getReceiverText().getText().toString());
-// 		sentSMS.put("body", composeActivity.getMessageText().getText().toString());
-// 		getContentResolver().insert(Uri.parse("content://sms/sent"), sentSMS);
+	// TODO save sent message to receiver's SMS thread
+	public void saveWebSMS() {
+		ContentValues sentSMS = new ContentValues();
+		sentSMS.put("address", composeActivity.getReceiverText().getText().toString());
+		sentSMS.put("body", composeActivity.getMessageText().getText().toString());
+		getContentResolver().insert(Uri.parse("content://sms/sent"), sentSMS);
+	}
 
+	// TODO reset text fields after successful sending a message
+	public void resetEditText() {
 		composeActivity.getReceiverText().setText("");
 		composeActivity.getMessageText().setText("");
+		composeActivity.getCaptchaText().setText("");
 	}
 
 }
