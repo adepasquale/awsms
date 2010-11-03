@@ -18,7 +18,9 @@ package com.googlecode.awsms.ui;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.database.Cursor;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.Menu;
@@ -35,6 +37,7 @@ import android.widget.TextView;
 
 import com.googlecode.awsms.AndroidWebSMS;
 import com.googlecode.awsms.R;
+import com.googlecode.awsms.db.ContactCursorAdapter;
 
 /**
  * Activity used to compose a message and send it by pressing a button. 
@@ -47,7 +50,6 @@ public class ComposeActivity extends Activity {
 	private AndroidWebSMS androidWebSMS;
 	
  	private MultiAutoCompleteTextView receiverText;
-//	private EditText receiverText;
 	private EditText messageText;
 	private TextView messageCounter;
 	private Button messageSend;
@@ -70,9 +72,12 @@ public class ComposeActivity extends Activity {
 		
 		androidWebSMS = AndroidWebSMS.getApplication();
 		androidWebSMS.setComposeActivity(this);
-
+		
 		// TODO dynamically load contacts using MultiAutoCompleteTextView
-// 		receiverText.setAdapter();
+//		Cursor contactCursor = getContentResolver().query(
+//				ContactsContract.Contacts.CONTENT_FILTER_URI, 
+//				new String[] { }, "name=?", null, null);
+// 		receiverText.setAdapter(new ContactCursorAdapter(this, contactCursor));
 // 		receiverText.setTokenizer(new MultiAutoCompleteTextView.CommaTokenizer());
 
         messageText.addTextChangedListener(new TextWatcher() {
