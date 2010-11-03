@@ -44,7 +44,7 @@ public class AndroidWebSMS extends Application {
     public void onCreate() {
         super.onCreate();
         androidWebSMS = this;
-        
+		
         sharedPreferences = 
         	PreferenceManager.getDefaultSharedPreferences(getBaseContext());
 
@@ -54,15 +54,15 @@ public class AndroidWebSMS extends Application {
     public static AndroidWebSMS getApplication() {
         return androidWebSMS;
     }
-    
+
     public WebSender getWebSender() {
     	return webSender;
     }
-    
+
     public void sendWebSMS() {
     	new SenderAsyncTask().execute();
     }
-    
+
 	public ComposeActivity getComposeActivity() {
 		return composeActivity;
 	}
@@ -98,14 +98,25 @@ public class AndroidWebSMS extends Application {
 		return composeActivity.getCaptchaText().getText().toString();
 	}
 
-	public void showCaptchaLayout(Bitmap captchaImage) {
-		composeActivity.getCaptchaImage().setImageBitmap(captchaImage);
+	public void showCaptchaLayout(byte[] cArray) {
+		Bitmap cImage = BitmapFactory.decodeByteArray(cArray, 0, cArray.length);
+		composeActivity.getCaptchaImage().setImageBitmap(cImage);
 		composeActivity.getCaptchaLayout().setVisibility(View.VISIBLE);
+		composeActivity.getCaptchaText().requestFocus();
 	}
 	
 	public void hideCaptchaLayout() {
 		composeActivity.getCaptchaLayout().setVisibility(View.GONE);
 		composeActivity.getCaptchaText().setText("");
+
+		// TODO save sent message to receiver's SMS thread
+// 		ContentValues sentSMS = new ContentValues();
+// 		sentSMS.put("address", composeActivity.getReceiverText().getText().toString());
+// 		sentSMS.put("body", composeActivity.getMessageText().getText().toString());
+// 		getContentResolver().insert(Uri.parse("content://sms/sent"), sentSMS);
+
+		composeActivity.getReceiverText().setText("");
+		composeActivity.getMessageText().setText("");
 	}
 
 }
