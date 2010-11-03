@@ -17,8 +17,8 @@
 	
 -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-	package="com.googlecode.awsms" android:versionCode="2"
-	android:versionName="1.1" android:installLocation="auto">
+	package="com.googlecode.awsms" android:versionCode="3"
+	android:versionName="1.2" android:installLocation="auto">
 	<uses-permission android:name="android.permission.READ_CONTACTS" />
 	<uses-permission android:name="android.permission.INTERNET" />
 	<uses-permission android:name="android.permission.READ_SMS" />
