@@ -60,7 +60,6 @@ public class ComposeActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
 
-		// TODO try nextFocus* on res/main.xml
 // 		receiverText = (MultiAutoCompleteTextView) findViewById(R.id.ReceiverText);
 		receiverText = (EditText) findViewById(R.id.ReceiverText);
 		messageText = (EditText) findViewById(R.id.MessageText);

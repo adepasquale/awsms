@@ -17,8 +17,8 @@
 package com.googlecode.awsms.senders;
 
 import android.app.ProgressDialog;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
+import android.content.DialogInterface;
+import android.content.DialogInterface.OnCancelListener;
 import android.os.AsyncTask;
 import android.widget.Toast;
 
@@ -30,7 +30,7 @@ import com.googlecode.awsms.R;
  * 
  * @author Andrea De Pasquale
  */
-public class SenderAsyncTask extends AsyncTask<Void, byte[], String> {
+public class SenderAsyncTask extends AsyncTask<Void, byte[], Integer> {
 // TODO make this a background service with an outgoing message queue
 
 	private AndroidWebSMS androidWebSMS;
@@ -46,11 +46,15 @@ public class SenderAsyncTask extends AsyncTask<Void, byte[], String> {
 				androidWebSMS.getString(R.string.ProgressDialogTitle), 
 				androidWebSMS.getString(R.string.ProgressDialogMessage), 
 				true, true);
-		// TODO what should we do when the dialog is canceled?
+		progressDialog.setOnCancelListener(new OnCancelListener() {
+			public void onCancel(DialogInterface dialog) {
+				SenderAsyncTask.this.cancel(true);
+			}
+		});
 	}
 	
 	@Override
-	protected String doInBackground(Void... params) {
+	protected Integer doInBackground(Void... params) {
 		WebSender webSender = androidWebSMS.getWebSender();
 		String username = androidWebSMS.getUsername();
 		String password = androidWebSMS.getPassword();
@@ -60,23 +64,23 @@ public class SenderAsyncTask extends AsyncTask<Void, byte[], String> {
 
 		switch (webSender.send(username, password, receiver, message, captcha)) {
 		case SETTINGS_INVALID: 
-			return androidWebSMS.getString(R.string.WebSenderSettingsInvalid);
+			return R.string.WebSenderSettingsInvalid;
 		case RECEIVER_INVALID:
-			return androidWebSMS.getString(R.string.WebSenderReceiverInvalid);
+			return R.string.WebSenderReceiverInvalid;
 		case MESSAGE_INVALID:
-			return androidWebSMS.getString(R.string.WebSenderMessageInvalid);
+			return R.string.WebSenderMessageInvalid;
 		case WEBSITE_UNAVAILABLE:
-			return androidWebSMS.getString(R.string.WebSenderWebsiteUnavailable);
+			return R.string.WebSenderWebsiteUnavailable;
 		case OUT_OF_MESSAGES:
-			return androidWebSMS.getString(R.string.WebSenderOutOfMessages);
+			return R.string.WebSenderOutOfMessages;
 		case NEED_CAPTCHA:
 			publishProgress(webSender.getCaptchaArray());
-			return androidWebSMS.getString(R.string.WebSenderNeedCaptcha);
+			return R.string.WebSenderNeedCaptcha;
 		case MESSAGE_SENT:
 			publishProgress();
-			return androidWebSMS.getString(R.string.WebSenderMessageSent);
+			return R.string.WebSenderMessageSent;
 		default:
-			return androidWebSMS.getString(R.string.WebSenderUnknownError);
+			return R.string.WebSenderUnknownError;
 		}
 	}
 	
@@ -86,14 +90,23 @@ public class SenderAsyncTask extends AsyncTask<Void, byte[], String> {
 			androidWebSMS.showCaptchaLayout(progress[0]);
         } else {
         	androidWebSMS.hideCaptchaLayout();
+        	androidWebSMS.saveWebSMS();
+        	androidWebSMS.resetEditText();
         }
     }
 	
 	@Override
-	protected void onPostExecute(String result) {
+	protected void onPostExecute(Integer result) {
 		progressDialog.dismiss();
 		Toast.makeText(androidWebSMS.getComposeActivity(), 
 				result, Toast.LENGTH_LONG).show();
+	}
+	
+	@Override
+	protected void onCancelled() {
+		Toast.makeText(androidWebSMS.getComposeActivity(), 
+				R.string.ProgressDialogCanceled, 
+				Toast.LENGTH_LONG).show();
 	}
 	
 }

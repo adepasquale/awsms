@@ -17,8 +17,11 @@
 package com.googlecode.awsms;
 
 import android.app.Application;
+import android.content.ContentValues;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.preference.PreferenceManager;
 import android.view.View;
 
@@ -110,7 +113,6 @@ public class AndroidWebSMS extends Application {
 		composeActivity.getCaptchaText().setText("");
 	}
 
-	// TODO save sent message to receiver's SMS thread
 	public void saveWebSMS() {
 		ContentValues sentSMS = new ContentValues();
 		sentSMS.put("address", composeActivity.getReceiverText().getText().toString());
@@ -118,7 +120,6 @@ public class AndroidWebSMS extends Application {
 		getContentResolver().insert(Uri.parse("content://sms/sent"), sentSMS);
 	}
 
-	// TODO reset text fields after successful sending a message
 	public void resetEditText() {
 		composeActivity.getReceiverText().setText("");
 		composeActivity.getMessageText().setText("");

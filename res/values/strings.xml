@@ -30,6 +30,7 @@
 	<string name="VodafoneItalyPasswordPreference">Password</string>
 	<string name="ProgressDialogTitle">Invio Web SMS</string>
 	<string name="ProgressDialogMessage">Invio in corso...</string>
+	<string name="ProgressDialogCanceled">L\'invio è stato annullato.</string>
 	<string name="WebSenderSettingsInvalid">Il nome utente e/o la password non sono validi.</string>
 	<string name="WebSenderReceiverInvalid">Il destinatario non è valido.</string>
 	<string name="WebSenderMessageInvalid">Il messaggio non è valido.</string>
