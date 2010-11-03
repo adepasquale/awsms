@@ -46,6 +46,7 @@ public class ComposeActivity extends Activity {
 	private AndroidWebSMS androidWebSMS;
 	
 	// TODO dynamically load contacts using MultiAutoCompleteTextView
+// 	MultiAutoCompleteTextView receiverText;
 	private EditText receiverText;
 	private EditText messageText;
 	private TextView messageCounter;
@@ -59,6 +60,8 @@ public class ComposeActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
 
+		// TODO try nextFocus* on res/main.xml
+// 		receiverText = (MultiAutoCompleteTextView) findViewById(R.id.ReceiverText);
 		receiverText = (EditText) findViewById(R.id.ReceiverText);
 		messageText = (EditText) findViewById(R.id.MessageText);
 		messageCounter = (TextView) findViewById(R.id.MessageCounter);
@@ -69,7 +72,10 @@ public class ComposeActivity extends Activity {
 		
 		androidWebSMS = AndroidWebSMS.getApplication();
 		androidWebSMS.setComposeActivity(this);
-				
+
+// 		receiverText.setAdapter();
+// 		receiverText.setTokenizer(new MultiAutoCompleteTextView.CommaTokenizer());
+
         messageText.addTextChangedListener(new TextWatcher() {
 			public void beforeTextChanged(
 					CharSequence s, int start, int count, int after) {}
@@ -79,7 +85,7 @@ public class ComposeActivity extends Activity {
         		androidWebSMS.updateMessageCounter(s.length());
 			}
 		});
-        
+		
         androidWebSMS.updateMessageCounter(0);
 		
 		messageSend.setOnClickListener(new OnClickListener() {

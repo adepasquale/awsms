@@ -30,7 +30,8 @@ import com.googlecode.awsms.R;
  * 
  * @author Andrea De Pasquale
  */
-public class SenderAsyncTask extends AsyncTask<Void, Bitmap, String> {
+public class SenderAsyncTask extends AsyncTask<Void, byte[], String> {
+// TODO make this a background service with an outgoing message queue
 
 	private AndroidWebSMS androidWebSMS;
 	private ProgressDialog progressDialog;
@@ -65,18 +66,14 @@ public class SenderAsyncTask extends AsyncTask<Void, Bitmap, String> {
 		case MESSAGE_INVALID:
 			return androidWebSMS.getString(R.string.WebSenderMessageInvalid);
 		case WEBSITE_UNAVAILABLE:
-			publishProgress();
 			return androidWebSMS.getString(R.string.WebSenderWebsiteUnavailable);
 		case OUT_OF_MESSAGES:
 			return androidWebSMS.getString(R.string.WebSenderOutOfMessages);
 		case NEED_CAPTCHA:
-			byte[] cArray = webSender.getCaptchaArray();
-			Bitmap cImage = BitmapFactory.decodeByteArray(cArray, 0, cArray.length);
-			publishProgress(cImage);
+			publishProgress(webSender.getCaptchaArray());
 			return androidWebSMS.getString(R.string.WebSenderNeedCaptcha);
 		case MESSAGE_SENT:
 			publishProgress();
-			// TODO save sent message to receiver's SMS thread
 			return androidWebSMS.getString(R.string.WebSenderMessageSent);
 		default:
 			return androidWebSMS.getString(R.string.WebSenderUnknownError);
@@ -84,7 +81,7 @@ public class SenderAsyncTask extends AsyncTask<Void, Bitmap, String> {
 	}
 	
 	@Override
-    protected void onProgressUpdate(Bitmap... progress) {
+    protected void onProgressUpdate(byte[]... progress) {
         if (progress.length > 0) {
 			androidWebSMS.showCaptchaLayout(progress[0]);
         } else {
