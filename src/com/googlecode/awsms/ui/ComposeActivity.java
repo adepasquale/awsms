@@ -30,6 +30,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.MultiAutoCompleteTextView;
 import android.widget.TextView;
 
 import com.googlecode.awsms.AndroidWebSMS;
@@ -45,9 +46,8 @@ public class ComposeActivity extends Activity {
 	
 	private AndroidWebSMS androidWebSMS;
 	
-	// TODO dynamically load contacts using MultiAutoCompleteTextView
-// 	MultiAutoCompleteTextView receiverText;
-	private EditText receiverText;
+ 	private MultiAutoCompleteTextView receiverText;
+//	private EditText receiverText;
 	private EditText messageText;
 	private TextView messageCounter;
 	private Button messageSend;
@@ -60,8 +60,7 @@ public class ComposeActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
 
-// 		receiverText = (MultiAutoCompleteTextView) findViewById(R.id.ReceiverText);
-		receiverText = (EditText) findViewById(R.id.ReceiverText);
+		receiverText = (MultiAutoCompleteTextView) findViewById(R.id.ReceiverText);
 		messageText = (EditText) findViewById(R.id.MessageText);
 		messageCounter = (TextView) findViewById(R.id.MessageCounter);
 		messageSend = (Button) findViewById(R.id.MessageSend);
@@ -72,6 +71,7 @@ public class ComposeActivity extends Activity {
 		androidWebSMS = AndroidWebSMS.getApplication();
 		androidWebSMS.setComposeActivity(this);
 
+		// TODO dynamically load contacts using MultiAutoCompleteTextView
 // 		receiverText.setAdapter();
 // 		receiverText.setTokenizer(new MultiAutoCompleteTextView.CommaTokenizer());
 
@@ -104,6 +104,12 @@ public class ComposeActivity extends Activity {
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 	    switch (item.getItemId()) {
+	    case R.id.ClearMenuItem:
+            receiverText.setText("");
+            messageText.setText("");
+            captchaText.setText("");
+    		captchaLayout.setVisibility(View.GONE);
+	        return true;
 	    case R.id.SettingsMenuItem:
             startActivity(new Intent(this, SettingsActivity.class));
 	        return true;
