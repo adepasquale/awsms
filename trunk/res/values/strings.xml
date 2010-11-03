@@ -23,6 +23,7 @@
 	<string name="MessageTextHint">Messaggio</string>
 	<string name="MessageSend">Invia</string>
 	<string name="CaptchaTextHint">Codice</string>
+	<string name="ClearMenuItem">Cancella</string>
 	<string name="SettingsMenuItem">Impostazioni</string>
 	<string name="SettingsActivityLabel">Impostazioni Web SMS</string>
 	<string name="VodafoneItalyPreferenceCategory">www.vodafone.it</string>
