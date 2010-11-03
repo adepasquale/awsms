@@ -22,7 +22,7 @@
 	<MultiAutoCompleteTextView
 		android:layout_height="wrap_content" android:inputType="phone"
 		android:layout_width="match_parent" android:hint="@string/ReceiverTextHint"
-		android:id="@+id/ReceiverText"></MultiAutoCompleteTextView>
+		android:id="@+id/ReceiverText" android:imeOptions="actionNext"></MultiAutoCompleteTextView>
 	<LinearLayout android:layout_height="wrap_content"
 		android:orientation="horizontal" android:layout_width="match_parent"
 		android:id="@+id/Message">
