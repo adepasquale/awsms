@@ -38,6 +38,7 @@ public class SenderAsyncTask extends AsyncTask<Void, byte[], Integer> {
 
 	public SenderAsyncTask() {
 		androidWebSMS = AndroidWebSMS.getApplication();
+		progressDialog = null;
 	}
 
 	@Override
@@ -90,14 +91,16 @@ public class SenderAsyncTask extends AsyncTask<Void, byte[], Integer> {
 			androidWebSMS.showCaptchaLayout(progress[0]);
         } else {
         	androidWebSMS.hideCaptchaLayout();
-        	androidWebSMS.saveWebSMS();
+        	androidWebSMS.saveWebSMS(); // TODO only if preference
         	androidWebSMS.resetEditText();
         }
     }
 	
 	@Override
 	protected void onPostExecute(Integer result) {
-		progressDialog.dismiss();
+		if (progressDialog != null) {
+			progressDialog.dismiss();
+		}
 		Toast.makeText(androidWebSMS.getComposeActivity(), 
 				result, Toast.LENGTH_LONG).show();
 	}

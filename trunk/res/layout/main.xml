@@ -51,8 +51,9 @@
 			android:minWidth="150px" android:id="@+id/CaptchaImage"
 			android:maxHeight="25px" android:maxWidth="150px" android:scaleType="center"
 			android:padding="5dp"></ImageView>
-		<EditText android:layout_width="wrap_content" android:id="@+id/CaptchaText"
-			android:layout_height="match_parent" android:layout_weight="1.0"
-			android:hint="@string/CaptchaTextHint"></EditText>
+	<EditText android:inputType="textCapCharacters|textNoSuggestions"
+		android:layout_width="wrap_content" android:id="@+id/CaptchaText"
+		android:layout_height="match_parent" android:layout_weight="1.0"
+		android:hint="@string/CaptchaTextHint"></EditText>
 	</LinearLayout>
 </LinearLayout>
