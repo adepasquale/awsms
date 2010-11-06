@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+ 
+	Copyright 2010 Andrea De Pasquale
+	
+	Licensed under the Apache License, Version 2.0 (the "License");
+	you may not use this file except in compliance with the License.
+	You may obtain a copy of the License at
+	
+	   http://www.apache.org/licenses/LICENSE-2.0
+	
+	Unless required by applicable law or agreed to in writing, software
+	distributed under the License is distributed on an "AS IS" BASIS,
+	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	See the License for the specific language governing permissions and
+	limitations under the License.
+	
+-->
+<resources>
+	<string name="app_name">Web SMS</string>
+	<string name="ComposeActivityLabel">Web SMS</string>
+	<string name="ReceiverTextHint">Destinatario</string>
+	<string name="MessageTextHint">Messaggio</string>
+	<string name="MessageSend">Invia</string>
+	<string name="CaptchaTextHint">Codice</string>
+	<string name="ClearMenuItem">Cancella</string>
+	<string name="SettingsMenuItem">Impostazioni</string>
+	<string name="SettingsActivityLabel">Impostazioni Web SMS</string>
+	<string name="SaveWebSMSPreference">Salva Web SMS inviati</string>
+	<string name="SaveWebSMSPreferenceOn">I messaggi inviati saranno salvati insieme agli SMS tradizionali</string>
+	<string name="SaveWebSMSPreferenceOff">I messaggi inviati saranno cancellati</string>
+	<string name="VodafoneItalyPreferenceCategory">www.vodafone.it</string>
+	<string name="VodafoneItalyUsernamePreference">Nome utente</string>
+	<string name="VodafoneItalyPasswordPreference">Password</string>
+	<string name="ProgressDialogTitle">Invio Web SMS</string>
+	<string name="ProgressDialogMessage">Invio in corso...</string>
+	<string name="ProgressDialogCanceled">L\'invio è stato annullato.</string>
+	<string name="WebSenderSettingsInvalid">Il nome utente e/o la password non sono validi.</string>
+	<string name="WebSenderReceiverInvalid">Il destinatario non è valido.</string>
+	<string name="WebSenderMessageInvalid">Il messaggio non è valido.</string>
+	<string name="WebSenderWebsiteUnavailable">Il sito web al momento non è disponibile.</string>
+	<string name="WebSenderOutOfMessages">Gli SMS disponibili sono esauriti.</string>
+	<string name="WebSenderNeedCaptcha">Per favore, decifra il codice nell\'immagine e ripeti l\'invio.</string>
+	<string name="WebSenderUnknownError">Non è possibile inviare il messaggio.</string>
+	<string name="WebSenderMessageSent">Il messaggio è stato inviato.</string>
+</resources>
