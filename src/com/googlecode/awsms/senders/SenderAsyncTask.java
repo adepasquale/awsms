@@ -91,7 +91,7 @@ public class SenderAsyncTask extends AsyncTask<Void, byte[], Integer> {
 			androidWebSMS.showCaptchaLayout(progress[0]);
         } else {
         	androidWebSMS.hideCaptchaLayout();
-        	androidWebSMS.saveWebSMS(); // TODO only if preference
+        	androidWebSMS.saveWebSMS();
         	androidWebSMS.resetEditText();
         }
     }

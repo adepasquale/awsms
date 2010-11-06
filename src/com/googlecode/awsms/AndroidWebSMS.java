@@ -23,6 +23,8 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.preference.PreferenceManager;
+import android.text.Annotation;
+import android.text.Spannable;
 import android.view.View;
 
 import com.googlecode.awsms.senders.SenderAsyncTask;
@@ -90,7 +92,16 @@ public class AndroidWebSMS extends Application {
 	}
 	
 	public String getReceiver() {
-		return composeActivity.getReceiverText().getText().toString();
+		Spannable receiverText = composeActivity.getReceiverText().getText();
+		Annotation[] annotations = 
+			receiverText.getSpans(0, receiverText.length(), Annotation.class);
+		for (Annotation annotation : annotations) {
+			if (annotation.getKey().equals("receiver")) {
+				return annotation.getValue();
+			}
+		}
+		
+		return receiverText.toString();
 	}
 	
 	public String getMessage() {
@@ -114,10 +125,12 @@ public class AndroidWebSMS extends Application {
 	}
 
 	public void saveWebSMS() {
-		ContentValues sentSMS = new ContentValues();
-		sentSMS.put("address", composeActivity.getReceiverText().getText().toString());
-		sentSMS.put("body", composeActivity.getMessageText().getText().toString());
-		getContentResolver().insert(Uri.parse("content://sms/sent"), sentSMS);
+		if (sharedPreferences.getBoolean("SaveWebSMS", true)) {
+			ContentValues sentSMS = new ContentValues();
+			sentSMS.put("address", getReceiver());
+			sentSMS.put("body", getMessage());
+			getContentResolver().insert(Uri.parse("content://sms/sent"), sentSMS);
+		}
 	}
 
 	public void resetEditText() {

@@ -26,6 +26,9 @@
 	<string name="ClearMenuItem">Cancella</string>
 	<string name="SettingsMenuItem">Impostazioni</string>
 	<string name="SettingsActivityLabel">Impostazioni Web SMS</string>
+	<string name="SaveWebSMSPreference">Salva Web SMS inviati</string>
+	<string name="SaveWebSMSPreferenceOn">I messaggi inviati saranno salvati insieme agli SMS tradizionali</string>
+	<string name="SaveWebSMSPreferenceOff">I messaggi inviati saranno cancellati</string>
 	<string name="VodafoneItalyPreferenceCategory">www.vodafone.it</string>
 	<string name="VodafoneItalyUsernamePreference">Nome utente</string>
 	<string name="VodafoneItalyPasswordPreference">Password</string>

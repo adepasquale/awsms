@@ -19,10 +19,10 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
 	android:layout_width="match_parent" android:layout_height="match_parent"
 	android:orientation="vertical">
-	<MultiAutoCompleteTextView
-		android:layout_height="wrap_content" android:inputType="phone"
-		android:layout_width="match_parent" android:hint="@string/ReceiverTextHint"
-		android:id="@+id/ReceiverText" android:imeOptions="actionNext"></MultiAutoCompleteTextView>
+	<AutoCompleteTextView
+		android:layout_height="wrap_content" android:layout_width="match_parent"
+		android:hint="@string/ReceiverTextHint" android:id="@+id/ReceiverText"
+		android:singleLine="true" android:imeOptions="actionNext" />
 	<LinearLayout android:layout_height="wrap_content"
 		android:orientation="horizontal" android:layout_width="match_parent"
 		android:id="@+id/Message">
@@ -31,16 +31,16 @@
 			android:layout_width="wrap_content" android:layout_height="wrap_content"
 			android:layout_weight="1.0" android:id="@+id/MessageText"
 			android:hint="@string/MessageTextHint" android:gravity="top"
-			android:minLines="3" android:maxLines="4"></EditText>
+			android:minLines="3" android:maxLines="4" />
 		<LinearLayout android:layout_width="wrap_content"
 			android:orientation="vertical" android:layout_height="match_parent"
 			android:id="@+id/MessageTools">
 			<TextView android:layout_height="wrap_content"
 				android:layout_width="match_parent" android:textSize="12sp"
-				android:gravity="center_horizontal" android:id="@+id/MessageCounter"></TextView>
+				android:gravity="center_horizontal" android:id="@+id/MessageCounter" />
 			<Button android:id="@+id/MessageSend" android:text="@string/MessageSend"
 				android:onClick="onClick" android:layout_height="match_parent"
-				android:layout_width="match_parent"></Button>
+				android:layout_width="match_parent" />
 		</LinearLayout>
 	</LinearLayout>
 	<LinearLayout android:layout_height="wrap_content"
@@ -50,10 +50,10 @@
 			android:layout_height="match_parent" android:minHeight="25px"
 			android:minWidth="150px" android:id="@+id/CaptchaImage"
 			android:maxHeight="25px" android:maxWidth="150px" android:scaleType="center"
-			android:padding="5dp"></ImageView>
-	<EditText android:inputType="textCapCharacters|textNoSuggestions"
-		android:layout_width="wrap_content" android:id="@+id/CaptchaText"
-		android:layout_height="match_parent" android:layout_weight="1.0"
-		android:hint="@string/CaptchaTextHint"></EditText>
+			android:padding="5dp" />
+		<EditText android:inputType="textCapCharacters|textNoSuggestions"
+			android:layout_width="wrap_content" android:id="@+id/CaptchaText"
+			android:layout_height="match_parent" android:layout_weight="1.0"
+			android:hint="@string/CaptchaTextHint" />
 	</LinearLayout>
 </LinearLayout>
