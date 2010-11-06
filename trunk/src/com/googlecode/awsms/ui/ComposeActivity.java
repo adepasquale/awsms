@@ -18,9 +18,7 @@ package com.googlecode.awsms.ui;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.database.Cursor;
 import android.os.Bundle;
-import android.provider.ContactsContract;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.Menu;
@@ -28,16 +26,16 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.MultiAutoCompleteTextView;
 import android.widget.TextView;
 
 import com.googlecode.awsms.AndroidWebSMS;
 import com.googlecode.awsms.R;
-import com.googlecode.awsms.db.ContactCursorAdapter;
+import com.googlecode.awsms.db.ReceiverAdapter;
 
 /**
  * Activity used to compose a message and send it by pressing a button. 
@@ -49,7 +47,7 @@ public class ComposeActivity extends Activity {
 	
 	private AndroidWebSMS androidWebSMS;
 	
- 	private MultiAutoCompleteTextView receiverText;
+ 	private AutoCompleteTextView receiverText;
 	private EditText messageText;
 	private TextView messageCounter;
 	private Button messageSend;
@@ -62,7 +60,7 @@ public class ComposeActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
 
-		receiverText = (MultiAutoCompleteTextView) findViewById(R.id.ReceiverText);
+		receiverText = (AutoCompleteTextView) findViewById(R.id.ReceiverText);
 		messageText = (EditText) findViewById(R.id.MessageText);
 		messageCounter = (TextView) findViewById(R.id.MessageCounter);
 		messageSend = (Button) findViewById(R.id.MessageSend);
@@ -73,12 +71,7 @@ public class ComposeActivity extends Activity {
 		androidWebSMS = AndroidWebSMS.getApplication();
 		androidWebSMS.setComposeActivity(this);
 		
-		// TODO dynamically load contacts using MultiAutoCompleteTextView
-//		Cursor contactCursor = getContentResolver().query(
-//				ContactsContract.Contacts.CONTENT_FILTER_URI, 
-//				new String[] { }, "name=?", null, null);
-// 		receiverText.setAdapter(new ContactCursorAdapter(this, contactCursor));
-// 		receiverText.setTokenizer(new MultiAutoCompleteTextView.CommaTokenizer());
+ 		receiverText.setAdapter(new ReceiverAdapter(this));
 
         messageText.addTextChangedListener(new TextWatcher() {
 			public void beforeTextChanged(
@@ -123,7 +116,7 @@ public class ComposeActivity extends Activity {
 	    }
 	}
 
-	public EditText getReceiverText() {
+	public AutoCompleteTextView getReceiverText() {
 		return receiverText;
 	}
 

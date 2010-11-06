@@ -184,6 +184,7 @@ public class VodafoneItalyWebSender extends WebSender {
 		}
 	}
 	
+	// TODO find an efficient method to search for a string in a stream 
 	private String streamToString(InputStream is) {
 		try {
 			
