@@ -17,15 +17,15 @@
 	
 -->
 <resources>
-	<string name="app_name">Web SMS</string>
-	<string name="ComposeActivityLabel">Web SMS</string>
+	<string name="app_name">Android Web SMS</string>
+	<string name="ComposeActivityLabel">Android Web SMS</string>
 	<string name="ReceiverTextHint">Destinatario</string>
 	<string name="MessageTextHint">Messaggio</string>
 	<string name="MessageSend">Invia</string>
 	<string name="CaptchaTextHint">Codice</string>
 	<string name="ClearMenuItem">Cancella</string>
 	<string name="SettingsMenuItem">Impostazioni</string>
-	<string name="SettingsActivityLabel">Impostazioni Web SMS</string>
+	<string name="SettingsActivityLabel">Impostazioni Android Web SMS</string>
 	<string name="SaveWebSMSPreference">Salva Web SMS inviati</string>
 	<string name="SaveWebSMSPreferenceOn">I messaggi inviati saranno salvati insieme agli SMS tradizionali</string>
 	<string name="SaveWebSMSPreferenceOff">I messaggi inviati saranno cancellati</string>

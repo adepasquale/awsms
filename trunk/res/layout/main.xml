@@ -47,10 +47,9 @@
 		android:orientation="horizontal" android:layout_width="match_parent"
 		android:id="@+id/Captcha" android:visibility="gone">
 		<ImageView android:layout_width="wrap_content"
-			android:layout_height="match_parent" android:minHeight="25px"
-			android:minWidth="150px" android:id="@+id/CaptchaImage"
-			android:maxHeight="25px" android:maxWidth="150px" android:scaleType="center"
-			android:padding="5dp" />
+			android:layout_height="match_parent" android:id="@+id/CaptchaImage"
+			android:scaleType="fitXY" android:padding="5dp" android:maxHeight="35dp"
+			android:maxWidth="210dp" android:minHeight="35dp" android:minWidth="210dp" />
 		<EditText android:inputType="textCapCharacters|textNoSuggestions"
 			android:layout_width="wrap_content" android:id="@+id/CaptchaText"
 			android:layout_height="match_parent" android:layout_weight="1.0"
