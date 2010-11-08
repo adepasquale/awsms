@@ -116,6 +116,11 @@ public class ComposeActivity extends Activity {
 	    }
 	}
 
+	// TODO there is a bug when rotating the screen with dialog open
+	// http://efreedom.com/Question/1-2239828/Android-Crash-Rotation-Horizontal-Vertical
+	// http://developer.android.com/reference/android/app/Activity.html
+	// public void onPause() {}
+
 	public AutoCompleteTextView getReceiverText() {
 		return receiverText;
 	}
