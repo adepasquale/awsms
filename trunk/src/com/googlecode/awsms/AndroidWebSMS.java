@@ -22,6 +22,7 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.AsyncTask.Status;
 import android.preference.PreferenceManager;
 import android.text.Annotation;
 import android.text.Spannable;
@@ -43,6 +44,7 @@ public class AndroidWebSMS extends Application {
 	private static AndroidWebSMS androidWebSMS;
 	private SharedPreferences sharedPreferences;
 	private ComposeActivity composeActivity;
+	private SenderAsyncTask senderAsyncTask;
 	private WebSender webSender;
 
     @Override
@@ -53,6 +55,7 @@ public class AndroidWebSMS extends Application {
         sharedPreferences = 
         	PreferenceManager.getDefaultSharedPreferences(getBaseContext());
 
+        senderAsyncTask = null;
         webSender = new VodafoneItalyWebSender();
     }
 
@@ -64,10 +67,18 @@ public class AndroidWebSMS extends Application {
     	return webSender;
     }
 
-    public void sendWebSMS() {
-    	new SenderAsyncTask().execute();
+    public void doSendWebSMS() {
+    	senderAsyncTask = new SenderAsyncTask();
+    	senderAsyncTask.execute();
     }
 
+    public void cancelSendWebSMS() {
+    	if (senderAsyncTask != null && 
+    			senderAsyncTask.getStatus() != Status.FINISHED) {
+   			senderAsyncTask.cancel(true);
+    	}
+    }
+    
 	public ComposeActivity getComposeActivity() {
 		return composeActivity;
 	}
