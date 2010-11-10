@@ -87,7 +87,7 @@ public class ComposeActivity extends Activity {
 		
 		messageSend.setOnClickListener(new OnClickListener() {
 			public void onClick(View v) {
-				androidWebSMS.sendWebSMS();
+				androidWebSMS.doSendWebSMS();
 			}
 		});
 	}
@@ -116,10 +116,11 @@ public class ComposeActivity extends Activity {
 	    }
 	}
 
-	// TODO there is a bug when rotating the screen with dialog open
-	// http://efreedom.com/Question/1-2239828/Android-Crash-Rotation-Horizontal-Vertical
-	// http://developer.android.com/reference/android/app/Activity.html
-	// public void onPause() {}
+	@Override
+	public void onPause() {
+		super.onPause();
+		androidWebSMS.cancelSendWebSMS();
+	}
 
 	public AutoCompleteTextView getReceiverText() {
 		return receiverText;
