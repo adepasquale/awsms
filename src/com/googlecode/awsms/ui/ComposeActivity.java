@@ -67,6 +67,7 @@ public class ComposeActivity extends Activity {
 		captchaLayout = (LinearLayout) findViewById(R.id.Captcha);
 		captchaImage = (ImageView) findViewById(R.id.CaptchaImage);
 		captchaText = (EditText) findViewById(R.id.CaptchaText);
+		// TODO sent messages counter
 		
 		androidWebSMS = AndroidWebSMS.getApplication();
 		androidWebSMS.setComposeActivity(this);

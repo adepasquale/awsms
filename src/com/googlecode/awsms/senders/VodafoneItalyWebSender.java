@@ -41,6 +41,8 @@ import org.apache.http.protocol.HTTP;
  */
 public class VodafoneItalyWebSender extends WebSender {
 
+	// TODO try doing the same as Vodafone widget
+
 	public Result send(
 			String username, String password, 
 			String receiver, String message, String captcha) {
