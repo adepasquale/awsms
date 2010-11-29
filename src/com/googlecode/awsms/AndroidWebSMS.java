@@ -17,11 +17,9 @@
 package com.googlecode.awsms;
 
 import android.app.Application;
-import android.content.ContentValues;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.net.Uri;
 import android.os.AsyncTask.Status;
 import android.preference.PreferenceManager;
 import android.text.Annotation;
@@ -133,15 +131,6 @@ public class AndroidWebSMS extends Application {
 	public void hideCaptchaLayout() {
 		composeActivity.getCaptchaLayout().setVisibility(View.GONE);
 		composeActivity.getCaptchaText().setText("");
-	}
-
-	public void saveWebSMS() {
-		if (sharedPreferences.getBoolean("SaveWebSMS", true)) {
-			ContentValues sentSMS = new ContentValues();
-			sentSMS.put("address", getReceiver());
-			sentSMS.put("body", getMessage());
-			getContentResolver().insert(Uri.parse("content://sms/sent"), sentSMS);
-		}
 	}
 
 	public void resetEditText() {
