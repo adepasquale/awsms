@@ -67,7 +67,6 @@ public class ComposeActivity extends Activity {
 		captchaLayout = (LinearLayout) findViewById(R.id.Captcha);
 		captchaImage = (ImageView) findViewById(R.id.CaptchaImage);
 		captchaText = (EditText) findViewById(R.id.CaptchaText);
-		// TODO sent messages counter
 		
 		androidWebSMS = AndroidWebSMS.getApplication();
 		androidWebSMS.setComposeActivity(this);
@@ -102,6 +101,7 @@ public class ComposeActivity extends Activity {
 	
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
+		// TODO sent messages counter dialog
 	    switch (item.getItemId()) {
 	    case R.id.ClearMenuItem:
             receiverText.setText("");
@@ -115,12 +115,6 @@ public class ComposeActivity extends Activity {
 	    default:
 	        return super.onOptionsItemSelected(item);
 	    }
-	}
-
-	@Override
-	public void onPause() {
-		super.onPause();
-		androidWebSMS.cancelSendWebSMS();
 	}
 
 	public AutoCompleteTextView getReceiverText() {
