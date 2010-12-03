@@ -31,7 +31,7 @@
 			android:layout_width="wrap_content" android:layout_height="wrap_content"
 			android:layout_weight="1.0" android:id="@+id/MessageText"
 			android:hint="@string/MessageTextHint" android:gravity="top"
-			android:minLines="3" android:maxLines="4" />
+			android:maxLines="5" android:minLines="3"/>
 		<LinearLayout android:layout_width="wrap_content"
 			android:orientation="vertical" android:layout_height="fill_parent"
 			android:id="@+id/MessageTools">
