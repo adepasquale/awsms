@@ -23,6 +23,7 @@
 	<string name="MessageTextHint">Messaggio</string>
 	<string name="MessageSend">Invia</string>
 	<string name="CaptchaTextHint">Codice</string>
+	<string name="InfoMenuItem">Contatore</string>
 	<string name="ClearMenuItem">Cancella</string>
 	<string name="SettingsMenuItem">Impostazioni</string>
 	<string name="SettingsActivityLabel">Impostazioni Android Web SMS</string>
@@ -32,6 +33,9 @@
 	<string name="VodafoneItalyPreferenceCategory">www.vodafone.it</string>
 	<string name="VodafoneItalyUsernamePreference">Nome utente</string>
 	<string name="VodafoneItalyPasswordPreference">Password</string>
+	<string name="InfoDialogTitle">Contatore messaggi</string>
+	<string name="InfoDialogMessage">Messaggi inviati oggi: </string>
+	<string name="InfoDialogButton">Chiudi</string>
 	<string name="ProgressDialogTitle">Invio Web SMS</string>
 	<string name="ProgressDialogMessage">Invio in corso...</string>
 	<string name="ProgressDialogCanceled">L\'invio è stato annullato.</string>

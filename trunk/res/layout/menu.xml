@@ -20,6 +20,9 @@
 	<item android:id="@+id/ClearMenuItem"
           android:icon="@drawable/ic_menu_clear"
           android:title="@string/ClearMenuItem" />
+	<item android:id="@+id/InfoMenuItem" 
+		android:icon="@drawable/ic_menu_info"
+		android:title="@string/InfoMenuItem" />
     <item android:id="@+id/SettingsMenuItem"
           android:icon="@drawable/ic_menu_preferences"
           android:title="@string/SettingsMenuItem" />

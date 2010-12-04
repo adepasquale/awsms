@@ -17,6 +17,9 @@
 package com.googlecode.awsms.ui;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
@@ -45,15 +48,17 @@ import com.googlecode.awsms.db.ReceiverAdapter;
  */
 public class ComposeActivity extends Activity {
 	
-	private AndroidWebSMS androidWebSMS;
+	AndroidWebSMS androidWebSMS;
 	
- 	private AutoCompleteTextView receiverText;
-	private EditText messageText;
-	private TextView messageCounter;
-	private Button messageSend;
-	private LinearLayout captchaLayout;
-	private ImageView captchaImage;
-	private EditText captchaText;
+ 	AutoCompleteTextView receiverText;
+	EditText messageText;
+	TextView messageCounter;
+	Button messageSend;
+	LinearLayout captchaLayout;
+	ImageView captchaImage;
+	EditText captchaText;
+	
+	static final int INFO_DIALOG = 0;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -101,8 +106,10 @@ public class ComposeActivity extends Activity {
 	
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		// TODO sent messages counter dialog
 	    switch (item.getItemId()) {
+	    case R.id.InfoMenuItem:
+	    	showDialog(INFO_DIALOG);
+	    	return true;
 	    case R.id.ClearMenuItem:
             receiverText.setText("");
             messageText.setText("");
@@ -115,6 +122,31 @@ public class ComposeActivity extends Activity {
 	    default:
 	        return super.onOptionsItemSelected(item);
 	    }
+	}
+	
+	@Override
+	protected Dialog onCreateDialog(int id) {
+		switch (id) {
+		case INFO_DIALOG:
+			AlertDialog.Builder builder = new AlertDialog.Builder(this);
+			builder.setTitle(R.string.InfoDialogTitle);
+			builder.setMessage(R.string.InfoDialogMessage);
+			builder.setNeutralButton(R.string.InfoDialogButton, 
+				new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog, int which) {
+						dialog.dismiss();
+					}
+				});
+			return builder.create();
+			
+		default:
+			return null;
+		}
+	}
+	
+	@Override
+	protected void onPrepareDialog (int id, Dialog dialog) {
+		
 	}
 
 	public AutoCompleteTextView getReceiverText() {
