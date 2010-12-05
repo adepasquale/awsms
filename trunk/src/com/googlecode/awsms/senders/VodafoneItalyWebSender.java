@@ -40,6 +40,12 @@ import org.apache.http.protocol.HTTP;
  * @author Andrea De Pasquale
  */
 public class VodafoneItalyWebSender extends WebSender {
+	
+	public VodafoneItalyWebSender() {
+		super();
+		name = "Vodafone IT";
+		dailyLimit = 10;
+	}
 
 	public Result send(
 			String username, String password, 
