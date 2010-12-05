@@ -33,6 +33,9 @@ public abstract class WebSender {
 	protected HttpClient httpClient;
 	protected HttpContext httpContext;
 	
+	protected String name;
+	protected int dailyLimit;
+	
 	/**
 	 * Default constructor that initializes HTTP connections.
 	 */
@@ -67,6 +70,22 @@ public abstract class WebSender {
 	 * (at index 0) and how many characters are remaining (at index 1).
 	 */
 	public abstract int[] getInformation(int messageLength);
+
+	/**
+	 * Retrieve web sender name for displaying 
+	 * @return this web sender's formatted name
+	 */
+	public String getName() {
+		return name;
+	}
+
+	/**
+	 * Retrieve how many SMS can be sent in a single day.
+	 * @return this web sender's daily messages limit, zero if no limits
+	 */
+	public int getDailyLimit() {
+		return dailyLimit;
+	}
 	
 	/**
 	 * Strips international prefix from a phone number.

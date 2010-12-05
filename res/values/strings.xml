@@ -34,7 +34,6 @@
 	<string name="VodafoneItalyUsernamePreference">Nome utente</string>
 	<string name="VodafoneItalyPasswordPreference">Password</string>
 	<string name="InfoDialogTitle">Contatore messaggi</string>
-	<string name="InfoDialogMessage">Messaggi inviati oggi: </string>
 	<string name="InfoDialogButton">Chiudi</string>
 	<string name="ProgressDialogTitle">Invio Web SMS</string>
 	<string name="ProgressDialogMessage">Invio in corso...</string>

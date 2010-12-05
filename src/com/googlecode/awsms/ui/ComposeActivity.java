@@ -130,23 +130,21 @@ public class ComposeActivity extends Activity {
 		case INFO_DIALOG:
 			AlertDialog.Builder builder = new AlertDialog.Builder(this);
 			builder.setTitle(R.string.InfoDialogTitle);
-			builder.setMessage(R.string.InfoDialogMessage);
+			builder.setMessage(
+					androidWebSMS.getWebSender().getName() + ": " +
+					/* database + */ " / " +
+					androidWebSMS.getWebSender().getDailyLimit());
 			builder.setNeutralButton(R.string.InfoDialogButton, 
 				new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int which) {
-						dialog.dismiss();
+						removeDialog(INFO_DIALOG);
 					}
 				});
 			return builder.create();
 			
 		default:
-			return null;
+			return super.onCreateDialog(id);
 		}
-	}
-	
-	@Override
-	protected void onPrepareDialog (int id, Dialog dialog) {
-		
 	}
 
 	public AutoCompleteTextView getReceiverText() {
