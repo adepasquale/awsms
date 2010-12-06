@@ -61,14 +61,14 @@ public class SmslogDatabase {
 	public int query(String sender) {
 		SQLiteQueryBuilder queryBuilder = new SQLiteQueryBuilder();
         queryBuilder.setTables(TABLE_NAME);
-
+        
+		String[] projection = { _ID, DATE, SENDER, SIZE };
+		String selection = String.format("%s=\'%s\' AND %s=\'%s\'", 
+				DATE, dateFormat.format(new Date()), SENDER, sender);
+		
         SQLiteDatabase database = dbOpenHelper.getReadableDatabase();
-		Cursor cursor = queryBuilder.query(database, 
-				new String[] { SmslogDatabase._ID, SmslogDatabase.SIZE },
-				"?=? AND ?=?", new String[] { 
-				SmslogDatabase.DATE, dateFormat.format(new Date()), 
-				SmslogDatabase.SENDER, sender,
-				}, null, null, null);
+		Cursor cursor = queryBuilder.query(
+				database, projection, selection, null, null, null, null);
 
 		int size = 0;
 	    cursor.moveToFirst();
