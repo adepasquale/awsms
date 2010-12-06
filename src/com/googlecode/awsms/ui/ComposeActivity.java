@@ -49,6 +49,7 @@ import com.googlecode.awsms.senders.WebSender;
  * @author Andrea De Pasquale
  */
 public class ComposeActivity extends Activity {
+// TODO save current status when onPause() and restore it
 	
 	AndroidWebSMS androidWebSMS;
 	
