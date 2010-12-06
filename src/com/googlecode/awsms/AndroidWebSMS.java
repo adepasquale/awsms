@@ -22,12 +22,12 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
-import android.os.AsyncTask.Status;
 import android.preference.PreferenceManager;
 import android.text.Annotation;
 import android.text.Spannable;
 import android.view.View;
 
+import com.googlecode.awsms.db.SmslogDatabase;
 import com.googlecode.awsms.senders.SenderAsyncTask;
 import com.googlecode.awsms.senders.VodafoneItalyWebSender;
 import com.googlecode.awsms.senders.WebSender;
@@ -43,6 +43,7 @@ public class AndroidWebSMS extends Application {
 
 	private static AndroidWebSMS androidWebSMS;
 	private SharedPreferences sharedPreferences;
+	private SmslogDatabase smslogDatabase;
 	private ComposeActivity composeActivity;
 	private SenderAsyncTask senderAsyncTask;
 	private WebSender webSender;
@@ -54,6 +55,8 @@ public class AndroidWebSMS extends Application {
 		
         sharedPreferences = 
         	PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+        smslogDatabase = new SmslogDatabase(this);
+        smslogDatabase.delete();
 
         senderAsyncTask = null;
         webSender = new VodafoneItalyWebSender();
@@ -63,20 +66,17 @@ public class AndroidWebSMS extends Application {
         return androidWebSMS;
     }
 
+    public SmslogDatabase getDatabase() {
+		return smslogDatabase;
+	}
+    
     public WebSender getWebSender() {
     	return webSender;
     }
 
-    public void doSendWebSMS() {
+    public void sendWebSMS() {
     	senderAsyncTask = new SenderAsyncTask();
     	senderAsyncTask.execute();
-    }
-
-    public void cancelSendWebSMS() {
-    	if (senderAsyncTask != null && 
-    			senderAsyncTask.getStatus() != Status.FINISHED) {
-   			senderAsyncTask.cancel(true);
-    	}
     }
     
 	public ComposeActivity getComposeActivity() {
@@ -136,10 +136,14 @@ public class AndroidWebSMS extends Application {
 	}
 
 	public void saveWebSMS() {
+		String message = getMessage();
+		smslogDatabase.insert(webSender.getName(), 
+				webSender.getInformation(message.length())[0]);
+		
 		if (sharedPreferences.getBoolean("SaveWebSMS", true)) {
 			ContentValues sentSMS = new ContentValues();
 			sentSMS.put("address", getReceiver());
-			sentSMS.put("body", getMessage());
+			sentSMS.put("body", message);
 			getContentResolver().insert(Uri.parse("content://sms/sent"), sentSMS);
 		}
 	}
