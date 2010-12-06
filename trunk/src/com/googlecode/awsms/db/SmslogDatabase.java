@@ -16,6 +16,7 @@ import android.database.sqlite.SQLiteQueryBuilder;
  * @author Andrea De Pasquale
  */
 public class SmslogDatabase {
+// FIXME counter is always zero, read problem or write problem?
 	
     private static final String DB_NAME = "awsms.db";
     private static final int DB_VERSION = 1;
