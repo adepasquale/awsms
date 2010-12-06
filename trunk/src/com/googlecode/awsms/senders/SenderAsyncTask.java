@@ -87,9 +87,9 @@ public class SenderAsyncTask extends AsyncTask<Void, byte[], Integer> {
 	
 	@Override
     protected void onProgressUpdate(byte[]... progress) {
-        if (progress.length > 0) {
+        if (progress.length > 0) { // need CAPTCHA
 			androidWebSMS.showCaptchaLayout(progress[0]);
-        } else {
+        } else { // successfully sent message
         	androidWebSMS.hideCaptchaLayout();
         	androidWebSMS.saveWebSMS();
         	androidWebSMS.resetEditText();

@@ -39,6 +39,8 @@ import android.widget.TextView;
 import com.googlecode.awsms.AndroidWebSMS;
 import com.googlecode.awsms.R;
 import com.googlecode.awsms.db.ReceiverAdapter;
+import com.googlecode.awsms.db.SmslogDatabase;
+import com.googlecode.awsms.senders.WebSender;
 
 /**
  * Activity used to compose a message and send it by pressing a button. 
@@ -92,7 +94,7 @@ public class ComposeActivity extends Activity {
 		
 		messageSend.setOnClickListener(new OnClickListener() {
 			public void onClick(View v) {
-				androidWebSMS.doSendWebSMS();
+				androidWebSMS.sendWebSMS();
 			}
 		});
 	}
@@ -128,12 +130,15 @@ public class ComposeActivity extends Activity {
 	protected Dialog onCreateDialog(int id) {
 		switch (id) {
 		case INFO_DIALOG:
+			WebSender webSender = androidWebSMS.getWebSender();
+			SmslogDatabase smslogDatabase = androidWebSMS.getDatabase();
+						
 			AlertDialog.Builder builder = new AlertDialog.Builder(this);
 			builder.setTitle(R.string.InfoDialogTitle);
 			builder.setMessage(
-					androidWebSMS.getWebSender().getName() + ": " +
-					/* database + */ " / " +
-					androidWebSMS.getWebSender().getDailyLimit());
+					webSender.getName() + ": " +
+					smslogDatabase.query(webSender.getName()) + " / " +
+					webSender.getDailyLimit());
 			builder.setNeutralButton(R.string.InfoDialogButton, 
 				new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int which) {
