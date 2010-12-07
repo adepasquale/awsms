@@ -108,8 +108,9 @@ public class SmslogDatabase {
 
 	public void delete() {
 		SQLiteDatabase database = dbOpenHelper.getWritableDatabase();
-		database.delete(TABLE_NAME, "?<>?", new String[] { 
-				SmslogDatabase.DATE, dateFormat.format(new Date()) });
+		String whereClause = String.format("%s<>\'%s\'", 
+				DATE, dateFormat.format(new Date()));
+		database.delete(TABLE_NAME, whereClause, null);
 	}
 	
 }
