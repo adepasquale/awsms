@@ -25,7 +25,6 @@ import android.net.Uri;
 import android.preference.PreferenceManager;
 import android.text.Annotation;
 import android.text.Spannable;
-import android.util.Log;
 import android.view.View;
 
 import com.googlecode.awsms.db.SmslogDatabase;

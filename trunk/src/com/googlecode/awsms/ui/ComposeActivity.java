@@ -24,6 +24,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -99,6 +100,16 @@ public class ComposeActivity extends Activity {
 				androidWebSMS.sendWebSMS();
 			}
 		});
+	}
+	
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		// prevent application from quitting when pressing back button
+		if (keyCode == KeyEvent.KEYCODE_BACK) {
+			moveTaskToBack(true);
+			return true;
+		}
+
+		return false;
 	}
 	
 	@Override
