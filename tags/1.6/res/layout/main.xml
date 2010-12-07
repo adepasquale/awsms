@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+ 
+	Copyright 2010 Andrea De Pasquale
+	
+	Licensed under the Apache License, Version 2.0 (the "License");
+	you may not use this file except in compliance with the License.
+	You may obtain a copy of the License at
+	
+	   http://www.apache.org/licenses/LICENSE-2.0
+	
+	Unless required by applicable law or agreed to in writing, software
+	distributed under the License is distributed on an "AS IS" BASIS,
+	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	See the License for the specific language governing permissions and
+	limitations under the License.
+	
+-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="fill_parent" android:layout_height="fill_parent"
+	android:orientation="vertical">
+	<AutoCompleteTextView
+		android:layout_height="wrap_content" android:layout_width="fill_parent"
+		android:hint="@string/ReceiverTextHint" android:id="@+id/ReceiverText"
+		android:singleLine="true" android:imeOptions="actionNext" />
+	<LinearLayout android:layout_height="wrap_content"
+		android:orientation="horizontal" android:layout_width="fill_parent"
+		android:id="@+id/Message">
+		<EditText
+			android:inputType="textShortMessage|textAutoCorrect|textCapSentences|textMultiLine"
+			android:layout_width="wrap_content" android:layout_height="wrap_content"
+			android:layout_weight="1.0" android:id="@+id/MessageText"
+			android:hint="@string/MessageTextHint" android:gravity="top"
+			android:maxLines="5" android:minLines="3"/>
+		<LinearLayout android:layout_width="wrap_content"
+			android:orientation="vertical" android:layout_height="fill_parent"
+			android:id="@+id/MessageTools">
+			<TextView android:layout_height="wrap_content"
+				android:layout_width="fill_parent" android:textSize="12sp"
+				android:gravity="center_horizontal" android:id="@+id/MessageCounter" />
+			<Button android:id="@+id/MessageSend" android:text="@string/MessageSend"
+				android:onClick="onClick" android:layout_height="fill_parent"
+				android:layout_width="fill_parent" />
+		</LinearLayout>
+	</LinearLayout>
+	<LinearLayout android:layout_height="wrap_content"
+		android:orientation="horizontal" android:layout_width="fill_parent"
+		android:id="@+id/Captcha" android:visibility="gone">
+		<ImageView android:layout_width="wrap_content"
+			android:layout_height="fill_parent" android:id="@+id/CaptchaImage"
+			android:scaleType="fitXY" android:padding="5dp" android:maxHeight="35dp"
+			android:maxWidth="210dp" android:minHeight="35dp" android:minWidth="210dp" />
+		<EditText android:inputType="textCapCharacters|textNoSuggestions"
+			android:layout_width="wrap_content" android:id="@+id/CaptchaText"
+			android:layout_height="fill_parent" android:layout_weight="1.0"
+			android:hint="@string/CaptchaTextHint" />
+	</LinearLayout>
+</LinearLayout>
