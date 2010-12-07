@@ -49,8 +49,7 @@ import com.googlecode.awsms.senders.WebSender;
  * @author Andrea De Pasquale
  */
 public class ComposeActivity extends Activity {
-// TODO save current status when onPause() and restore it
-	
+
 	AndroidWebSMS androidWebSMS;
 	
  	AutoCompleteTextView receiverText;
@@ -95,6 +94,8 @@ public class ComposeActivity extends Activity {
 		
 		messageSend.setOnClickListener(new OnClickListener() {
 			public void onClick(View v) {
+				messageText.setText(messageText.getText().toString()
+						.replaceAll("\\s+$", ""));
 				androidWebSMS.sendWebSMS();
 			}
 		});
