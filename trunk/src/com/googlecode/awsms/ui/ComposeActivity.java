@@ -109,7 +109,7 @@ public class ComposeActivity extends Activity {
 			return true;
 		}
 
-		return false;
+		return super.onKeyDown(keyCode, event);
 	}
 	
 	@Override
