@@ -16,11 +16,14 @@
 
 package com.googlecode.awsms.ui;
 
+import java.net.URLDecoder;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -52,6 +55,7 @@ import com.googlecode.awsms.senders.WebSender;
 public class ComposeActivity extends Activity {
 
 	AndroidWebSMS androidWebSMS;
+	ReceiverAdapter receiverAdapter;
 	
  	AutoCompleteTextView receiverText;
 	EditText messageText;
@@ -79,7 +83,8 @@ public class ComposeActivity extends Activity {
 		androidWebSMS = AndroidWebSMS.getApplication();
 		androidWebSMS.setComposeActivity(this);
 		
- 		receiverText.setAdapter(new ReceiverAdapter(this));
+		receiverAdapter = new ReceiverAdapter(this);
+ 		receiverText.setAdapter(receiverAdapter);
 
         messageText.addTextChangedListener(new TextWatcher() {
 			public void beforeTextChanged(
@@ -100,6 +105,19 @@ public class ComposeActivity extends Activity {
 				androidWebSMS.sendWebSMS();
 			}
 		});
+		
+		// check if application was started through clicking on a contact
+		Intent intent = getIntent();
+		if (savedInstanceState == null && intent != null) {
+			if (intent.getAction().equals(Intent.ACTION_SENDTO)) {
+				String receiver = URLDecoder.decode(intent.getDataString())
+					.replace("-", "").replace("smsto:", "").replace("sms:", "");
+				Cursor cursor = receiverAdapter.runQueryOnBackgroundThread(receiver);
+			    cursor.moveToFirst();
+				receiverText.setText(receiverAdapter.convertToString(cursor));
+				messageText.requestFocus();
+			}			
+		}
 	}
 	
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
