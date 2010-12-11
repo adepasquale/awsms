@@ -100,8 +100,10 @@ public class ComposeActivity extends Activity {
 		
 		messageSend.setOnClickListener(new OnClickListener() {
 			public void onClick(View v) {
-				messageText.setText(messageText.getText().toString()
-						.replaceAll("\\s+$", ""));
+				String trimmedText = 
+					messageText.getText().toString().replaceAll("\\s+$", "");
+				messageText.setText("");
+				messageText.append(trimmedText);
 				androidWebSMS.sendWebSMS();
 			}
 		});
