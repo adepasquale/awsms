@@ -64,11 +64,11 @@ public class SenderAsyncTask extends AsyncTask<Void, byte[], Integer> {
 		String captcha = androidWebSMS.getCaptcha();
 
 		switch (webSender.send(username, password, receiver, message, captcha)) {
-		case SETTINGS_INVALID: 
+		case INVALID_SETTINGS: 
 			return R.string.WebSenderSettingsInvalid;
-		case RECEIVER_INVALID:
+		case INVALID_RECEIVER:
 			return R.string.WebSenderReceiverInvalid;
-		case MESSAGE_INVALID:
+		case INVALID_MESSAGE:
 			return R.string.WebSenderMessageInvalid;
 		case WEBSITE_UNAVAILABLE:
 			return R.string.WebSenderWebsiteUnavailable;
