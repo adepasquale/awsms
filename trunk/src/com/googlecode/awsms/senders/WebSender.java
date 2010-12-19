@@ -29,7 +29,7 @@ import org.apache.http.protocol.HttpContext;
  * @author Andrea De Pasquale
  */
 public abstract class WebSender {
-
+	
 	protected HttpClient httpClient;
 	protected HttpContext httpContext;
 	
@@ -41,16 +41,9 @@ public abstract class WebSender {
 	 */
 	public WebSender() {
 		httpClient = new DefaultHttpClient();
-		httpClient.getParams().setParameter("http.protocol.allow-circular-redirects", true);
 		httpContext = new BasicHttpContext();
 		httpContext.setAttribute(ClientContext.COOKIE_STORE, new BasicCookieStore());
 	}
-	
-	public enum Result { 
-		INVALID_SETTINGS, INVALID_RECEIVER, INVALID_MESSAGE, 
-		WEBSITE_UNAVAILABLE, OUT_OF_MESSAGES, NEED_CAPTCHA, 
-		UNKNOWN_ERROR, MESSAGE_SENT
-	};
 
 	/**
 	 * Call this method to send someone a text message.
@@ -58,10 +51,10 @@ public abstract class WebSender {
 	 * @param password Password to enter private website area.
 	 * @param receiver Phone number of the message addressee.
 	 * @param message Text message to be sent to the receiver.
-	 * @param captcha Captcha text manually decoded by the user.
-	 * @return <code>enum</code> representing what happened. 
+	 * @param captcha Captcha text manually decoded by the user. 
 	 */
-	public abstract Result send(String username, String password, String receiver, String message, String captcha);
+	public abstract void send(String username, String password, 
+			String receiver, String message, String captcha) throws Exception;
 
 	/**
 	 * Call this method to retrieve information based on current message length.
