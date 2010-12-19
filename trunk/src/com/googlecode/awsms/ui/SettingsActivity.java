@@ -16,10 +16,10 @@
 
 package com.googlecode.awsms.ui;
 
-import com.googlecode.awsms.R;
-
 import android.os.Bundle;
 import android.preference.PreferenceActivity;
+
+import com.googlecode.awsms.R;
 
 /**
  * Activity used to setup web senders parameters, e.g. username and password. 

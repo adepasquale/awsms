@@ -119,8 +119,10 @@ public class ComposeActivity extends Activity {
 					.replace("-", "").replace("smsto:", "").replace("sms:", "");
 				Cursor cursor = receiverAdapter.runQueryOnBackgroundThread(receiver);
 			    cursor.moveToFirst();
-				receiverText.setText(receiverAdapter.convertToString(cursor));
-				messageText.requestFocus();
+			    if (!cursor.isAfterLast()) {
+					receiverText.setText(receiverAdapter.convertToString(cursor));
+					messageText.requestFocus();
+			    }
 			}			
 		}
 	}
