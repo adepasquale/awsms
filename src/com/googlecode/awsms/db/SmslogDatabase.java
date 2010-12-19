@@ -87,7 +87,7 @@ public class SmslogDatabase {
 
 		int size = 0;
 	    cursor.moveToFirst();
-	    while (cursor.isAfterLast() == false) {
+	    while (!cursor.isAfterLast()) {
 	    	size += cursor.getInt(cursor.getColumnIndex(SIZE));
 	   	    cursor.moveToNext();
 	    }
