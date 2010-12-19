@@ -30,7 +30,7 @@ import com.googlecode.awsms.R;
  * 
  * @author Andrea De Pasquale
  */
-public class SenderAsyncTask extends AsyncTask<Void, byte[], Integer> {
+public class SenderAsyncTask extends AsyncTask<Void, byte[], String> {
 // TODO make this a background service with an outgoing message queue
 
 	private AndroidWebSMS androidWebSMS;
@@ -55,7 +55,7 @@ public class SenderAsyncTask extends AsyncTask<Void, byte[], Integer> {
 	}
 	
 	@Override
-	protected Integer doInBackground(Void... params) {
+	protected String doInBackground(Void... params) {
 		WebSender webSender = androidWebSMS.getWebSender();
 		String username = androidWebSMS.getUsername();
 		String password = androidWebSMS.getPassword();
@@ -63,25 +63,15 @@ public class SenderAsyncTask extends AsyncTask<Void, byte[], Integer> {
 		String message = androidWebSMS.getMessage();
 		String captcha = androidWebSMS.getCaptcha();
 
-		switch (webSender.send(username, password, receiver, message, captcha)) {
-		case INVALID_SETTINGS: 
-			return R.string.WebSenderSettingsInvalid;
-		case INVALID_RECEIVER:
-			return R.string.WebSenderReceiverInvalid;
-		case INVALID_MESSAGE:
-			return R.string.WebSenderMessageInvalid;
-		case WEBSITE_UNAVAILABLE:
-			return R.string.WebSenderWebsiteUnavailable;
-		case OUT_OF_MESSAGES:
-			return R.string.WebSenderOutOfMessages;
-		case NEED_CAPTCHA:
-			publishProgress(webSender.getCaptchaArray());
-			return R.string.WebSenderNeedCaptcha;
-		case MESSAGE_SENT:
+		try {
+			webSender.send(username, password, receiver, message, captcha);
 			publishProgress();
-			return R.string.WebSenderMessageSent;
-		default:
-			return R.string.WebSenderUnknownError;
+			return "message sent";
+		} catch (Exception e) {
+			// FIXME restore string messages
+			if (e.getMessage().equals("need captcha"))
+				publishProgress(webSender.getCaptchaArray());
+			return e.getMessage();
 		}
 	}
 	
@@ -97,7 +87,7 @@ public class SenderAsyncTask extends AsyncTask<Void, byte[], Integer> {
     }
 	
 	@Override
-	protected void onPostExecute(Integer result) {
+	protected void onPostExecute(String result) {
 		if (progressDialog != null) {
 			progressDialog.dismiss();
 		}

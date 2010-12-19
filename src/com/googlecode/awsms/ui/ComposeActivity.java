@@ -52,9 +52,6 @@ import com.googlecode.awsms.senders.WebSender;
  * 
  * @author Andrea De Pasquale
  */
-// TODO disable button when receiver is empty
-// TODO pop-up information at first run
-// TODO pop-up message for username or password not set
 public class ComposeActivity extends Activity {
 
 	AndroidWebSMS androidWebSMS;
@@ -68,7 +65,9 @@ public class ComposeActivity extends Activity {
 	ImageView captchaImage;
 	EditText captchaText;
 	
-	static final int INFO_DIALOG = 0;
+	// TODO pop-up information at first run
+	static final int WELCOME_DIALOG = 0;
+	static final int INFO_DIALOG = 1;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
