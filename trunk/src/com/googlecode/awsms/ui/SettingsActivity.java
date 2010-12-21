@@ -28,6 +28,8 @@ import com.googlecode.awsms.R;
  */
 public class SettingsActivity extends PreferenceActivity {
 
+	// TODO add buttons: about, feedback, donate
+	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

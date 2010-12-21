@@ -74,6 +74,8 @@ public class ComposeActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
 
+		// TODO allow multiple receivers with MultiAutoCompleteTextView
+		// TODO button for last used receiver, useful during a conversation
 		receiverText = (AutoCompleteTextView) findViewById(R.id.ReceiverText);
 		messageText = (EditText) findViewById(R.id.MessageText);
 		messageCounter = (TextView) findViewById(R.id.MessageCounter);
