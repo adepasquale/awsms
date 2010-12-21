@@ -32,6 +32,7 @@ import com.googlecode.awsms.R;
  */
 public class SenderAsyncTask extends AsyncTask<Void, byte[], String> {
 // TODO make this a background service with an outgoing message queue
+// TODO use notifications (instead of toasts) for showing results to the user 
 
 	private AndroidWebSMS androidWebSMS;
 	private ProgressDialog progressDialog;

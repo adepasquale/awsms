@@ -149,6 +149,7 @@ public class AndroidWebSMS extends Application {
 	}
 
 	public void resetEditText() {
+		// TODO make this based on a preference
 		composeActivity.getReceiverText().setText("");
 		composeActivity.getMessageText().setText("");
 		composeActivity.getCaptchaText().setText("");

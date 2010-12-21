@@ -83,7 +83,7 @@ public class VodafoneItalyWebSender extends WebSender {
 			throw new Exception("invalid settings");
 		}
 		
-		// TODO disable button when receiver does not satisfy this
+		// FIXME TODO sanitize user input!!!
 		receiver = stripPrefix("+39", receiver);
 		if (receiver.length() < 9 || receiver.length() > 10) {
 			throw new Exception("invalid receiver");
