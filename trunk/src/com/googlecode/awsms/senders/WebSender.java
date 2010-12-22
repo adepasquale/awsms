@@ -95,6 +95,15 @@ public abstract class WebSender {
 		return number;
 	}
 	
+	/**
+	 * Removes invalid chars from the receiver number.
+	 * @param number Phone number to be sanitized.
+	 * @return The number without any invalid char.
+	 */
+	protected String sanitize(String number) {
+		return number; // TODO sanitize with regexp
+	}
+	
 	protected byte[] captchaArray;
 	
 	public byte[] getCaptchaArray() {
