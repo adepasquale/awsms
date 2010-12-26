@@ -28,7 +28,8 @@ import com.googlecode.awsms.R;
  */
 public class SettingsActivity extends PreferenceActivity {
 
-	// TODO add buttons: about, feedback, donate
+	// TODO buttons: about, feedback, donate
+	// maybe better in their own info menu?
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {

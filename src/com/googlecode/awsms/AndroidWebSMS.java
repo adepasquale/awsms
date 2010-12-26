@@ -140,7 +140,7 @@ public class AndroidWebSMS extends Application {
 		smslogDatabase.insert(webSender.getName(), 
 				webSender.getInformation(message.length())[0]);
 		
-		if (sharedPreferences.getBoolean("SaveWebSMS", true)) {
+		if (sharedPreferences.getBoolean("SaveSMS", true)) {
 			ContentValues sentSMS = new ContentValues();
 			sentSMS.put("address", getReceiver());
 			sentSMS.put("body", message);
@@ -149,10 +149,11 @@ public class AndroidWebSMS extends Application {
 	}
 
 	public void resetEditText() {
-		// TODO make this based on a preference
-		composeActivity.getReceiverText().setText("");
-		composeActivity.getMessageText().setText("");
-		composeActivity.getCaptchaText().setText("");
+		if (sharedPreferences.getBoolean("ResetSMS", true)) {
+			composeActivity.getReceiverText().setText("");
+			composeActivity.getMessageText().setText("");
+			composeActivity.getCaptchaText().setText("");
+		}
 	}
 
 }

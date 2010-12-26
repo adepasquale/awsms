@@ -65,9 +65,9 @@ public class ComposeActivity extends Activity {
 	ImageView captchaImage;
 	EditText captchaText;
 	
-	// TODO pop-up information at first run
 	static final int WELCOME_DIALOG = 0;
-	static final int INFO_DIALOG = 1;
+	static final int SETTINGS_DIALOG = 1;
+	static final int INFO_DIALOG = 2;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -112,6 +112,19 @@ public class ComposeActivity extends Activity {
 			}
 		});
 		
+		
+//		boolean firstRun = false;
+//		// show welcome dialog if first run
+//		if (firstRun) {
+//			showDialog(WELCOME_DIALOG);
+//		}
+//		
+//		// warn if username or password are empty
+//		if (androidWebSMS.getUsername().equals("") ||
+//			androidWebSMS.getPassword().equals("")) {
+//			showDialog(SETTINGS_DIALOG);
+//		}
+
 		// check if application was started through clicking on a contact
 		Intent intent = getIntent();
 		if (savedInstanceState == null && intent != null) {
@@ -168,6 +181,14 @@ public class ComposeActivity extends Activity {
 	@Override
 	protected Dialog onCreateDialog(int id) {
 		switch (id) {
+		case WELCOME_DIALOG:
+			// TODO welcome dialog
+			return null;
+			
+		case SETTINGS_DIALOG:
+			// TODO settings dialog
+			return null;
+			
 		case INFO_DIALOG:
 			WebSender webSender = androidWebSMS.getWebSender();
 			SmslogDatabase smslogDatabase = androidWebSMS.getDatabase();

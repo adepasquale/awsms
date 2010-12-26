@@ -23,6 +23,8 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
 
+import android.util.Log;
+
 /**
  * Abstract class for web message senders.
  * 
@@ -34,6 +36,7 @@ public abstract class WebSender {
 	protected HttpContext httpContext;
 	
 	protected String name;
+	protected String defaultPrefix;
 	protected int dailyLimit;
 	
 	/**
@@ -101,7 +104,7 @@ public abstract class WebSender {
 	 * @return The number without any invalid char.
 	 */
 	protected String sanitize(String number) {
-		return number; // TODO sanitize with regexp
+		return number.replaceAll("[^0-9\\+]*", "");
 	}
 	
 	protected byte[] captchaArray;
