@@ -32,7 +32,6 @@ import com.googlecode.awsms.R;
  */
 public class SenderAsyncTask extends AsyncTask<Void, byte[], String> {
 // TODO make this a background service with an outgoing message queue
-// TODO use notifications (instead of toasts) for showing results to the user 
 
 	private AndroidWebSMS androidWebSMS;
 	private ProgressDialog progressDialog;
@@ -67,10 +66,10 @@ public class SenderAsyncTask extends AsyncTask<Void, byte[], String> {
 		try {
 			webSender.send(username, password, receiver, message, captcha);
 			publishProgress();
-			return "message sent";
+			return androidWebSMS.getString(R.string.WebSenderMessageSent);
 		} catch (Exception e) {
-			// FIXME restore string messages
-			if (e.getMessage().equals("need captcha"))
+			if (e.getMessage().equals(
+					androidWebSMS.getString(R.string.WebSenderNeedCaptcha)))
 				publishProgress(webSender.getCaptchaArray());
 			return e.getMessage();
 		}
@@ -92,6 +91,8 @@ public class SenderAsyncTask extends AsyncTask<Void, byte[], String> {
 		if (progressDialog != null) {
 			progressDialog.dismiss();
 		}
+		
+		// TODO use notifications for showing results to the user 
 		Toast.makeText(androidWebSMS.getComposeActivity(), 
 				result, Toast.LENGTH_LONG).show();
 	}
@@ -100,7 +101,7 @@ public class SenderAsyncTask extends AsyncTask<Void, byte[], String> {
 	protected void onCancelled() {
 		Toast.makeText(androidWebSMS.getComposeActivity(), 
 				R.string.ProgressDialogCanceled, 
-				Toast.LENGTH_LONG).show();
+				Toast.LENGTH_SHORT).show();
 	}
 	
 }
