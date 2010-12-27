@@ -23,8 +23,6 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
 
-import android.util.Log;
-
 /**
  * Abstract class for web message senders.
  * 
