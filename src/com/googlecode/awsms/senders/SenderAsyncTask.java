@@ -46,7 +46,8 @@ public class SenderAsyncTask extends AsyncTask<Void, byte[], String> {
 		progressDialog = ProgressDialog.show(androidWebSMS.getComposeActivity(),
 				androidWebSMS.getString(R.string.ProgressDialogTitle), 
 				androidWebSMS.getString(R.string.ProgressDialogMessage), 
-				true, true);
+				true, true); // indeterminate, cancelable
+//				true, false); // indeterminate, NOT cancelable
 		progressDialog.setOnCancelListener(new OnCancelListener() {
 			public void onCancel(DialogInterface dialog) {
 				SenderAsyncTask.this.cancel(true);
@@ -99,6 +100,9 @@ public class SenderAsyncTask extends AsyncTask<Void, byte[], String> {
 	
 	@Override
 	protected void onCancelled() {
+		// FIXME bug when the connection is still in use
+		// Invalid use of SingleClientConnManager: connection still allocated.
+		// Make sure to release the connection before allocating another one.
 		Toast.makeText(androidWebSMS.getComposeActivity(), 
 				R.string.ProgressDialogCanceled, 
 				Toast.LENGTH_SHORT).show();

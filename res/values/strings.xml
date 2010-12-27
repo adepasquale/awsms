@@ -18,15 +18,18 @@
 -->
 <resources>
 	<string name="app_name">Android Web SMS</string>
-	<string name="ComposeActivityLabel">Composizione Web SMS</string>
+	<string name="ComposeActivityLabel">Android Web SMS</string>
 	<string name="ReceiverTextHint">Destinatario</string>
 	<string name="MessageTextHint">Messaggio</string>
 	<string name="MessageSend">Invia</string>
 	<string name="CaptchaTextHint">Codice</string>
-	<string name="InfoMenuItem">Contatore</string>
 	<string name="ClearMenuItem">Cancella</string>
+	<string name="CounterMenuItem">Contatore</string>
 	<string name="SettingsMenuItem">Impostazioni</string>
-	<string name="SettingsActivityLabel">Impostazioni Web SMS</string>
+	<string name="SettingsActivityLabel">Impostazioni</string>
+	<string name="VodafoneItalyPreferenceCategory">Account www.vodafone.it</string>
+	<string name="UsernamePreference">Nome utente</string>
+	<string name="PasswordPreference">Password</string>
 	<string name="OperationsPreferenceCategory">Operazioni automatiche</string>
 	<string name="SaveSMSPreference">Salva messaggi inviati</string>
 	<string name="SaveSMSPreferenceOn">I messaggi inviati saranno salvati insieme agli SMS tradizionali</string>
@@ -34,11 +37,22 @@
 	<string name="ResetSMSPreference">Cancella dopo l\'invio</string>
 	<string name="ResetSMSPreferenceOn">Pulisci i campi dopo che l\'invio del messaggio è andato a buon fine</string>
 	<string name="ResetSMSPreferenceOff">Non pulire i campi dopo aver inviato un messaggio</string>
-	<string name="VodafoneItalyPreferenceCategory">www.vodafone.it</string>
-	<string name="UsernamePreference">Nome utente</string>
-	<string name="PasswordPreference">Password</string>
-	<string name="InfoDialogTitle">Contatore messaggi</string>
-	<string name="InfoDialogButton">Chiudi</string>
+	<string name="DetailsPreferenceCategory">Dettagli applicazione</string>
+	<string name="AboutPreference">Android Web SMS v1.8</string>
+	<string name="AboutPreferenceSummary">Rilasciato con Licenza Apache 2.0\n© 2010 Andrea De Pasquale</string>
+	<string name="AboutURL">http://code.google.com/p/awsms/</string>
+	<string name="FeedbackPreference">Scrivi allo sviluppatore</string>
+	<string name="FeedbackPreferenceSummary">Segnala qualsiasi problema e/o suggerisci miglioramenti</string>
+	<string name="FeedbackURL">http://code.google.com/p/awsms/issues/list</string>
+	<string name="DonatePreference">Effettua una donazione</string>
+	<string name="DonatePreferenceSummary">Contribuisci economicamente allo sviluppo del programma</string>
+	<string name="DonateURL">https://www.paypal.com/cgi-bin/webscr?cmd=_donations&amp;business=andrea%40de%2dpasquale%2ename&amp;lc=IT&amp;item_name=Android%20Web%20SMS&amp;currency_code=EUR&amp;bn=PP%2dDonationsBF%3abtn_donateCC_LG%2egif%3aNonHosted</string>
+	<string name="SettingsDialogTitle">Configurazione account</string>
+	<string name="SettingsDialogMessage">Prima di poter inviare un messaggio, è necessario configurare nome utente e password relativi al sito Vodafone IT. Effettuare questa operazione adesso?</string>
+	<string name="SettingsDialogPositiveButton">Sì</string>
+	<string name="SettingsDialogNegativeButton">No</string>
+	<string name="CounterDialogTitle">Contatore messaggi</string>
+	<string name="CounterDialogButton">Chiudi</string>
 	<string name="ProgressDialogTitle">Invio Web SMS</string>
 	<string name="ProgressDialogMessage">Invio in corso...</string>
 	<string name="ProgressDialogCanceled">L\'invio è stato annullato.</string>

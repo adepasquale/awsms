@@ -65,9 +65,8 @@ public class ComposeActivity extends Activity {
 	ImageView captchaImage;
 	EditText captchaText;
 	
-	static final int WELCOME_DIALOG = 0;
-	static final int SETTINGS_DIALOG = 1;
-	static final int INFO_DIALOG = 2;
+	static final int SETTINGS_DIALOG = 0;
+	static final int COUNTER_DIALOG = 1;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -112,31 +111,26 @@ public class ComposeActivity extends Activity {
 			}
 		});
 		
-		
-//		boolean firstRun = false;
-//		// show welcome dialog if first run
-//		if (firstRun) {
-//			showDialog(WELCOME_DIALOG);
-//		}
-//		
-//		// warn if username or password are empty
-//		if (androidWebSMS.getUsername().equals("") ||
-//			androidWebSMS.getPassword().equals("")) {
-//			showDialog(SETTINGS_DIALOG);
-//		}
+		// display a warning if username or password are empty
+		if (androidWebSMS.getUsername().equals("") ||
+			androidWebSMS.getPassword().equals("")) {
+			showDialog(SETTINGS_DIALOG);
+		}
 
 		// check if application was started through clicking on a contact
 		Intent intent = getIntent();
 		if (savedInstanceState == null && intent != null) {
 			if (intent.getAction().equals(Intent.ACTION_SENDTO)) {
 				String receiver = URLDecoder.decode(intent.getDataString())
-					.replace("-", "").replace("smsto:", "").replace("sms:", "");
+					.replaceAll("[^0-9\\+]*", "");
 				Cursor cursor = receiverAdapter.runQueryOnBackgroundThread(receiver);
 			    cursor.moveToFirst();
 			    if (!cursor.isAfterLast()) {
 					receiverText.setText(receiverAdapter.convertToString(cursor));
-					messageText.requestFocus();
+			    } else {
+			    	receiverText.setText(receiver);
 			    }
+			    messageText.requestFocus();
 			}			
 		}
 	}
@@ -161,18 +155,21 @@ public class ComposeActivity extends Activity {
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 	    switch (item.getItemId()) {
-	    case R.id.InfoMenuItem:
-	    	showDialog(INFO_DIALOG);
-	    	return true;
 	    case R.id.ClearMenuItem:
             receiverText.setText("");
             messageText.setText("");
             captchaText.setText("");
     		captchaLayout.setVisibility(View.GONE);
 	        return true;
+	        
+	    case R.id.CounterMenuItem:
+	    	showDialog(COUNTER_DIALOG);
+	    	return true;
+	    	
 	    case R.id.SettingsMenuItem:
             startActivity(new Intent(this, SettingsActivity.class));
 	        return true;
+	        
 	    default:
 	        return super.onOptionsItemSelected(item);
 	    }
@@ -180,32 +177,43 @@ public class ComposeActivity extends Activity {
 	
 	@Override
 	protected Dialog onCreateDialog(int id) {
+		
 		switch (id) {
-		case WELCOME_DIALOG:
-			// TODO welcome dialog
-			return null;
-			
 		case SETTINGS_DIALOG:
-			// TODO settings dialog
-			return null;
+			AlertDialog.Builder settingsBuilder = new AlertDialog.Builder(this);
+			settingsBuilder.setTitle(R.string.SettingsDialogTitle);
+			settingsBuilder.setMessage(R.string.SettingsDialogMessage);
+			settingsBuilder.setPositiveButton(R.string.SettingsDialogPositiveButton, 
+				new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog, int which) {
+						startActivity(new Intent(ComposeActivity.this, SettingsActivity.class));
+					}
+				});
+			settingsBuilder.setNegativeButton(R.string.SettingsDialogNegativeButton, 
+				new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog, int which) {
+						removeDialog(SETTINGS_DIALOG);
+					}
+				});
+			return settingsBuilder.create();
 			
-		case INFO_DIALOG:
+		case COUNTER_DIALOG:
 			WebSender webSender = androidWebSMS.getWebSender();
 			SmslogDatabase smslogDatabase = androidWebSMS.getDatabase();
 						
-			AlertDialog.Builder builder = new AlertDialog.Builder(this);
-			builder.setTitle(R.string.InfoDialogTitle);
-			builder.setMessage(
+			AlertDialog.Builder counterBuilder = new AlertDialog.Builder(this);
+			counterBuilder.setTitle(R.string.CounterDialogTitle);
+			counterBuilder.setMessage(
 					webSender.getName() + ": " +
 					smslogDatabase.query(webSender.getName()) + " / " +
 					webSender.getDailyLimit());
-			builder.setNeutralButton(R.string.InfoDialogButton, 
+			counterBuilder.setNeutralButton(R.string.CounterDialogButton, 
 				new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int which) {
-						removeDialog(INFO_DIALOG);
+						removeDialog(COUNTER_DIALOG);
 					}
 				});
-			return builder.create();
+			return counterBuilder.create();
 			
 		default:
 			return super.onCreateDialog(id);

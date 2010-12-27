@@ -214,6 +214,7 @@ public class VodafoneItalyWebSender extends WebSender {
 		}
 		
 		Element root = document.getRootElement();
+		@SuppressWarnings("unchecked")
 		List<Element> children = root.getChildren("e");
 		Log.d("VodafoneIT", "doPrecheck()");
 		int status = 0, errorcode = 0;
@@ -254,6 +255,7 @@ public class VodafoneItalyWebSender extends WebSender {
 		}
 		
 		Element root = document.getRootElement();
+		@SuppressWarnings("unchecked")
 		List<Element> children = root.getChildren("e");
 		Log.d("VodafoneIT", "doPrepare()");
 		int status = 0, errorcode = 0;
@@ -302,6 +304,7 @@ public class VodafoneItalyWebSender extends WebSender {
 		}
 		
 		Element root = document.getRootElement();
+		@SuppressWarnings("unchecked")
 		List<Element> children = root.getChildren("e");
 		Log.d("VodafoneIT", "doSend()");
 		int status = 0, errorcode = 0;

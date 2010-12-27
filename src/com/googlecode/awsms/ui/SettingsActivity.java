@@ -16,7 +16,11 @@
 
 package com.googlecode.awsms.ui;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import android.preference.Preference;
+import android.preference.Preference.OnPreferenceClickListener;
 import android.preference.PreferenceActivity;
 
 import com.googlecode.awsms.R;
@@ -28,13 +32,40 @@ import com.googlecode.awsms.R;
  */
 public class SettingsActivity extends PreferenceActivity {
 
-	// TODO buttons: about, feedback, donate
-	// maybe better in their own info menu?
-	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         addPreferencesFromResource(R.layout.settings);
+        
+        Preference aboutPreference = (Preference) findPreference("About");
+		aboutPreference.setOnPreferenceClickListener(new OnPreferenceClickListener() {
+			public boolean onPreferenceClick(Preference preference) {
+				Intent intent = new Intent(Intent.ACTION_VIEW);
+				intent.setData(Uri.parse(getString(R.string.AboutURL)));
+				startActivity(intent);
+				return true;
+			}
+		});
+        
+        Preference feedbackPreference = (Preference) findPreference("Feedback");
+		feedbackPreference.setOnPreferenceClickListener(new OnPreferenceClickListener() {
+			public boolean onPreferenceClick(Preference preference) {
+				Intent intent = new Intent(Intent.ACTION_VIEW);
+				intent.setData(Uri.parse(getString(R.string.FeedbackURL)));
+				startActivity(intent);
+				return true;
+			}
+		});
+        
+        Preference donatePreference = (Preference) findPreference("Donate");
+		donatePreference.setOnPreferenceClickListener(new OnPreferenceClickListener() {
+			public boolean onPreferenceClick(Preference preference) {
+				Intent intent = new Intent(Intent.ACTION_VIEW);
+				intent.setData(Uri.parse(getString(R.string.DonateURL)));
+				startActivity(intent);
+				return true;
+			}
+		});
 	}
 	
 }
