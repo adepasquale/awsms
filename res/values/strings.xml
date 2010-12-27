@@ -38,7 +38,7 @@
 	<string name="ResetSMSPreferenceOn">Pulisci i campi dopo che l\'invio del messaggio è andato a buon fine</string>
 	<string name="ResetSMSPreferenceOff">Non pulire i campi dopo aver inviato un messaggio</string>
 	<string name="DetailsPreferenceCategory">Dettagli applicazione</string>
-	<string name="AboutPreference">Android Web SMS v1.8</string>
+	<string name="AboutPreference">Android Web SMS v1.9</string>
 	<string name="AboutPreferenceSummary">Rilasciato con Licenza Apache 2.0\n© 2010 Andrea De Pasquale</string>
 	<string name="AboutURL">http://code.google.com/p/awsms/</string>
 	<string name="FeedbackPreference">Scrivi allo sviluppatore</string>
