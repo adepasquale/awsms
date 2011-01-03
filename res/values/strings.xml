@@ -60,9 +60,10 @@
 	<string name="ReceiverInvalid">Il destinatario non è valido</string>
 	<string name="MessageInvalid">Il messaggio non è valido</string>
 	<string name="EnqueueSuccessful">Web SMS inserito nella coda di invio</string>
-	<string name="WebSenderNetworkError">Errore di connessione, riprova</string>
+	<string name="WebSenderNetworkError">Errore di connessione, riprova più tardi</string>
+	<string name="WebSenderSettingsInvalid">Il nome utente e/o la password non sono validi</string>
+	<string name="WebSenderLimitReached">Gli SMS gratuiti di oggi sono esauriti</string>
 	<string name="WebSenderReceiverNotAllowed">Il destinatario non è un cliente Vodafone</string>
-	<string name="WebSenderSettingsInvalid">Il nome utente e/o la password non sono validi.</string>
-	<string name="WebSenderUnknownError">Non è possibile inviare il messaggio.</string>
-	<string name="WebSenderMessageSent">Il messaggio è stato inviato.</string>
+	<string name="WebSenderUnknownError">Non è possibile inviare il messaggio</string>
+	<string name="WebSenderMessageSent">Il messaggio è stato inviato</string>
 </resources>

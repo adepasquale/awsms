@@ -44,8 +44,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.googlecode.awsms.R;
-import com.googlecode.awsms.senders.SMS;
+import com.googlecode.awsms.senders.WebSMS;
 import com.googlecode.awsms.senders.WebSenderAsyncTask;
+import com.googlecode.awsms.senders.WebSenderHelper;
+import com.googlecode.awsms.senders.vodafone.VodafoneWebSenderHelper;
 
 /**
  * Activity used to compose a message and send it by pressing a button. If
@@ -59,6 +61,7 @@ public class ComposeActivity extends Activity {
     
     WebSenderAsyncTask webSenderAsyncTask;
     SharedPreferences sharedPreferences;
+    WebSenderHelper webSenderHelper;
     
     ReceiverAdapter receiverAdapter;
     AutoCompleteTextView receiverText;
@@ -78,8 +81,8 @@ public class ComposeActivity extends Activity {
 	webSenderAsyncTask = new WebSenderAsyncTask(ComposeActivity.this);
 	webSenderAsyncTask.execute();
 	
-	sharedPreferences = 
-	    PreferenceManager.getDefaultSharedPreferences(this);
+	sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+	webSenderHelper = new VodafoneWebSenderHelper(this);
 	
 	receiverText = (AutoCompleteTextView) findViewById(R.id.ReceiverText);
 	messageText = (EditText) findViewById(R.id.MessageText);
@@ -102,7 +105,7 @@ public class ComposeActivity extends Activity {
 	    }
 	});
 
-//	updateLength(0); // FIXME null pointer
+	updateLength(0);
 
 	messageSend.setOnClickListener(new OnClickListener() {
 	    public void onClick(View v) {
@@ -115,7 +118,7 @@ public class ComposeActivity extends Activity {
 		
     		try {
     		    // schedule the message for sending
-    		    SMS sms = new SMS(getReceiver(), getMessage());
+    		    WebSMS sms = new WebSMS(getReceiver(), getMessage());
     		    webSenderAsyncTask.enqueue(sms);
     		    Toast.makeText(ComposeActivity.this,
     			R.string.EnqueueSuccessful, Toast.LENGTH_SHORT).show();
@@ -128,8 +131,8 @@ public class ComposeActivity extends Activity {
 	});
 
 	// display a warning if username or password are empty
-	if (sharedPreferences.getString("VodafoneUsername", "").equals("") ||
-	    sharedPreferences.getString("VodafonePassword", "").equals("")) {
+	if (webSenderHelper.getUsername().equals("") ||
+	    webSenderHelper.getPassword().equals("")) {
 	    showDialog(SETTINGS_DIALOG);
 	}
 
@@ -160,6 +163,12 @@ public class ComposeActivity extends Activity {
 	}
     }
 
+    @Override
+    public void onBackPressed() {
+	// prevent onDestroy() call
+	moveTaskToBack(true);
+    }
+    
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
 	MenuInflater inflater = getMenuInflater();
@@ -214,8 +223,9 @@ public class ComposeActivity extends Activity {
 	case COUNTER_DIALOG:
 	    AlertDialog.Builder counterBuilder = new AlertDialog.Builder(this);
 	    counterBuilder.setTitle(R.string.CounterDialogTitle);
-	    int[] info = webSenderAsyncTask.getWebSender().getCount();
-	    counterBuilder.setMessage("Vodafone IT: "+info[0]+" / "+info[1]);
+	    counterBuilder.setMessage("Vodafone: " + 
+		    webSenderHelper.getCount() + " / " + 
+		    webSenderHelper.getLimit());
 	    counterBuilder.setPositiveButton(R.string.CounterDialogButton,
 		    new DialogInterface.OnClickListener() {
 			public void onClick(DialogInterface dialog, int which) {
@@ -230,8 +240,8 @@ public class ComposeActivity extends Activity {
     }
 
     private void updateLength(int length) {
-	int[] info = webSenderAsyncTask.getWebSender().calcLength(length);
-	messageLength.setText(info[1]+" / "+info[0]);
+	messageLength.setText(webSenderHelper.calcRemaining(length) + 
+		" / " + webSenderHelper.calcFragments(length));
     }
     
     private void clearFields(boolean always) {
@@ -284,7 +294,7 @@ public class ComposeActivity extends Activity {
 	String message = messageText.getText().toString();
 	message = message.replaceAll("\\s+$", "").replaceAll("\\s{2,}", " ");
 	
-	if (webSenderAsyncTask.getWebSender().calcLength(message.length())[0] == 0) {
+	if (webSenderHelper.calcFragments(message.length()) == 0) {
 	    throw new Exception(getString(R.string.MessageInvalid));
 	}
 	

@@ -17,11 +17,11 @@
 package com.googlecode.awsms.senders;
 
 /**
- * Simple class representing an SMS
+ * Simple class representing a Web SMS
  * 
  * @author Andrea De Pasquale
  */
-public class SMS {
+public class WebSMS {
 
     String[] receivers;
     String message;
@@ -29,12 +29,10 @@ public class SMS {
     /**
      * Create a text message with a single receiver
      * 
-     * @param receiver
-     *            Phone number of the message addressee.
-     * @param message
-     *            Text message to be sent to the receiver.
+     * @param receiver Phone number of the message addressee.
+     * @param message Text message to be sent to the receiver.
      */
-    public SMS(String receiver, String message) {
+    public WebSMS(String receiver, String message) {
 	this.receivers = new String[1];
 	this.receivers[0] = receiver;
 	this.message = message;
@@ -43,12 +41,10 @@ public class SMS {
     /**
      * Create a text message with multiple receivers
      * 
-     * @param receivers
-     *            Phone numbers of the many message addressees.
-     * @param message
-     *            Text message to be sent to every receiver.
+     * @param receivers Phone numbers of the many message addressees.
+     * @param message Text message to be sent to every receiver.
      */
-    public SMS(String[] receivers, String message) {
+    public WebSMS(String[] receivers, String message) {
 	this.receivers = receivers;
 	this.message = message;
     }
