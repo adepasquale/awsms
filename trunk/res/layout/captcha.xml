@@ -17,12 +17,15 @@
 	
 -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	style="?android:attr/dropDownItemStyle" android:orientation="horizontal"
-	android:layout_width="fill_parent" android:layout_height="55dp">
-	<TextView android:id="@+id/ReceiverName" style="?android:attr/dropDownItemStyle"
+	android:layout_height="fill_parent" android:layout_width="fill_parent"
+	android:orientation="vertical">
+	<ImageView android:id="@+id/CaptchaDialogImage"
 		android:layout_width="wrap_content" android:layout_height="wrap_content"
-		android:textSize="18sp" android:singleLine="true" />
-	<TextView android:id="@+id/ReceiverNumber" style="?android:attr/dropDownItemStyle"
-		android:layout_width="wrap_content" android:layout_height="wrap_content"
-		android:textSize="14sp" android:singleLine="true" />
+		android:scaleType="fitXY" android:padding="5dp" android:maxHeight="35dp"
+		android:maxWidth="210dp" android:minHeight="35dp" android:minWidth="210dp" />
+	<EditText android:id="@+id/CaptchaDialogText" android:hint="@string/CaptchaDialogTextHint"
+		android:layout_width="fill_parent" android:layout_height="wrap_content"
+		android:inputType="textCapCharacters|textNoSuggestions" />
+	<Button android:id="@+id/CaptchaDialogButton" android:hint="@string/CaptchaDialogButton" 
+		android:layout_width="fill_parent" android:layout_height="wrap_content" android:onClick="onClick" />
 </LinearLayout>
