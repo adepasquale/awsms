@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.googlecode.awsms.senders;
+package com.googlecode.awsms.senders.vodafone;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -41,6 +41,9 @@ import android.content.Context;
 import android.util.Log;
 
 import com.googlecode.awsms.R;
+import com.googlecode.awsms.senders.WebSMS;
+import com.googlecode.awsms.senders.WebSender;
+import com.googlecode.awsms.senders.captcha.Base64;
 
 /**
  * <code>WebSender</code> implementation for www.vodafone.it web site
@@ -75,6 +78,8 @@ public class VodafoneWebSender extends WebSender {
 	httpClient.getParams().setParameter("http.useragent", "Vodafone_DW");
 	httpContext.setAttribute(ClientContext.COOKIE_STORE,
 		new BasicCookieStore());
+	
+	helper = new VodafoneWebSenderHelper(context);
 
 	try {
 	    // to allow self-signed certificate to be accepted
@@ -92,7 +97,7 @@ public class VodafoneWebSender extends WebSender {
 	}
     }
 
-    public boolean send(SMS sms, String captcha) throws Exception {
+    public boolean send(WebSMS sms, String captcha) throws Exception {
 	// TODO support multiple receivers
 	String receiver = sms.getReceivers()[0];
 	String message = sms.getMessage();
@@ -104,40 +109,10 @@ public class VodafoneWebSender extends WebSender {
 		return false; // need CAPTCHA
 	}
 
-	doSend(receiver, message, captcha);
-	smsDatabase.insertNew(VodafoneWebSender.class.getName(), 
-		calcLength(message.length())[0]);
+	if (!doSend(receiver, message, captcha))
+	    return false; // still need CAPTCHA
+	helper.addCount(message.length());
 	return true;
-    }
-
-    public int[] calcLength(int length) {
-	int[] info = new int[2];
-
-	if (length == 0) {
-	    info[0] = 0;
-	    info[1] = 0;
-	} else if (length <= 160) {
-	    info[0] = 1;
-	    info[1] = 160 - length;
-	} else if (length <= 307) {
-	    info[0] = 2;
-	    info[1] = 307 - length;
-	} else if (length <= 360) {
-	    info[0] = 3;
-	    info[1] = 360 - length;
-	} else {
-	    info[0] = 0;
-	    info[1] = 360 - length;
-	}
-
-	return info;
-    }
-    
-    public int[] getCount() {
-	int[] info = new int[2];
-	info[0] = smsDatabase.queryToday(VodafoneWebSender.class.getName());
-	info[1] = 10;
-	return info;
     }
 
     /**
@@ -176,12 +151,12 @@ public class VodafoneWebSender extends WebSender {
 	    HttpPost request = new HttpPost(
 		    "https://widget.vodafone.it/190/trilogy/jsp/login.do");
 	    List<NameValuePair> requestData = new ArrayList<NameValuePair>();
-	    requestData.add(new BasicNameValuePair("username", 
-		    sharedPreferences.getString("VodafoneUsername", "")));
-	    requestData.add(new BasicNameValuePair("password", 
-		    sharedPreferences.getString("VodafonePassword", "")));
-	    request.setEntity(new UrlEncodedFormEntity(requestData,
-		    HTTP.ISO_8859_1));
+	    requestData.add(
+		    new BasicNameValuePair("username", helper.getUsername()));
+	    requestData.add(
+		    new BasicNameValuePair("password", helper.getPassword()));
+	    request.setEntity(
+		    new UrlEncodedFormEntity(requestData, HTTP.ISO_8859_1));
 	    HttpResponse response = httpClient.execute(request, httpContext);
 	    response.getEntity().consumeContent();
 	} catch (Exception e) {
@@ -197,11 +172,16 @@ public class VodafoneWebSender extends WebSender {
 
     private void parseError(int error) throws Exception {
 	switch (error) {
+	case 107:
+	    throw new Exception(
+		    context.getString(R.string.WebSenderLimitReached));
+	
 	case 113:
 	    throw new Exception(
 		    context.getString(R.string.WebSenderReceiverNotAllowed));
 	    
 	case 104: // ?
+	case 109: // Messaggio vuoto
 	default:
 	    throw new Exception(
 		    context.getString(R.string.WebSenderUnknownError));
@@ -221,10 +201,12 @@ public class VodafoneWebSender extends WebSender {
 		    "https://widget.vodafone.it/190/fsms/precheck.do?channel=VODAFONE_DW");
 	    HttpResponse response = httpClient.execute(request, httpContext);
 
-	    // FIXME does not work when 10 messages have been sent
 	    Reader reader = new BufferedReader(new InputStreamReader(response
 		    .getEntity().getContent()));
-	    reader.skip(13); // this trick solves XML header problem
+	    
+	    if (helper.getCount() < helper.getLimit()) {
+		reader.skip(13); // this trick solves XML header problem
+	    }
 
 	    document = new SAXBuilder().build(reader);
 	    response.getEntity().consumeContent();
@@ -322,8 +304,9 @@ public class VodafoneWebSender extends WebSender {
      * @param message
      * @param captcha
      * @throws Exception
+     * @returns false if CAPTCHA still present
      */
-    private void doSend(String receiver, String message, String captcha)
+    private boolean doSend(String receiver, String message, String captcha)
 	    throws Exception {
 	Document document;
 
@@ -363,9 +346,10 @@ public class VodafoneWebSender extends WebSender {
 		errorcode = Integer.parseInt(child.getAttributeValue("v"));
 	    if (child.getAttributeValue("n").equals("RETURNMSG"))
 		returnmsg = child.getValue();
-	    if (child.getAttributeValue("n").equals("CODEIMG"))
-		throw new Exception(
-			context.getString(R.string.WebSenderUnknownError));
+	    if (child.getAttributeValue("n").equals("CODEIMG")) {
+		captchaArray = Base64.decode(child.getValue());
+		return false;
+	    }
 	}
 
 	Log.d("VodafoneIT", "status code: " + status);
@@ -373,6 +357,8 @@ public class VodafoneWebSender extends WebSender {
 	Log.d("VodafoneIT", "return message: " + returnmsg);
 	if (status != 1)
 	    parseError(errorcode);
+	
+	return true;
     }
 
 }

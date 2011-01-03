@@ -24,6 +24,7 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -38,6 +39,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.googlecode.awsms.R;
+import com.googlecode.awsms.senders.vodafone.VodafoneWebSender;
+import com.googlecode.awsms.ui.ComposeActivity;
 
 /**
  * Asynchronous task which sends an SMS and displays notifications.
@@ -50,16 +53,13 @@ public class WebSenderAsyncTask extends AsyncTask<Void, Object, Void> {
 
     Context context;
     NotificationManager notificationManager;
-    SharedPreferences sharedPreferences;
-    LinkedBlockingQueue<SMS> smsQueue;
-    LinkedBlockingQueue<String> captchaQueue;
-    
-    VodafoneWebSender vodafoneWebSender = null;
-    Dialog captchaDialog;
+    SharedPreferences preferences;
+    LinkedBlockingQueue<WebSMS> smsQueue;
+    VodafoneWebSender vodafoneWebSender;
 
-    public synchronized WebSender getWebSender() {
-        return vodafoneWebSender;
-    }
+    // XXX remove
+    LinkedBlockingQueue<String> captchaQueue;
+    Dialog captchaDialog;
 
     static final int PROGRESS_BEFORE_LOGIN = 1;
     static final int PROGRESS_AFTER_LOGIN = 2;
@@ -73,36 +73,36 @@ public class WebSenderAsyncTask extends AsyncTask<Void, Object, Void> {
 	context = c;
 	notificationManager = (NotificationManager) context
 		.getSystemService(Context.NOTIFICATION_SERVICE);
-	sharedPreferences = 
+	preferences = 
 	    PreferenceManager.getDefaultSharedPreferences(context);
-	smsQueue = new LinkedBlockingQueue<SMS>(20);
+	smsQueue = new LinkedBlockingQueue<WebSMS>(20);
 	captchaQueue = new LinkedBlockingQueue<String>(5);
     }
     
-    public void enqueue(SMS sms) {
+    public void enqueue(WebSMS sms) {
 	smsQueue.add(sms);
     }
 
     @Override
     protected Void doInBackground(Void... params) {
-	if (sharedPreferences.getBoolean("NotifyStatus", true))
+	if (preferences.getBoolean("NotifyStatus", true))
 	    publishProgress(PROGRESS_BEFORE_LOGIN);
 	
 	vodafoneWebSender = new VodafoneWebSender(context);
 	
-	if (sharedPreferences.getBoolean("NotifyStatus", true))
+	if (preferences.getBoolean("NotifyStatus", true))
 	    publishProgress(PROGRESS_AFTER_LOGIN);
 	
 	while (true) {
-	    SMS sms = null;
+	    WebSMS sms = null;
 	    try { sms = smsQueue.take(); } 
 	    catch (Exception e) { }
 	    if (sms == null) continue;
 	    
 	    try {
 		
-		if (sharedPreferences.getBoolean("NotifyStatus", true))
-		    publishProgress(PROGRESS_BEFORE_SENDING, smsQueue.size()+1);
+		if (preferences.getBoolean("NotifyStatus", true))
+		    publishProgress(PROGRESS_BEFORE_SENDING);
 
 		String captcha = "";
 		while (!vodafoneWebSender.send(sms, captcha)) {
@@ -111,13 +111,13 @@ public class WebSenderAsyncTask extends AsyncTask<Void, Object, Void> {
 		    captcha = captchaQueue.take();
 		}
 		
-		if (sharedPreferences.getBoolean("NotifyStatus", true))
+		if (preferences.getBoolean("NotifyStatus", true))
 		    publishProgress(PROGRESS_AFTER_SENDING);
 		
-		if (sharedPreferences.getBoolean("NotifySuccess", false))
+		if (preferences.getBoolean("NotifySuccess", false))
 		    publishProgress(PROGRESS_SUCCESS);
 		
-		if (sharedPreferences.getBoolean("SaveSMS", true)) {
+		if (preferences.getBoolean("SaveSMS", true)) {
 		    String[] receivers = sms.getReceivers();
 		    String message = sms.getMessage();
 		    for (String receiver : receivers) {
@@ -155,7 +155,7 @@ public class WebSenderAsyncTask extends AsyncTask<Void, Object, Void> {
 	    Notification nbs = createNotification("Invio in corso");
 	    nbs.flags |= Notification.FLAG_ONGOING_EVENT;
 	    nbs.flags |= Notification.FLAG_NO_CLEAR;
-	    int queueSize = (Integer) progress[1];
+	    int queueSize = smsQueue.size() + 1;
 	    if (queueSize > 1) nbs.number = queueSize;
 	    notificationManager.notify(0, nbs);
 	    break;
@@ -199,12 +199,14 @@ public class WebSenderAsyncTask extends AsyncTask<Void, Object, Void> {
 	    
 	case PROGRESS_SUCCESS:
 	    Notification ns = createNotification("Messaggio inviato");
+	    ns.flags |= Notification.FLAG_AUTO_CANCEL;
 	    notificationManager.notify(0, ns);
 	    break;
 	    
 	case PROGRESS_ERROR:
-	    Notification ne = createNotification("Errore durante l'invio");
-	    ne.flags |= Notification.FLAG_NO_CLEAR;
+	    // TODO save a draft of the message for re-sending
+	    Notification ne = createNotification((String) progress[1]);
+	    ne.flags |= Notification.FLAG_AUTO_CANCEL;
 	    ne.defaults |= Notification.DEFAULT_SOUND;
 	    ne.defaults |= Notification.DEFAULT_VIBRATE;
 	    notificationManager.notify(0, ne);
@@ -215,13 +217,17 @@ public class WebSenderAsyncTask extends AsyncTask<Void, Object, Void> {
 	}
     }
     
-    private Notification createNotification(String content) {
+    private Notification createNotification(String title) {
 	Notification notification = new Notification(R.drawable.ic_notify_draft,
-		content, System.currentTimeMillis());
-	// FIXME resume ComposeActivity
+		title, System.currentTimeMillis());
+	Intent intent = new Intent(context, ComposeActivity.class);
+	intent.setAction(Intent.ACTION_MAIN);
+	intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK |
+		Intent.FLAG_ACTIVITY_SINGLE_TOP |
+		Intent.FLAG_ACTIVITY_CLEAR_TOP);
 	notification.setLatestEventInfo(context, 
-		context.getString(R.string.ApplicationLabel), content, 
-		PendingIntent.getActivity(context, 0, null, 0));
+		context.getString(R.string.ApplicationLabel), title, 
+		PendingIntent.getActivity(context, 0, intent, 0));
 	return notification;
     }
 }

@@ -22,9 +22,6 @@ import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
 
 import android.content.Context;
-import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
-
 
 /**
  * Abstract class for web message senders.
@@ -39,20 +36,15 @@ public abstract class WebSender {
     protected HttpContext httpContext;
     
     protected Context context;
-    protected SharedPreferences sharedPreferences;
-    protected SMSDatabase smsDatabase;
+    protected WebSenderHelper helper;
 
     /**
      * Default constructor that initializes HTTP connections.
      */
     public WebSender(Context context) {
+	this.context = context;
 	httpClient = new DefaultHttpClient();
 	httpContext = new BasicHttpContext();
-	
-	this.context = context;
-	sharedPreferences = 
-	    PreferenceManager.getDefaultSharedPreferences(context);
-	smsDatabase = new SMSDatabase(context);
     }
 
     /**
@@ -61,30 +53,12 @@ public abstract class WebSender {
      * @param sms Text message to be sent
      * @param captcha Captcha text manually decoded by the user.
      */
-    public abstract boolean send(SMS sms, String captcha) throws Exception;
+    public abstract boolean send(WebSMS sms, String captcha) throws Exception;
 
-    /**
-     * Call this method to retrieve information based on current message length.
-     * 
-     * @param length Length of the text message.
-     * @return an <code>int[]</code>, containing how many messages will be sent
-     *         (at index 0) and how many characters are remaining (at index 1).
-     */
-    public abstract int[] calcLength(int length);
-
-    /**
-     * Call this method to retrieve information about message count.
-     * 
-     * @return an <code>int[]</code>, containing how many messages have been
-     * 	       sent today (at index 0) and how many messages can be sent in a
-     *         single day (at index 1).
-     */
-    public abstract int[] getCount();
-
-    protected byte[] captchaArray;
+    protected byte[] captchaArray; // XXX remove
 
     public byte[] getCaptchaArray() {
-	return captchaArray;
+	return captchaArray; // XXX remove
     }
 
 }

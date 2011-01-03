@@ -31,9 +31,9 @@ import android.database.sqlite.SQLiteQueryBuilder;
  * 
  * @author Andrea De Pasquale
  */
-public class SMSDatabase {
+public class WebSenderDatabase {
 
-    static final String TAG = "SMSDatabase";
+    static final String TAG = "WebSenderDatabase";
     
     static final String DB_NAME = "awsms.db";
     static final int DB_VERSION = 2;
@@ -67,7 +67,7 @@ public class SMSDatabase {
     DBOpenHelper dbOpenHelper;
     SimpleDateFormat dateFormat;
 
-    public SMSDatabase(Context context) {
+    public WebSenderDatabase(Context context) {
 	dbOpenHelper = new DBOpenHelper(context);
 	dateFormat = new SimpleDateFormat("yyyyMMdd");
 	deleteOld(); // keep the database clean
