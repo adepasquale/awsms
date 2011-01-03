@@ -16,14 +16,17 @@
 	limitations under the License.
 	
 -->
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
-	<item android:id="@+id/ClearMenuItem"
-          android:icon="@drawable/ic_menu_clear"
-          android:title="@string/ClearMenuItem" />
-	<item android:id="@+id/CounterMenuItem" 
-		android:icon="@drawable/ic_menu_counter"
-		android:title="@string/CounterMenuItem" />
-    <item android:id="@+id/SettingsMenuItem"
-          android:icon="@drawable/ic_menu_settings"
-          android:title="@string/SettingsMenuItem" />
-</menu>
+<resources>
+	<string-array name="ClearSMSEntries">
+		<item>Destinatario e messaggio</item>
+		<item>Soltanto il destinatario</item>
+		<item>Soltanto il messaggio</item>
+		<item>Nessuno dei due</item>
+	</string-array>
+	<string-array name="ClearSMSValues">
+		<item>RM</item>
+		<item>R</item>
+		<item>M</item>
+		<item></item>
+	</string-array>
+</resources>

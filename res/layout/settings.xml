@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
  
-	Copyright 2010 Andrea De Pasquale
+	Copyright 2010-2011 Andrea De Pasquale
 	
 	Licensed under the Apache License, Version 2.0 (the "License");
 	you may not use this file except in compliance with the License.
@@ -17,21 +17,24 @@
 	
 -->
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-	<PreferenceCategory android:title="@string/VodafoneItalyPreferenceCategory">
+	<PreferenceCategory android:title="@string/VodafonePreferenceCategory">
 		<EditTextPreference android:title="@string/UsernamePreference"
-			android:key="VodafoneItalyUsername" />
+			android:key="VodafoneUsername" />
 		<EditTextPreference android:title="@string/PasswordPreference"
-			android:key="VodafoneItalyPassword" android:password="true" />
+			android:key="VodafonePassword" android:password="true" />
 	</PreferenceCategory>
 	<PreferenceCategory android:title="@string/OperationsPreferenceCategory">
 		<CheckBoxPreference android:title="@string/SaveSMSPreference"
-			android:summaryOn="@string/SaveSMSPreferenceOn" 
-			android:summaryOff="@string/SaveSMSPreferenceOff"
 			android:key="SaveSMS" android:defaultValue="true" />
-		<CheckBoxPreference android:title="@string/ResetSMSPreference"
-			android:summaryOn="@string/ResetSMSPreferenceOn" 
-			android:summaryOff="@string/ResetSMSPreferenceOff"
-			android:key="ResetSMS" android:defaultValue="true" />
+		<ListPreference android:title="@string/ClearSMSPreference"
+			android:key="ClearSMS" android:entries="@array/ClearSMSEntries" 
+			android:entryValues="@array/ClearSMSValues" />
+	</PreferenceCategory>
+	<PreferenceCategory android:title="@string/NotificationsPreferenceCategory">
+		<CheckBoxPreference android:title="@string/NotifySuccessPreference"
+			android:key="NotifySuccess" android:defaultValue="false" />
+		<CheckBoxPreference android:title="@string/NotifyStatusPreference"
+			android:key="NotifyStatus" android:defaultValue="true" />
 	</PreferenceCategory>
 	<PreferenceCategory android:title="@string/DetailsPreferenceCategory">
 		<Preference android:title="@string/AboutPreference"

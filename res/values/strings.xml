@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
  
-	Copyright 2010 Andrea De Pasquale
+	Copyright 2010-2011 Andrea De Pasquale
 	
 	Licensed under the Apache License, Version 2.0 (the "License");
 	you may not use this file except in compliance with the License.
@@ -17,29 +17,27 @@
 	
 -->
 <resources>
-	<string name="app_name">Android Web SMS</string>
+	<string name="ApplicationLabel">Android Web SMS</string>
 	<string name="ComposeActivityLabel">Android Web SMS</string>
 	<string name="ReceiverTextHint">Destinatario</string>
 	<string name="MessageTextHint">Messaggio</string>
 	<string name="MessageSend">Invia</string>
-	<string name="CaptchaTextHint">Codice</string>
 	<string name="ClearMenuItem">Cancella</string>
 	<string name="CounterMenuItem">Contatore</string>
 	<string name="SettingsMenuItem">Impostazioni</string>
 	<string name="SettingsActivityLabel">Impostazioni</string>
-	<string name="VodafoneItalyPreferenceCategory">Account www.vodafone.it</string>
+	<string name="VodafonePreferenceCategory">Account www.vodafone.it</string>
 	<string name="UsernamePreference">Nome utente</string>
 	<string name="PasswordPreference">Password</string>
 	<string name="OperationsPreferenceCategory">Operazioni automatiche</string>
 	<string name="SaveSMSPreference">Salva messaggi inviati</string>
-	<string name="SaveSMSPreferenceOn">I messaggi inviati saranno salvati insieme agli SMS tradizionali</string>
-	<string name="SaveSMSPreferenceOff">I messaggi inviati saranno cancellati</string>
-	<string name="ResetSMSPreference">Cancella dopo l\'invio</string>
-	<string name="ResetSMSPreferenceOn">Pulisci i campi dopo che l\'invio del messaggio è andato a buon fine</string>
-	<string name="ResetSMSPreferenceOff">Non pulire i campi dopo aver inviato un messaggio</string>
+	<string name="ClearSMSPreference">Cancella dopo l\'invio</string>
+	<string name="NotificationsPreferenceCategory">Notifiche attive</string>
+	<string name="NotifySuccessPreference">Invio riuscito</string>
+	<string name="NotifyStatusPreference">Stato dell\'invio</string>
 	<string name="DetailsPreferenceCategory">Dettagli applicazione</string>
-	<string name="AboutPreference">Android Web SMS v1.9</string>
-	<string name="AboutPreferenceSummary">Rilasciato con Licenza Apache 2.0\n© 2010 Andrea De Pasquale</string>
+	<string name="AboutPreference">Android Web SMS 2.0.0</string>
+	<string name="AboutPreferenceSummary">Rilasciato con Licenza Apache 2.0\n© 2010-2011 Andrea De Pasquale</string>
 	<string name="AboutURL">http://code.google.com/p/awsms/</string>
 	<string name="FeedbackPreference">Scrivi allo sviluppatore</string>
 	<string name="FeedbackPreferenceSummary">Segnala qualsiasi problema e/o suggerisci miglioramenti</string>
@@ -53,14 +51,18 @@
 	<string name="SettingsDialogNegativeButton">No</string>
 	<string name="CounterDialogTitle">Contatore messaggi</string>
 	<string name="CounterDialogButton">Chiudi</string>
+	<string name="CaptchaDialogTitle">Richiesta CAPTCHA</string>
+	<string name="CaptchaDialogTextHint">Codice</string>
+	<string name="CaptchaDialogButton">Decodifica</string>
 	<string name="ProgressDialogTitle">Invio Web SMS</string>
 	<string name="ProgressDialogMessage">Invio in corso...</string>
 	<string name="ProgressDialogCanceled">L\'invio è stato annullato.</string>
-	<string name="WebSenderNetworkError">Errore di connessione, riprova.</string>
-	<string name="WebSenderReceiverInvalid">Il campo destinatario non contiene un numero valido.</string>
-	<string name="WebSenderMessageInvalid">Il messaggio non è valido.</string>
+	<string name="ReceiverInvalid">Il destinatario non è valido</string>
+	<string name="MessageInvalid">Il messaggio non è valido</string>
+	<string name="EnqueueSuccessful">Web SMS inserito nella coda di invio</string>
+	<string name="WebSenderNetworkError">Errore di connessione, riprova</string>
+	<string name="WebSenderReceiverNotAllowed">Il destinatario non è un cliente Vodafone</string>
 	<string name="WebSenderSettingsInvalid">Il nome utente e/o la password non sono validi.</string>
-	<string name="WebSenderNeedCaptcha">Per favore, decifra il codice nell\'immagine e ripeti l\'invio.</string>
-	<string name="WebSenderMessageSent">Il messaggio è stato inviato.</string>
 	<string name="WebSenderUnknownError">Non è possibile inviare il messaggio.</string>
+	<string name="WebSenderMessageSent">Il messaggio è stato inviato.</string>
 </resources>
