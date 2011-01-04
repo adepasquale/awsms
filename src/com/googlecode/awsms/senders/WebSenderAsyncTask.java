@@ -77,6 +77,7 @@ public class WebSenderAsyncTask extends AsyncTask<Void, Object, Void> {
 	    PreferenceManager.getDefaultSharedPreferences(context);
 	smsQueue = new LinkedBlockingQueue<WebSMS>(20);
 	captchaQueue = new LinkedBlockingQueue<String>(5);
+	vodafoneWebSender = new VodafoneWebSender(context);
     }
     
     public void enqueue(WebSMS sms) {
@@ -88,7 +89,11 @@ public class WebSenderAsyncTask extends AsyncTask<Void, Object, Void> {
 	if (preferences.getBoolean("NotifyStatus", true))
 	    publishProgress(PROGRESS_BEFORE_LOGIN);
 	
-	vodafoneWebSender = new VodafoneWebSender(context);
+	try {
+	    vodafoneWebSender.preSend();
+	} catch (Exception e) {
+	    // don't care here
+	}
 	
 	if (preferences.getBoolean("NotifyStatus", true))
 	    publishProgress(PROGRESS_AFTER_LOGIN);
@@ -114,7 +119,7 @@ public class WebSenderAsyncTask extends AsyncTask<Void, Object, Void> {
 		if (preferences.getBoolean("NotifyStatus", true))
 		    publishProgress(PROGRESS_AFTER_SENDING);
 		
-		if (preferences.getBoolean("NotifySuccess", false))
+		if (preferences.getBoolean("NotifySuccess", true))
 		    publishProgress(PROGRESS_SUCCESS);
 		
 		if (preferences.getBoolean("SaveSMS", true)) {
@@ -218,7 +223,7 @@ public class WebSenderAsyncTask extends AsyncTask<Void, Object, Void> {
     }
     
     private Notification createNotification(String title) {
-	Notification notification = new Notification(R.drawable.ic_notify_draft,
+	Notification notification = new Notification(R.drawable.ic_notify,
 		title, System.currentTimeMillis());
 	Intent intent = new Intent(context, ComposeActivity.class);
 	intent.setAction(Intent.ACTION_MAIN);

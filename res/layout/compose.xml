@@ -39,8 +39,7 @@
 				android:layout_width="fill_parent" android:textSize="12sp"
 				android:gravity="center_horizontal" android:id="@+id/MessageLength" />
 			<Button android:id="@+id/MessageSend" android:text="@string/MessageSend"
-				android:onClick="onClick" android:layout_height="fill_parent"
-				android:layout_width="fill_parent" />
+				android:layout_height="fill_parent" android:layout_width="fill_parent" />
 		</LinearLayout>
 	</LinearLayout>
 </LinearLayout>

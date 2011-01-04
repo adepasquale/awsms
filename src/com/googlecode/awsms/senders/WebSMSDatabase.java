@@ -31,7 +31,7 @@ import android.database.sqlite.SQLiteQueryBuilder;
  * 
  * @author Andrea De Pasquale
  */
-public class WebSenderDatabase {
+public class WebSMSDatabase {
 
     static final String TAG = "WebSenderDatabase";
     
@@ -67,7 +67,7 @@ public class WebSenderDatabase {
     DBOpenHelper dbOpenHelper;
     SimpleDateFormat dateFormat;
 
-    public WebSenderDatabase(Context context) {
+    public WebSMSDatabase(Context context) {
 	dbOpenHelper = new DBOpenHelper(context);
 	dateFormat = new SimpleDateFormat("yyyyMMdd");
 	deleteOld(); // keep the database clean
@@ -106,7 +106,7 @@ public class WebSenderDatabase {
 	database.insert(TABLE_NAME, SENDER, values);
     }
 
-    private void deleteOld() {
+    public void deleteOld() {
 	SQLiteDatabase database = dbOpenHelper.getWritableDatabase();
 	String whereClause = String.format("%s<>\'%s\'", DATE,
 		dateFormat.format(new Date()));

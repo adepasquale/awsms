@@ -50,8 +50,7 @@ import com.googlecode.awsms.senders.WebSenderHelper;
 import com.googlecode.awsms.senders.vodafone.VodafoneWebSenderHelper;
 
 /**
- * Activity used to compose a message and send it by pressing a button. If
- * needed, also displays an additional view to manually decode a CAPTCHA.
+ * Activity used to compose a message and send it by pressing a button. 
  * 
  * @author Andrea De Pasquale
  */

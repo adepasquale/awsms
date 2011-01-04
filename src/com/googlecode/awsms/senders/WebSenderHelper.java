@@ -28,12 +28,12 @@ import android.preference.PreferenceManager;
 public abstract class WebSenderHelper {
     
     protected Context context;
-    protected WebSenderDatabase database;
+    protected WebSMSDatabase database;
     protected SharedPreferences preferences;
     
     public WebSenderHelper(Context context) {
 	this.context = context;
-	database = new WebSenderDatabase(context);
+	database = new WebSMSDatabase(context);
 	preferences = PreferenceManager.getDefaultSharedPreferences(context);
     }
     
