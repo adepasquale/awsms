@@ -36,8 +36,8 @@
 	<string name="NotifySuccessPreference">Invio riuscito</string>
 	<string name="NotifyStatusPreference">Stato dell\'invio</string>
 	<string name="DetailsPreferenceCategory">Dettagli applicazione</string>
-	<string name="AboutPreference">Android Web SMS 2.0.0</string>
-	<string name="AboutPreferenceSummary">Rilasciato con Licenza Apache 2.0\n© 2010-2011 Andrea De Pasquale</string>
+	<string name="AboutPreference">Android Web SMS 1.9</string>
+	<string name="AboutPreferenceSummary">© 2010-2011 Andrea De Pasquale</string>
 	<string name="AboutURL">http://code.google.com/p/awsms/</string>
 	<string name="FeedbackPreference">Scrivi allo sviluppatore</string>
 	<string name="FeedbackPreferenceSummary">Segnala qualsiasi problema e/o suggerisci miglioramenti</string>
@@ -46,7 +46,7 @@
 	<string name="DonatePreferenceSummary">Contribuisci economicamente allo sviluppo del programma</string>
 	<string name="DonateURL">https://www.paypal.com/cgi-bin/webscr?cmd=_donations&amp;business=andrea%40de%2dpasquale%2ename&amp;lc=IT&amp;item_name=Android%20Web%20SMS&amp;currency_code=EUR&amp;bn=PP%2dDonationsBF%3abtn_donateCC_LG%2egif%3aNonHosted</string>
 	<string name="SettingsDialogTitle">Configurazione account</string>
-	<string name="SettingsDialogMessage">Prima di poter inviare un messaggio, è necessario configurare nome utente e password relativi al sito Vodafone IT. Effettuare questa operazione adesso?</string>
+	<string name="SettingsDialogMessage">Prima di poter inviare un messaggio, è necessario configurare nome utente e password relativi al sito Vodafone. Effettuare questa operazione adesso?</string>
 	<string name="SettingsDialogPositiveButton">Sì</string>
 	<string name="SettingsDialogNegativeButton">No</string>
 	<string name="CounterDialogTitle">Contatore messaggi</string>
@@ -62,6 +62,7 @@
 	<string name="EnqueueSuccessful">Web SMS inserito nella coda di invio</string>
 	<string name="WebSenderNetworkError">Errore di connessione, riprova più tardi</string>
 	<string name="WebSenderSettingsInvalid">Il nome utente e/o la password non sono validi</string>
+	<string name="WebSenderProtocolError">Errore di comunicazione con il sito Vodafone</string>
 	<string name="WebSenderLimitReached">Gli SMS gratuiti di oggi sono esauriti</string>
 	<string name="WebSenderReceiverNotAllowed">Il destinatario non è un cliente Vodafone</string>
 	<string name="WebSenderUnknownError">Non è possibile inviare il messaggio</string>

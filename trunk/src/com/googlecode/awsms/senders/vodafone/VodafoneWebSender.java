@@ -35,6 +35,7 @@ import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.protocol.HTTP;
 import org.jdom.Document;
 import org.jdom.Element;
+import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
 
 import android.content.Context;
@@ -89,21 +90,19 @@ public class VodafoneWebSender extends WebSender {
 	} catch (Exception e) {
 	    Log.e(TAG, "SSLSocketFactory exception: " + e.getMessage());
 	}
-	
-	try {
-	    doLogin();
-	} catch (Exception e) {
-	    // don't worry, we will catch it during send()
-	}
     }
 
+    public void preSend() throws Exception {
+	if (!isLoggedIn()) doLogin();
+    }
+    
     public boolean send(WebSMS sms, String captcha) throws Exception {
 	// TODO support multiple receivers
 	String receiver = sms.getReceivers()[0];
 	String message = sms.getMessage();
 
 	if (captcha.equals("")) {
-	    if (!isLoggedIn()) doLogin();
+	    preSend();
 	    doPrecheck();
 	    if (!doPrepare(receiver, message))
 		return false; // need CAPTCHA
@@ -194,48 +193,55 @@ public class VodafoneWebSender extends WebSender {
      * @throws Exception
      */
     private void doPrecheck() throws Exception {
-	Document document;
+	Document document = null;
+	
+	// to solve XML header problem
+	boolean skip = true;
+	boolean done = false;
 
-	try {
-	    HttpGet request = new HttpGet(
-		    "https://widget.vodafone.it/190/fsms/precheck.do?channel=VODAFONE_DW");
-	    HttpResponse response = httpClient.execute(request, httpContext);
+	do {
+	    try {
+		HttpGet request = new HttpGet(
+			"https://widget.vodafone.it/190/fsms/precheck.do?channel=VODAFONE_DW");
+		HttpResponse response = httpClient.execute(request, httpContext);
 
-	    Reader reader = new BufferedReader(new InputStreamReader(response
-		    .getEntity().getContent()));
-	    
-	    if (helper.getCount() < helper.getLimit()) {
-		reader.skip(13); // this trick solves XML header problem
+		Reader reader = new BufferedReader(new InputStreamReader(
+			response.getEntity().getContent()));
+		if (skip) reader.skip(13);
+
+		document = new SAXBuilder().build(reader);
+		response.getEntity().consumeContent();
+		done = true;
+		
+	    } catch (JDOMException jdom) {
+		if (skip) skip = false;
+		else throw new Exception(
+			context.getString(R.string.WebSenderProtocolError));
+	    } catch (Exception e) {
+		throw new Exception(
+			context.getString(R.string.WebSenderNetworkError));
 	    }
-
-	    document = new SAXBuilder().build(reader);
-	    response.getEntity().consumeContent();
-
-	} catch (Exception e) {
-	    e.printStackTrace();
-	    throw new Exception(
-		    context.getString(R.string.WebSenderNetworkError));
-	}
+	} while (!done);
 
 	Element root = document.getRootElement();
 	@SuppressWarnings("unchecked")
 	List<Element> children = root.getChildren("e");
-	Log.d("VodafoneIT", "doPrecheck()");
+	Log.i(TAG, "doPrecheck()");
 	int status = 0, errorcode = 0;
 	for (Element child : children) {
-	    Log.d("VodafoneIT", child.getAttributeValue("n"));
+	    Log.i(TAG, child.getAttributeValue("n"));
 	    if (child.getAttributeValue("v") != null)
-		Log.d("VodafoneIT", child.getAttributeValue("v"));
+		Log.i(TAG, child.getAttributeValue("v"));
 	    if (child.getValue() != null)
-		Log.d("VodafoneIT", child.getValue());
+		Log.i(TAG, child.getValue());
 	    if (child.getAttributeValue("n").equals("STATUS"))
 		status = Integer.parseInt(child.getAttributeValue("v"));
 	    if (child.getAttributeValue("n").equals("ERRORCODE"))
 		errorcode = Integer.parseInt(child.getAttributeValue("v"));
 	}
 
-	Log.d("VodafoneIT", "status code: " + status);
-	Log.d("VodafoneIT", "error code: " + errorcode);
+	Log.i(TAG, "status code: " + status);
+	Log.i(TAG, "error code: " + errorcode);
 	if (status != 1)
 	    parseError(errorcode);
     }
@@ -271,14 +277,14 @@ public class VodafoneWebSender extends WebSender {
 	Element root = document.getRootElement();
 	@SuppressWarnings("unchecked")
 	List<Element> children = root.getChildren("e");
-	Log.d("VodafoneIT", "doPrepare()");
+	Log.i(TAG, "doPrepare()");
 	int status = 0, errorcode = 0;
 	for (Element child : children) {
-	    Log.d("VodafoneIT", child.getAttributeValue("n"));
+	    Log.i(TAG, child.getAttributeValue("n"));
 	    if (child.getAttributeValue("v") != null)
-		Log.d("VodafoneIT", child.getAttributeValue("v"));
+		Log.i(TAG, child.getAttributeValue("v"));
 	    if (child.getValue() != null)
-		Log.d("VodafoneIT", child.getValue());
+		Log.i(TAG, child.getValue());
 	    if (child.getAttributeValue("n").equals("STATUS"))
 		status = Integer.parseInt(child.getAttributeValue("v"));
 	    if (child.getAttributeValue("n").equals("ERRORCODE"))
@@ -289,8 +295,8 @@ public class VodafoneWebSender extends WebSender {
 	    }
 	}
 
-	Log.d("VodafoneIT", "status code: " + status);
-	Log.d("VodafoneIT", "error code: " + errorcode);
+	Log.i(TAG, "status code: " + status);
+	Log.i(TAG, "error code: " + errorcode);
 	if (status != 1)
 	    parseError(errorcode);
 	
@@ -331,15 +337,15 @@ public class VodafoneWebSender extends WebSender {
 	Element root = document.getRootElement();
 	@SuppressWarnings("unchecked")
 	List<Element> children = root.getChildren("e");
-	Log.d("VodafoneIT", "doSend()");
+	Log.i(TAG, "doSend()");
 	int status = 0, errorcode = 0;
 	String returnmsg = null;
 	for (Element child : children) {
-	    Log.d("VodafoneIT", child.getAttributeValue("n"));
+	    Log.i(TAG, child.getAttributeValue("n"));
 	    if (child.getAttributeValue("v") != null)
-		Log.d("VodafoneIT", child.getAttributeValue("v"));
+		Log.i(TAG, child.getAttributeValue("v"));
 	    if (child.getValue() != null)
-		Log.d("VodafoneIT", child.getValue());
+		Log.i(TAG, child.getValue());
 	    if (child.getAttributeValue("n").equals("STATUS"))
 		status = Integer.parseInt(child.getAttributeValue("v"));
 	    if (child.getAttributeValue("n").equals("ERRORCODE"))
@@ -352,9 +358,9 @@ public class VodafoneWebSender extends WebSender {
 	    }
 	}
 
-	Log.d("VodafoneIT", "status code: " + status);
-	Log.d("VodafoneIT", "error code: " + errorcode);
-	Log.d("VodafoneIT", "return message: " + returnmsg);
+	Log.i(TAG, "status code: " + status);
+	Log.i(TAG, "error code: " + errorcode);
+	Log.i(TAG, "return message: " + returnmsg);
 	if (status != 1)
 	    parseError(errorcode);
 	

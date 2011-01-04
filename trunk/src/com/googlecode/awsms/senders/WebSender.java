@@ -48,6 +48,11 @@ public abstract class WebSender {
     }
 
     /**
+     * Call this method to let send() run quicker 
+     */
+    public abstract void preSend() throws Exception;
+
+    /**
      * Call this method to send someone a text message.
      * 
      * @param sms Text message to be sent
