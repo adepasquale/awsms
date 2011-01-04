@@ -108,6 +108,8 @@ public class ComposeActivity extends Activity {
 
 	messageSend.setOnClickListener(new OnClickListener() {
 	    public void onClick(View v) {
+		// TODO complain about not being connected
+		
 		// if for some reason it isn't running, start it again
 		if (webSenderAsyncTask.getStatus() != Status.RUNNING) {
 		    webSenderAsyncTask = 

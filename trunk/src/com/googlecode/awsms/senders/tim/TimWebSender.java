@@ -32,6 +32,9 @@ public class TimWebSender extends WebSender {
 //    urlKo : 
 //    portale : timPortale
     
+//    https://www.tim.it/timcaptcha/captcha.jpg 
+
+    
     public TimWebSender(Context context) {
 	super(context);
 	// TODO 
