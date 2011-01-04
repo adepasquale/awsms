@@ -36,7 +36,7 @@
 	<string name="NotifySuccessPreference">Invio riuscito</string>
 	<string name="NotifyStatusPreference">Stato dell\'invio</string>
 	<string name="DetailsPreferenceCategory">Dettagli applicazione</string>
-	<string name="AboutPreference">Android Web SMS 1.9</string>
+	<string name="AboutPreference">Android Web SMS 2.0.0</string>
 	<string name="AboutPreferenceSummary">© 2010-2011 Andrea De Pasquale</string>
 	<string name="AboutURL">http://code.google.com/p/awsms/</string>
 	<string name="FeedbackPreference">Scrivi allo sviluppatore</string>
