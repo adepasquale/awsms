@@ -27,10 +27,8 @@ import org.apache.http.NameValuePair;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.protocol.ClientContext;
 import org.apache.http.conn.scheme.Scheme;
 import org.apache.http.conn.ssl.SSLSocketFactory;
-import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.protocol.HTTP;
 import org.jdom.Document;
@@ -72,13 +70,12 @@ public class VodafoneWebSender extends WebSender {
     // http://demos.vodafone.it/dw/updates.xml
     
     public VodafoneWebSender(Context context) {
+	
 	super(context);
-
+	
 	httpClient.getParams().setParameter(
 		"http.protocol.allow-circular-redirects", true);
 	httpClient.getParams().setParameter("http.useragent", "Vodafone_DW");
-	httpContext.setAttribute(ClientContext.COOKIE_STORE,
-		new BasicCookieStore());
 	
 	helper = new VodafoneWebSenderHelper(context);
 
@@ -167,6 +164,8 @@ public class VodafoneWebSender extends WebSender {
 	    throw new Exception(
 		    context.getString(R.string.WebSenderSettingsInvalid));
 	}
+	
+	saveCookies(); // to cookie file
     }
 
     private void parseError(int error) throws Exception {

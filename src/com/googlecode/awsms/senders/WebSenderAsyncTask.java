@@ -47,6 +47,7 @@ import com.googlecode.awsms.ui.ComposeActivity;
  * 
  * @author Andrea De Pasquale
  */
+// TODO better if this becomes a background bindable task
 public class WebSenderAsyncTask extends AsyncTask<Void, Object, Void> {
     
     static final String TAG = "WebSenderAsyncTask";
@@ -61,13 +62,11 @@ public class WebSenderAsyncTask extends AsyncTask<Void, Object, Void> {
     LinkedBlockingQueue<String> captchaQueue;
     Dialog captchaDialog;
 
-    static final int PROGRESS_BEFORE_LOGIN = 1;
-    static final int PROGRESS_AFTER_LOGIN = 2;
-    static final int PROGRESS_BEFORE_SENDING = 3;
-    static final int PROGRESS_AFTER_SENDING = 4;
-    static final int PROGRESS_CAPTCHA_DIALOG = 5;
-    static final int PROGRESS_SUCCESS = 6;
-    static final int PROGRESS_ERROR = 7;
+    static final int PROGRESS_SENDING = 1;
+    static final int PROGRESS_SENT = 2;
+    static final int PROGRESS_CAPTCHA = 3;
+    static final int PROGRESS_SUCCESS = 4;
+    static final int PROGRESS_ERROR = 5;
     
     public WebSenderAsyncTask(Context c) {
 	context = c;
@@ -86,17 +85,12 @@ public class WebSenderAsyncTask extends AsyncTask<Void, Object, Void> {
 
     @Override
     protected Void doInBackground(Void... params) {
-	if (preferences.getBoolean("NotifyStatus", true))
-	    publishProgress(PROGRESS_BEFORE_LOGIN);
 	
 	try {
 	    vodafoneWebSender.preSend();
 	} catch (Exception e) {
 	    // don't care here
 	}
-	
-	if (preferences.getBoolean("NotifyStatus", true))
-	    publishProgress(PROGRESS_AFTER_LOGIN);
 	
 	while (true) {
 	    WebSMS sms = null;
@@ -107,17 +101,17 @@ public class WebSenderAsyncTask extends AsyncTask<Void, Object, Void> {
 	    try {
 		
 		if (preferences.getBoolean("NotifyStatus", true))
-		    publishProgress(PROGRESS_BEFORE_SENDING);
+		    publishProgress(PROGRESS_SENDING);
 
 		String captcha = "";
 		while (!vodafoneWebSender.send(sms, captcha)) {
-		    publishProgress(PROGRESS_CAPTCHA_DIALOG, 
+		    publishProgress(PROGRESS_CAPTCHA, 
 			    vodafoneWebSender.getCaptchaArray());
 		    captcha = captchaQueue.take();
 		}
 		
 		if (preferences.getBoolean("NotifyStatus", true))
-		    publishProgress(PROGRESS_AFTER_SENDING);
+		    publishProgress(PROGRESS_SENT);
 		
 		if (preferences.getBoolean("NotifySuccess", true))
 		    publishProgress(PROGRESS_SUCCESS);
@@ -142,21 +136,13 @@ public class WebSenderAsyncTask extends AsyncTask<Void, Object, Void> {
 
     @Override
     protected void onProgressUpdate(Object... progress) {
+	// TODO auto-increment notification number
+	// TODO add receiver name in the notification
+	
 	if (progress.length == 0) return;
 	
 	switch ((Integer) progress[0]) {
-	case PROGRESS_BEFORE_LOGIN:
-	    Notification nbl = createNotification("Autenticazione in corso");
-	    nbl.flags |= Notification.FLAG_ONGOING_EVENT;
-	    nbl.flags |= Notification.FLAG_NO_CLEAR;
-	    notificationManager.notify(0, nbl);
-	    break;
-	    
-	case PROGRESS_AFTER_LOGIN:
-	    notificationManager.cancel(0);
-	    break;
-	    
-	case PROGRESS_BEFORE_SENDING:
+	case PROGRESS_SENDING:
 	    Notification nbs = createNotification("Invio in corso");
 	    nbs.flags |= Notification.FLAG_ONGOING_EVENT;
 	    nbs.flags |= Notification.FLAG_NO_CLEAR;
@@ -165,7 +151,10 @@ public class WebSenderAsyncTask extends AsyncTask<Void, Object, Void> {
 	    notificationManager.notify(0, nbs);
 	    break;
 	    
-	case PROGRESS_CAPTCHA_DIALOG:
+	case PROGRESS_CAPTCHA:
+	    // TODO display notification
+	    // TODO captcha refresh button
+	    // TODO auto-submit pressing enter
 	    captchaDialog = new Dialog(context);
 	    captchaDialog.setContentView(R.layout.captcha);
 	    captchaDialog.setTitle(R.string.CaptchaDialogTitle);
@@ -198,7 +187,7 @@ public class WebSenderAsyncTask extends AsyncTask<Void, Object, Void> {
 	    captchaDialog.show();
 	    break;
 	    
-	case PROGRESS_AFTER_SENDING:
+	case PROGRESS_SENT:
 	    notificationManager.cancel(0);
 	    break;
 	    
@@ -210,6 +199,7 @@ public class WebSenderAsyncTask extends AsyncTask<Void, Object, Void> {
 	    
 	case PROGRESS_ERROR:
 	    // TODO save a draft of the message for re-sending
+	    // content://sms/draft, outbox 
 	    Notification ne = createNotification((String) progress[1]);
 	    ne.flags |= Notification.FLAG_AUTO_CANCEL;
 	    ne.defaults |= Notification.DEFAULT_SOUND;

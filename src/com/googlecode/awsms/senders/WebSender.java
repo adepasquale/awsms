@@ -16,7 +16,13 @@
 
 package com.googlecode.awsms.senders;
 
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.protocol.ClientContext;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
@@ -34,6 +40,8 @@ public abstract class WebSender {
     
     protected HttpClient httpClient;
     protected HttpContext httpContext;
+    protected WebSenderCookieStore cookieStore;
+    static final String COOKIES = "cookies";
     
     protected Context context;
     protected WebSenderHelper helper;
@@ -45,6 +53,9 @@ public abstract class WebSender {
 	this.context = context;
 	httpClient = new DefaultHttpClient();
 	httpContext = new BasicHttpContext();
+	
+	loadCookies(); // from cookie file
+	httpContext.setAttribute(ClientContext.COOKIE_STORE, cookieStore);
     }
 
     /**
@@ -60,6 +71,46 @@ public abstract class WebSender {
      */
     public abstract boolean send(WebSMS sms, String captcha) throws Exception;
 
+    /**
+     * Retrieve old saved cookies or get a new cookie store
+     * @return a cookie store
+     */
+    protected boolean loadCookies() {
+	try {
+	    
+	    FileInputStream fileInput = context.openFileInput(COOKIES);
+	    ObjectInputStream objectInput = new ObjectInputStream(fileInput);
+	    cookieStore = (WebSenderCookieStore) objectInput.readObject();
+	    objectInput.close();
+	    fileInput.close();
+	    return true;
+	    
+	} catch (Exception e) {
+	    new WebSenderCookieStore();
+	    return false; 
+	}
+    }
+    
+    /**
+     * Save current cookies for future reuse.
+     */
+    protected boolean saveCookies() {
+	try {
+	    
+	    FileOutputStream fileOutput = 
+		context.openFileOutput(COOKIES, Context.MODE_PRIVATE);
+	    ObjectOutputStream objectOutput = 
+		new ObjectOutputStream(fileOutput);
+	    objectOutput.writeObject(cookieStore);
+	    objectOutput.close();
+	    fileOutput.close();
+	    return true;
+	    
+	} catch (Exception e) {
+	    return false;
+	}
+    }
+    
     protected byte[] captchaArray; // XXX remove
 
     public byte[] getCaptchaArray() {
