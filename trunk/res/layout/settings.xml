@@ -19,9 +19,9 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 	<PreferenceCategory android:title="@string/VodafonePreferenceCategory">
 		<EditTextPreference android:title="@string/UsernamePreference"
-			android:key="VodafoneUsername" />
+			android:key="VodafoneItalyUsername" />
 		<EditTextPreference android:title="@string/PasswordPreference"
-			android:key="VodafonePassword" android:password="true" />
+			android:key="VodafoneItalyPassword" android:password="true" />
 	</PreferenceCategory>
 	<PreferenceCategory android:title="@string/OperationsPreferenceCategory">
 		<CheckBoxPreference android:title="@string/SaveSMSPreference"
