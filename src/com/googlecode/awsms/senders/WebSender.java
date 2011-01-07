@@ -69,11 +69,11 @@ public abstract class WebSender {
      * @param sms Text message to be sent
      * @param captcha Captcha text manually decoded by the user.
      */
-    public abstract boolean send(WebSMS sms, String captcha) throws Exception;
+    public abstract boolean send(WebSMS sms) throws Exception;
 
     /**
-     * Retrieve old saved cookies or get a new cookie store
-     * @return a cookie store
+     * Retrieve old saved cookies or get a new cookie store.
+     * @return true if successfully loaded, false otherwise
      */
     protected boolean loadCookies() {
 	try {
@@ -86,13 +86,14 @@ public abstract class WebSender {
 	    return true;
 	    
 	} catch (Exception e) {
-	    new WebSenderCookieStore();
+	    cookieStore = new WebSenderCookieStore();
 	    return false; 
 	}
     }
     
     /**
      * Save current cookies for future reuse.
+     * @return true if successfully saved, false otherwise
      */
     protected boolean saveCookies() {
 	try {
@@ -110,11 +111,4 @@ public abstract class WebSender {
 	    return false;
 	}
     }
-    
-    protected byte[] captchaArray; // XXX remove
-
-    public byte[] getCaptchaArray() {
-	return captchaArray; // XXX remove
-    }
-
 }

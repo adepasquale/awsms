@@ -21,10 +21,12 @@ import java.net.URLDecoder;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.net.ConnectivityManager;
 import android.os.AsyncTask.Status;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -61,6 +63,7 @@ public class ComposeActivity extends Activity {
     WebSenderAsyncTask webSenderAsyncTask;
     SharedPreferences sharedPreferences;
     WebSenderHelper webSenderHelper;
+    ConnectivityManager connectivityManager;
     
     ReceiverAdapter receiverAdapter;
     AutoCompleteTextView receiverText;
@@ -82,6 +85,8 @@ public class ComposeActivity extends Activity {
 	
 	sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
 	webSenderHelper = new VodafoneWebSenderHelper(this);
+	connectivityManager = (ConnectivityManager)
+		getSystemService(Context.CONNECTIVITY_SERVICE);
 	
 	receiverText = (AutoCompleteTextView) findViewById(R.id.ReceiverText);
 	messageText = (EditText) findViewById(R.id.MessageText);
@@ -108,8 +113,6 @@ public class ComposeActivity extends Activity {
 
 	messageSend.setOnClickListener(new OnClickListener() {
 	    public void onClick(View v) {
-		// TODO complain about not being connected
-		
 		// if for some reason it isn't running, start it again
 		if (webSenderAsyncTask.getStatus() != Status.RUNNING) {
 		    webSenderAsyncTask = 
@@ -117,12 +120,23 @@ public class ComposeActivity extends Activity {
 		    webSenderAsyncTask.execute();
 		}
 		
+		// detect if there's no connection available
+		if (connectivityManager.getActiveNetworkInfo() == null) {
+		    Toast.makeText(ComposeActivity.this, 
+	    		R.string.NetworkUnavailable, 
+	    		Toast.LENGTH_SHORT).show();
+		    return;
+		}
+		
     		try {
     		    // schedule the message for sending
-    		    WebSMS sms = new WebSMS(getReceiver(), getMessage());
-    		    webSenderAsyncTask.enqueue(sms);
+    		    WebSMS sms = new WebSMS();
+    		    sms.setReceiver(getReceiver());
+    		    sms.setReceiverName(getReceiverName());
+    		    sms.setMessage(getMessage());
+    		    webSenderAsyncTask.send(sms);
     		    Toast.makeText(ComposeActivity.this,
-    			R.string.EnqueueSuccessful, Toast.LENGTH_SHORT).show();
+    			R.string.SMSValid, Toast.LENGTH_SHORT).show();
     		    clearFields(false);
     		} catch (Exception e) {
     		    Toast.makeText(ComposeActivity.this, 
@@ -150,12 +164,12 @@ public class ComposeActivity extends Activity {
 	    if (intent.getAction().equals(Intent.ACTION_SENDTO)) {
 		String receiver = URLDecoder.decode(intent.getDataString())
 			.replaceAll("[^0-9\\+]*", "");
-		Cursor cursor = receiverAdapter
-			.runQueryOnBackgroundThread(receiver);
+		Cursor cursor = 
+		    receiverAdapter.runQueryOnBackgroundThread(receiver);
 		cursor.moveToFirst();
 		if (!cursor.isAfterLast()) {
-		    receiverText.setText(receiverAdapter
-			    .convertToString(cursor));
+		    receiverText.setText(
+			    receiverAdapter.convertToString(cursor));
 		} else {
 		    receiverText.setText(receiver);
 		}
@@ -246,7 +260,7 @@ public class ComposeActivity extends Activity {
     }
     
     private void clearFields(boolean always) {
-	String preference = sharedPreferences.getString("ClearSMS", "");
+	String preference = sharedPreferences.getString("ClearSMS", "M");
 	if (always || preference.contains("R")) receiverText.setText("");
 	if (always || preference.contains("M")) messageText.setText("");
     }
@@ -268,6 +282,20 @@ public class ComposeActivity extends Activity {
 	}
 	
 	return receiver;
+    }
+    
+    private String getReceiverName() {
+	Spannable n = receiverText.getText();
+	String name = n.toString();
+	
+	Annotation[] annotations = n.getSpans(0, n.length(), Annotation.class);
+	for (Annotation annotation : annotations) {
+	    if (annotation.getKey().equals("receiverName")) {
+		name = annotation.getValue();
+	    }
+	}
+	
+	return name;
     }
     
     private String fixReceiver(String receiver) {

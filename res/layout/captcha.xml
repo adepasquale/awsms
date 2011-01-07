@@ -25,7 +25,8 @@
 		android:maxWidth="210dp" android:minHeight="35dp" android:minWidth="210dp" />
 	<EditText android:id="@+id/CaptchaDialogText" android:hint="@string/CaptchaDialogTextHint"
 		android:layout_width="fill_parent" android:layout_height="wrap_content"
-		android:padding="5dp" android:inputType="textCapCharacters|textNoSuggestions" />
+		android:padding="5dp" android:inputType="textCapCharacters|textNoSuggestions"
+		android:singleLine="true" android:imeOptions="actionNone" />
 	<Button android:id="@+id/CaptchaDialogButton" android:text="@string/CaptchaDialogButton"
 		android:layout_width="fill_parent" android:layout_height="wrap_content" />
 </LinearLayout>
