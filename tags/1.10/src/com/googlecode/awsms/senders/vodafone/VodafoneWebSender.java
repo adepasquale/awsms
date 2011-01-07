@@ -1,0 +1,359 @@
+/*
+ * Copyright 2010-2011 Andrea De Pasquale
+ * 
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.googlecode.awsms.senders.vodafone;
+
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.conn.scheme.Scheme;
+import org.apache.http.conn.ssl.SSLSocketFactory;
+import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.protocol.HTTP;
+import org.jdom.Document;
+import org.jdom.Element;
+import org.jdom.JDOMException;
+import org.jdom.input.SAXBuilder;
+
+import android.content.Context;
+import android.util.Log;
+
+import com.googlecode.awsms.R;
+import com.googlecode.awsms.senders.WebSMS;
+import com.googlecode.awsms.senders.WebSender;
+import com.googlecode.awsms.senders.captcha.Base64;
+
+/**
+ * <code>WebSender</code> implementation for www.vodafone.it web site
+ * 
+ * @author Andrea De Pasquale
+ */
+public class VodafoneWebSender extends WebSender {
+    
+    static final String TAG = "VodafoneWebSender";
+
+    // URLs used by the widget to login/logout, send SMS, etc.
+    // https://widget.vodafone.it/190/trilogy/jsp/login.do
+    // https://widget.vodafone.it/190/trilogy/jsp/logout.do
+    // https://widget.vodafone.it/190/trilogy/jsp/swapSim.do
+    // https://widget.vodafone.it/190/trilogy/jsp/utility/checkUser.jsp
+    // https://widget.vodafone.it/190/fsms/precheck.do?channel=VODAFONE_DW
+    // https://widget.vodafone.it/190/fsms/prepare.do?channel=VODAFONE_DW
+    // https://widget.vodafone.it/190/fsms/send.do?channel=VODAFONE_DW
+    // https://widget.vodafone.it/190/fast/mx/CreditoResiduoPush.do?hpfdtpri=y
+    // https://widget.vodafone.it/190/jone/mx/SaldoPuntiPush.do?hpfdtpri=y
+    // https://widget.vodafone.it/190/ebwe/mx/PushInfoconto.do?hpfdtpri=y
+
+    // XMLs containing information about the widget itself
+    // http://demos.vodafone.it/dw/getDWConfiguration.xml
+    // http://demos.vodafone.it/dw/updates.xml
+    
+    public VodafoneWebSender(Context context) {
+	
+	super(context);
+	
+	httpClient.getParams().setParameter(
+		"http.protocol.allow-circular-redirects", true);
+	httpClient.getParams().setParameter("http.useragent", "Vodafone_DW");
+	
+	helper = new VodafoneWebSenderHelper(context);
+
+	try {
+	    // to allow self-signed certificate to be accepted
+	    SSLSocketFactory socketFactory = new SSLSocketFactory(null);
+	    Scheme sch = new Scheme("https", socketFactory, 443);
+	    httpClient.getConnectionManager().getSchemeRegistry().register(sch);
+	} catch (Exception e) {
+	    Log.e(TAG, "SSLSocketFactory exception: " + e.getMessage());
+	}
+    }
+
+    public void preSend() throws Exception {
+	if (!isLoggedIn()) doLogin();
+    }
+    
+    public boolean send(WebSMS sms) throws Exception {
+	if (sms.getCaptchaArray() == null) {
+	    preSend();
+	    doPrecheck();
+	    if (!doPrepare(sms)) return false; // need CAPTCHA
+	}
+
+	if (!doSend(sms)) return false; // still need CAPTCHA
+	helper.addCount(sms.getMessage().length());
+	return true;
+    }
+
+    /**
+     * Check if the user is logged in to www.vodafone.it
+     * 
+     * @return true if the user is logged in, false otherwise
+     * @throws Exception
+     */
+    private boolean isLoggedIn() throws Exception {
+	Document document;
+
+	try {
+	    HttpGet request = new HttpGet(
+		    "https://widget.vodafone.it/190/trilogy/jsp/utility/checkUser.jsp");
+	    HttpResponse response = httpClient.execute(request, httpContext);
+	    document = new SAXBuilder()
+		    .build(response.getEntity().getContent());
+	    response.getEntity().consumeContent();
+	} catch (Exception e) {
+	    throw new Exception(
+		    context.getString(R.string.WebSenderNetworkError));
+	}
+
+	Element root = document.getRootElement();
+	Element child = root.getChild("logged-in");
+	return child.getValue().equals("true");
+    }
+
+    /**
+     * Login to www.vodafone.it website
+     * 
+     * @throws Exception
+     */
+    private void doLogin() throws Exception {
+	try {
+	    HttpPost request = new HttpPost(
+		    "https://widget.vodafone.it/190/trilogy/jsp/login.do");
+	    List<NameValuePair> requestData = new ArrayList<NameValuePair>();
+	    requestData.add(
+		    new BasicNameValuePair("username", helper.getUsername()));
+	    requestData.add(
+		    new BasicNameValuePair("password", helper.getPassword()));
+	    request.setEntity(
+		    new UrlEncodedFormEntity(requestData, HTTP.ISO_8859_1));
+	    HttpResponse response = httpClient.execute(request, httpContext);
+	    response.getEntity().consumeContent();
+	} catch (Exception e) {
+	    throw new Exception(
+		    context.getString(R.string.WebSenderNetworkError));
+	}
+
+	if (!isLoggedIn()) {
+	    throw new Exception(
+		    context.getString(R.string.WebSenderSettingsInvalid));
+	}
+	
+	saveCookies(); // to cookie file
+    }
+
+    private void parseError(int error) throws Exception {
+	switch (error) {
+	case 107:
+	    throw new Exception(
+		    context.getString(R.string.WebSenderLimitReached));
+	
+	case 113:
+	    throw new Exception(
+		    context.getString(R.string.WebSenderReceiverNotAllowed));
+	    
+	case 104: // ?
+	case 109: // Messaggio vuoto
+	default:
+	    throw new Exception(
+		    context.getString(R.string.WebSenderUnknownError));
+	}
+    }
+
+    /**
+     * Page to be visited before sending a message
+     * 
+     * @throws Exception
+     */
+    private void doPrecheck() throws Exception {
+	Document document = null;
+	
+	// to solve XML header problem
+	boolean skip = true;
+	boolean done = false;
+
+	do {
+	    try {
+		HttpGet request = new HttpGet(
+			"https://widget.vodafone.it/190/fsms/precheck.do?channel=VODAFONE_DW");
+		HttpResponse response = httpClient.execute(request, httpContext);
+
+		Reader reader = new BufferedReader(new InputStreamReader(
+			response.getEntity().getContent()));
+		if (skip) reader.skip(13);
+
+		document = new SAXBuilder().build(reader);
+		response.getEntity().consumeContent();
+		done = true;
+		
+	    } catch (JDOMException jdom) {
+		if (skip) skip = false;
+		else throw new Exception(
+			context.getString(R.string.WebSenderProtocolError));
+	    } catch (Exception e) {
+		throw new Exception(
+			context.getString(R.string.WebSenderNetworkError));
+	    }
+	} while (!done);
+
+	Element root = document.getRootElement();
+	@SuppressWarnings("unchecked")
+	List<Element> children = root.getChildren("e");
+	Log.i(TAG, "doPrecheck()");
+	int status = 0, errorcode = 0;
+	for (Element child : children) {
+	    Log.i(TAG, child.getAttributeValue("n"));
+	    if (child.getAttributeValue("v") != null)
+		Log.i(TAG, child.getAttributeValue("v"));
+	    if (child.getValue() != null)
+		Log.i(TAG, child.getValue());
+	    if (child.getAttributeValue("n").equals("STATUS"))
+		status = Integer.parseInt(child.getAttributeValue("v"));
+	    if (child.getAttributeValue("n").equals("ERRORCODE"))
+		errorcode = Integer.parseInt(child.getAttributeValue("v"));
+	}
+
+	Log.i(TAG, "status code: " + status);
+	Log.i(TAG, "error code: " + errorcode);
+	if (status != 1)
+	    parseError(errorcode);
+    }
+
+    /**
+     * Prepare the message to be sent.
+     * 
+     * @param sms
+     * @throws Exception
+     * @returns false if CAPTCHA present
+     */
+    private boolean doPrepare(WebSMS sms) throws Exception {
+	Document document;
+
+	try {
+	    HttpPost request = new HttpPost(
+		    "https://widget.vodafone.it/190/fsms/prepare.do?channel=VODAFONE_DW");
+	    List<NameValuePair> requestData = new ArrayList<NameValuePair>();
+	    requestData.add(new BasicNameValuePair("receiverNumber", sms.getReceiver()));
+	    requestData.add(new BasicNameValuePair("message", sms.getMessage()));
+	    request.setEntity(new UrlEncodedFormEntity(requestData,
+		    HTTP.ISO_8859_1));
+	    HttpResponse response = httpClient.execute(request, httpContext);
+	    document = new SAXBuilder()
+		    .build(response.getEntity().getContent());
+	    response.getEntity().consumeContent();
+	} catch (Exception e) {
+	    throw new Exception(
+		    context.getString(R.string.WebSenderNetworkError));
+	}
+
+	Element root = document.getRootElement();
+	@SuppressWarnings("unchecked")
+	List<Element> children = root.getChildren("e");
+	Log.i(TAG, "doPrepare()");
+	int status = 0, errorcode = 0;
+	for (Element child : children) {
+	    Log.i(TAG, child.getAttributeValue("n"));
+	    if (child.getAttributeValue("v") != null)
+		Log.i(TAG, child.getAttributeValue("v"));
+	    if (child.getValue() != null)
+		Log.i(TAG, child.getValue());
+	    if (child.getAttributeValue("n").equals("STATUS"))
+		status = Integer.parseInt(child.getAttributeValue("v"));
+	    if (child.getAttributeValue("n").equals("ERRORCODE"))
+		errorcode = Integer.parseInt(child.getAttributeValue("v"));
+	    if (child.getAttributeValue("n").equals("CODEIMG")) {
+		sms.setCaptchaArray(Base64.decode(child.getValue()));
+		return false;
+	    }
+	}
+
+	Log.i(TAG, "status code: " + status);
+	Log.i(TAG, "error code: " + errorcode);
+	if (status != 1)
+	    parseError(errorcode);
+	
+	return true;
+    }
+
+    /**
+     * Send the message (after decoding the CAPTCHA)
+     * 
+     * @param sms
+     * @throws Exception
+     * @returns false if CAPTCHA still present
+     */
+    private boolean doSend(WebSMS sms) throws Exception {
+	Document document;
+
+	try {
+	    HttpPost request = new HttpPost(
+		    "https://widget.vodafone.it/190/fsms/send.do?channel=VODAFONE_DW");
+	    List<NameValuePair> requestData = new ArrayList<NameValuePair>();
+	    requestData.add(new BasicNameValuePair("verifyCode", sms.getCaptcha()));
+	    requestData.add(new BasicNameValuePair("receiverNumber", sms.getReceiver()));
+	    requestData.add(new BasicNameValuePair("message", sms.getMessage()));
+	    request.setEntity(new UrlEncodedFormEntity(requestData,
+		    HTTP.ISO_8859_1));
+	    HttpResponse response = httpClient.execute(request, httpContext);
+	    document = new SAXBuilder()
+		    .build(response.getEntity().getContent());
+	    response.getEntity().consumeContent();
+	} catch (Exception e) {
+	    throw new Exception(
+		    context.getString(R.string.WebSenderNetworkError));
+	}
+
+	Element root = document.getRootElement();
+	@SuppressWarnings("unchecked")
+	List<Element> children = root.getChildren("e");
+	Log.i(TAG, "doSend()");
+	int status = 0, errorcode = 0;
+	String returnmsg = null;
+	for (Element child : children) {
+	    Log.i(TAG, child.getAttributeValue("n"));
+	    if (child.getAttributeValue("v") != null)
+		Log.i(TAG, child.getAttributeValue("v"));
+	    if (child.getValue() != null)
+		Log.i(TAG, child.getValue());
+	    if (child.getAttributeValue("n").equals("STATUS"))
+		status = Integer.parseInt(child.getAttributeValue("v"));
+	    if (child.getAttributeValue("n").equals("ERRORCODE"))
+		errorcode = Integer.parseInt(child.getAttributeValue("v"));
+	    if (child.getAttributeValue("n").equals("RETURNMSG"))
+		returnmsg = child.getValue();
+	    if (child.getAttributeValue("n").equals("CODEIMG")) {
+		sms.setCaptchaArray(Base64.decode(child.getValue()));
+		return false;
+	    }
+	}
+
+	Log.i(TAG, "status code: " + status);
+	Log.i(TAG, "error code: " + errorcode);
+	Log.i(TAG, "return message: " + returnmsg);
+	if (status != 1)
+	    parseError(errorcode);
+	
+	return true;
+    }
+
+}
