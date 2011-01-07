@@ -54,12 +54,11 @@
 	<string name="CaptchaDialogTitle">Richiesta CAPTCHA</string>
 	<string name="CaptchaDialogTextHint">Codice</string>
 	<string name="CaptchaDialogButton">Decodifica</string>
-	<string name="ProgressDialogTitle">Invio Web SMS</string>
-	<string name="ProgressDialogMessage">Invio in corso...</string>
-	<string name="ProgressDialogCanceled">L\'invio è stato annullato.</string>
+	<string name="CaptchaNotification">Richiesta decodifica manuale del CAPTCHA</string>
 	<string name="ReceiverInvalid">Il destinatario non è valido</string>
 	<string name="MessageInvalid">Il messaggio non è valido</string>
-	<string name="EnqueueSuccessful">Web SMS inserito nella coda di invio</string>
+	<string name="NetworkUnavailable">Nessuna connessione di rete disponibile</string>
+	<string name="SMSValid">SMS inserito nella coda di invio</string>
 	<string name="WebSenderNetworkError">Errore di connessione, riprova più tardi</string>
 	<string name="WebSenderSettingsInvalid">Il nome utente e/o la password non sono validi</string>
 	<string name="WebSenderProtocolError">Errore di comunicazione con il sito Vodafone</string>

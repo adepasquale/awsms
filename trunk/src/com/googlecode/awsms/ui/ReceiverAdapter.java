@@ -63,9 +63,9 @@ public class ReceiverAdapter extends ResourceCursorAdapter implements
 
 	String[] projection = { Phone._ID, Phone.DISPLAY_NAME, Phone.NUMBER };
 
-	String selection = String.format("%s=%s OR %s=%s OR %s=%s", Phone.TYPE,
-		Phone.TYPE_MOBILE, Phone.TYPE, Phone.TYPE_WORK_MOBILE,
-		Phone.TYPE, Phone.TYPE_MMS);
+	String selection = String.format("%s=%s OR %s=%s", 
+		Phone.TYPE, Phone.TYPE_MOBILE, 
+		Phone.TYPE, Phone.TYPE_WORK_MOBILE);
 
 	String sorting = Contacts.TIMES_CONTACTED + " DESC";
 
@@ -79,6 +79,8 @@ public class ReceiverAdapter extends ResourceCursorAdapter implements
 		+ " <" + cursor.getString(2) + ">");
 
 	receiver.setSpan(new Annotation("receiver", cursor.getString(2)), 0,
+		receiver.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+	receiver.setSpan(new Annotation("receiverName", cursor.getString(1)), 0,
 		receiver.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 
 	return receiver;

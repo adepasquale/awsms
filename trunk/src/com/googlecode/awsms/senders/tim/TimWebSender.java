@@ -46,7 +46,7 @@ public class TimWebSender extends WebSender {
     }
     
     @Override
-    public boolean send(WebSMS sms, String captcha) throws Exception {
+    public boolean send(WebSMS sms) throws Exception {
 	// TODO 
 	return false;
     }

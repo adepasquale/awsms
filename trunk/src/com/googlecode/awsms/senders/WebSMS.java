@@ -22,39 +22,73 @@ package com.googlecode.awsms.senders;
  * @author Andrea De Pasquale
  */
 public class WebSMS {
+    // TODO support multiple receivers
+    // TODO encapsulate status and error/return codes 
 
-    String[] receivers;
+    String sender;
+    String senderName;
+    String receiver;
+    String receiverName;
     String message;
-    
-    /**
-     * Create a text message with a single receiver
-     * 
-     * @param receiver Phone number of the message addressee.
-     * @param message Text message to be sent to the receiver.
-     */
-    public WebSMS(String receiver, String message) {
-	this.receivers = new String[1];
-	this.receivers[0] = receiver;
-	this.message = message;
+
+    // XXX remove
+    byte[] captchaArray;
+    String captcha;
+
+    public String getSender() {
+	return sender;
     }
 
-    /**
-     * Create a text message with multiple receivers
-     * 
-     * @param receivers Phone numbers of the many message addressees.
-     * @param message Text message to be sent to every receiver.
-     */
-    public WebSMS(String[] receivers, String message) {
-	this.receivers = receivers;
-	this.message = message;
+    public void setSender(String sender) {
+	this.sender = sender;
     }
 
-    public String[] getReceivers() {
-        return receivers;
+    public String getSenderName() {
+	return senderName;
+    }
+
+    public void setSenderName(String senderName) {
+	this.senderName = senderName;
+    }
+
+    public String getReceiver() {
+	return receiver;
+    }
+
+    public void setReceiver(String receiver) {
+	this.receiver = receiver;
+    }
+
+    public String getReceiverName() {
+	return receiverName;
+    }
+
+    public void setReceiverName(String receiverName) {
+	this.receiverName = receiverName;
     }
 
     public String getMessage() {
-        return message;
+	return message;
     }
-    
+
+    public void setMessage(String message) {
+	this.message = message;
+    }
+
+    public byte[] getCaptchaArray() {
+	return captchaArray;
+    }
+
+    public void setCaptchaArray(byte[] captchaArray) {
+	this.captchaArray = captchaArray;
+    }
+
+    public String getCaptcha() {
+	return captcha;
+    }
+
+    public void setCaptcha(String captcha) {
+	this.captcha = captcha;
+    }
+
 }

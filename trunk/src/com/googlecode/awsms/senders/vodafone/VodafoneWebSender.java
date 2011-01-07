@@ -93,21 +93,15 @@ public class VodafoneWebSender extends WebSender {
 	if (!isLoggedIn()) doLogin();
     }
     
-    public boolean send(WebSMS sms, String captcha) throws Exception {
-	// TODO support multiple receivers
-	String receiver = sms.getReceivers()[0];
-	String message = sms.getMessage();
-
-	if (captcha.equals("")) {
+    public boolean send(WebSMS sms) throws Exception {
+	if (sms.getCaptchaArray() == null) {
 	    preSend();
 	    doPrecheck();
-	    if (!doPrepare(receiver, message))
-		return false; // need CAPTCHA
+	    if (!doPrepare(sms)) return false; // need CAPTCHA
 	}
 
-	if (!doSend(receiver, message, captcha))
-	    return false; // still need CAPTCHA
-	helper.addCount(message.length());
+	if (!doSend(sms)) return false; // still need CAPTCHA
+	helper.addCount(sms.getMessage().length());
 	return true;
     }
 
@@ -248,20 +242,19 @@ public class VodafoneWebSender extends WebSender {
     /**
      * Prepare the message to be sent.
      * 
-     * @param receiver
-     * @param message
+     * @param sms
      * @throws Exception
      * @returns false if CAPTCHA present
      */
-    private boolean doPrepare(String receiver, String message) throws Exception {
+    private boolean doPrepare(WebSMS sms) throws Exception {
 	Document document;
 
 	try {
 	    HttpPost request = new HttpPost(
 		    "https://widget.vodafone.it/190/fsms/prepare.do?channel=VODAFONE_DW");
 	    List<NameValuePair> requestData = new ArrayList<NameValuePair>();
-	    requestData.add(new BasicNameValuePair("receiverNumber", receiver));
-	    requestData.add(new BasicNameValuePair("message", message));
+	    requestData.add(new BasicNameValuePair("receiverNumber", sms.getReceiver()));
+	    requestData.add(new BasicNameValuePair("message", sms.getMessage()));
 	    request.setEntity(new UrlEncodedFormEntity(requestData,
 		    HTTP.ISO_8859_1));
 	    HttpResponse response = httpClient.execute(request, httpContext);
@@ -289,7 +282,7 @@ public class VodafoneWebSender extends WebSender {
 	    if (child.getAttributeValue("n").equals("ERRORCODE"))
 		errorcode = Integer.parseInt(child.getAttributeValue("v"));
 	    if (child.getAttributeValue("n").equals("CODEIMG")) {
-		captchaArray = Base64.decode(child.getValue());
+		sms.setCaptchaArray(Base64.decode(child.getValue()));
 		return false;
 	    }
 	}
@@ -305,23 +298,20 @@ public class VodafoneWebSender extends WebSender {
     /**
      * Send the message (after decoding the CAPTCHA)
      * 
-     * @param receiver
-     * @param message
-     * @param captcha
+     * @param sms
      * @throws Exception
      * @returns false if CAPTCHA still present
      */
-    private boolean doSend(String receiver, String message, String captcha)
-	    throws Exception {
+    private boolean doSend(WebSMS sms) throws Exception {
 	Document document;
 
 	try {
 	    HttpPost request = new HttpPost(
 		    "https://widget.vodafone.it/190/fsms/send.do?channel=VODAFONE_DW");
 	    List<NameValuePair> requestData = new ArrayList<NameValuePair>();
-	    requestData.add(new BasicNameValuePair("verifyCode", captcha));
-	    requestData.add(new BasicNameValuePair("receiverNumber", receiver));
-	    requestData.add(new BasicNameValuePair("message", message));
+	    requestData.add(new BasicNameValuePair("verifyCode", sms.getCaptcha()));
+	    requestData.add(new BasicNameValuePair("receiverNumber", sms.getReceiver()));
+	    requestData.add(new BasicNameValuePair("message", sms.getMessage()));
 	    request.setEntity(new UrlEncodedFormEntity(requestData,
 		    HTTP.ISO_8859_1));
 	    HttpResponse response = httpClient.execute(request, httpContext);
@@ -352,7 +342,7 @@ public class VodafoneWebSender extends WebSender {
 	    if (child.getAttributeValue("n").equals("RETURNMSG"))
 		returnmsg = child.getValue();
 	    if (child.getAttributeValue("n").equals("CODEIMG")) {
-		captchaArray = Base64.decode(child.getValue());
+		sms.setCaptchaArray(Base64.decode(child.getValue()));
 		return false;
 	    }
 	}

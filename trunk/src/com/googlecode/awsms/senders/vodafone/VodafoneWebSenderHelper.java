@@ -29,11 +29,13 @@ public class VodafoneWebSenderHelper extends WebSenderHelper {
     }
     
     public String getUsername() {
+	// TODO change to VodafoneUsername
         return preferences.getString("VodafoneItalyUsername", "");
     }
 
     public String getPassword() {
-        return preferences.getString("VodafoneItalyPassword", "");
+	// TODO change to VodafonePassword
+	return preferences.getString("VodafoneItalyPassword", "");
     }
 
     public int calcRemaining(int length) {

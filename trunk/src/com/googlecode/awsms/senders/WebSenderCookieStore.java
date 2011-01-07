@@ -48,22 +48,22 @@ public class WebSenderCookieStore implements CookieStore, Serializable {
 	input.defaultReadObject();
 	int size = input.readInt();
 	while (size-- > 0) {
-	    SerializableCookie serializableCookie = 
-		(SerializableCookie) input.readObject();
-	    cookieStore.addCookie(serializableCookie.getCookie());
+	    WebSenderCookie wsCookie = (WebSenderCookie) input.readObject();
+	    cookieStore.addCookie(wsCookie.getCookie());
 	}
     }
     
     private void writeObject(ObjectOutputStream output) throws IOException {
 	output.defaultWriteObject();
-	List<Cookie> cookies = getCookies();
+	List<Cookie> cookies = cookieStore.getCookies();
 	output.writeInt(cookies.size());
 	for (Cookie cookie : cookies) {
-	    output.writeObject(new SerializableCookie(cookie));
+	    output.writeObject(new WebSenderCookie(cookie));
 	}
     }
     
-    class SerializableCookie implements Serializable {
+    // TODO implement Cookie interface entirely
+    class WebSenderCookie implements Serializable {
 	static final long serialVersionUID = 1L;
 	
 	int version;
@@ -73,7 +73,7 @@ public class WebSenderCookieStore implements CookieStore, Serializable {
 	String path;
 	long expiry;
 	
-	public SerializableCookie(Cookie cookie) {
+	public WebSenderCookie(Cookie cookie) {
 	    version = cookie.getVersion();
 	    name = cookie.getName();
 	    value = cookie.getValue();
