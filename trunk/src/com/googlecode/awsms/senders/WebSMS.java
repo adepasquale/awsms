@@ -25,9 +25,9 @@ public class WebSMS {
     // TODO support multiple receivers
     // TODO encapsulate status and error/return codes 
 
-    String sender;
+    String senderNumber;
     String senderName;
-    String receiver;
+    String receiverNumber;
     String receiverName;
     String message;
 
@@ -35,12 +35,12 @@ public class WebSMS {
     byte[] captchaArray;
     String captcha;
 
-    public String getSender() {
-	return sender;
+    public String getSenderNumber() {
+	return senderNumber;
     }
 
-    public void setSender(String sender) {
-	this.sender = sender;
+    public void setSenderNumber(String senderNumber) {
+	this.senderNumber = senderNumber;
     }
 
     public String getSenderName() {
@@ -51,12 +51,12 @@ public class WebSMS {
 	this.senderName = senderName;
     }
 
-    public String getReceiver() {
-	return receiver;
+    public String getReceiverNumber() {
+	return receiverNumber;
     }
 
-    public void setReceiver(String receiver) {
-	this.receiver = receiver;
+    public void setReceiverNumber(String receiverNumber) {
+	this.receiverNumber = receiverNumber;
     }
 
     public String getReceiverName() {

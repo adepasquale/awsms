@@ -21,6 +21,7 @@ import android.content.Context;
 import com.googlecode.awsms.senders.WebSMS;
 import com.googlecode.awsms.senders.WebSender;
 
+// TODO use gathered information to build the sender
 public class TimWebSender extends WebSender {
     
     static final String TAG = "TimWebSender";
@@ -34,20 +35,16 @@ public class TimWebSender extends WebSender {
     
 //    https://www.tim.it/timcaptcha/captcha.jpg 
 
-    
     public TimWebSender(Context context) {
 	super(context);
-	// TODO 
     }
 
     @Override
     public void preSend() throws Exception {
-	// TODO 	
     }
     
     @Override
     public boolean send(WebSMS sms) throws Exception {
-	// TODO 
 	return false;
     }
 

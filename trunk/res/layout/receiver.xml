@@ -21,8 +21,18 @@
 	android:layout_width="fill_parent" android:layout_height="60dp">
 	<TextView android:id="@+id/ReceiverName" style="?android:attr/dropDownItemStyle"
 		android:layout_width="wrap_content" android:layout_height="wrap_content"
-		android:textSize="18sp" android:singleLine="true" />
-	<TextView android:id="@+id/ReceiverNumber" style="?android:attr/dropDownItemStyle"
-		android:layout_width="wrap_content" android:layout_height="wrap_content"
-		android:textSize="14sp" android:singleLine="true" />
+		android:layout_weight="1.0" android:singleLine="true"
+		android:textSize="16sp" android:textStyle="bold" />
+	<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+		style="?android:attr/dropDownItemStyle" android:orientation="vertical"
+		android:layout_width="wrap_content" android:layout_height="fill_parent"
+		android:gravity="center_vertical|right">
+		<TextView android:id="@+id/ReceiverNumber" style="?android:attr/dropDownItemStyle"
+			android:layout_width="wrap_content" android:layout_height="wrap_content"
+			android:textSize="13sp" android:singleLine="true" />
+		<TextView android:id="@+id/ReceiverType" style="?android:attr/dropDownItemStyle"
+			android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:textColor="@android:color/darker_gray"
+			android:textSize="13sp" android:singleLine="true" />
+	</LinearLayout>
 </LinearLayout>

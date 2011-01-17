@@ -253,7 +253,7 @@ public class VodafoneWebSender extends WebSender {
 	    HttpPost request = new HttpPost(
 		    "https://widget.vodafone.it/190/fsms/prepare.do?channel=VODAFONE_DW");
 	    List<NameValuePair> requestData = new ArrayList<NameValuePair>();
-	    requestData.add(new BasicNameValuePair("receiverNumber", sms.getReceiver()));
+	    requestData.add(new BasicNameValuePair("receiverNumber", sms.getReceiverNumber()));
 	    requestData.add(new BasicNameValuePair("message", sms.getMessage()));
 	    request.setEntity(new UrlEncodedFormEntity(requestData,
 		    HTTP.ISO_8859_1));
@@ -310,7 +310,7 @@ public class VodafoneWebSender extends WebSender {
 		    "https://widget.vodafone.it/190/fsms/send.do?channel=VODAFONE_DW");
 	    List<NameValuePair> requestData = new ArrayList<NameValuePair>();
 	    requestData.add(new BasicNameValuePair("verifyCode", sms.getCaptcha()));
-	    requestData.add(new BasicNameValuePair("receiverNumber", sms.getReceiver()));
+	    requestData.add(new BasicNameValuePair("receiverNumber", sms.getReceiverNumber()));
 	    requestData.add(new BasicNameValuePair("message", sms.getMessage()));
 	    request.setEntity(new UrlEncodedFormEntity(requestData,
 		    HTTP.ISO_8859_1));
