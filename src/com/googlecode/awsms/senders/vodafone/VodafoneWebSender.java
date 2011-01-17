@@ -146,7 +146,7 @@ public class VodafoneWebSender extends WebSender {
 	    requestData.add(
 		    new BasicNameValuePair("password", helper.getPassword()));
 	    request.setEntity(
-		    new UrlEncodedFormEntity(requestData, HTTP.ISO_8859_1));
+		    new UrlEncodedFormEntity(requestData, HTTP.UTF_8));
 	    HttpResponse response = httpClient.execute(request, httpContext);
 	    response.getEntity().consumeContent();
 	} catch (Exception e) {
@@ -255,8 +255,7 @@ public class VodafoneWebSender extends WebSender {
 	    List<NameValuePair> requestData = new ArrayList<NameValuePair>();
 	    requestData.add(new BasicNameValuePair("receiverNumber", sms.getReceiverNumber()));
 	    requestData.add(new BasicNameValuePair("message", sms.getMessage()));
-	    request.setEntity(new UrlEncodedFormEntity(requestData,
-		    HTTP.ISO_8859_1));
+	    request.setEntity(new UrlEncodedFormEntity(requestData, HTTP.UTF_8));
 	    HttpResponse response = httpClient.execute(request, httpContext);
 	    document = new SAXBuilder()
 		    .build(response.getEntity().getContent());
@@ -312,8 +311,7 @@ public class VodafoneWebSender extends WebSender {
 	    requestData.add(new BasicNameValuePair("verifyCode", sms.getCaptcha()));
 	    requestData.add(new BasicNameValuePair("receiverNumber", sms.getReceiverNumber()));
 	    requestData.add(new BasicNameValuePair("message", sms.getMessage()));
-	    request.setEntity(new UrlEncodedFormEntity(requestData,
-		    HTTP.ISO_8859_1));
+	    request.setEntity(new UrlEncodedFormEntity(requestData, HTTP.UTF_8));
 	    HttpResponse response = httpClient.execute(request, httpContext);
 	    document = new SAXBuilder()
 		    .build(response.getEntity().getContent());
