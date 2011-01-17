@@ -17,8 +17,10 @@
 package com.googlecode.awsms.ui;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
+import android.preference.PreferenceManager;
 import android.provider.ContactsContract.CommonDataKinds.Phone;
 import android.provider.ContactsContract.Contacts;
 import android.text.Annotation;
@@ -31,24 +33,31 @@ import android.widget.TextView;
 
 import com.googlecode.awsms.R;
 
-public class ReceiverAdapter extends ResourceCursorAdapter implements
-	Filterable {
+public class ReceiverAdapter extends ResourceCursorAdapter 
+	implements Filterable {
 
-    private Context context;
+    final static String TAG = "ReceiverAdapter";
+    
+    Context context;
+    SharedPreferences preferences;
 
     public ReceiverAdapter(Context context) {
 	super(context, R.layout.receiver, null, false);
 	this.context = context;
+	preferences = PreferenceManager.getDefaultSharedPreferences(context);
     }
 
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
-	TextView receiverNameText = (TextView) view
-		.findViewById(R.id.ReceiverName);
-	receiverNameText.setText(cursor.getString(1));
-	TextView receiverNumberText = (TextView) view
-		.findViewById(R.id.ReceiverNumber);
-	receiverNumberText.setText(cursor.getString(2));
+	TextView name = (TextView) view.findViewById(R.id.ReceiverName);
+	name.setText(cursor.getString(2));
+	
+	TextView number = (TextView) view.findViewById(R.id.ReceiverNumber);
+	number.setText(cursor.getString(3));
+	
+	TextView type = (TextView) view.findViewById(R.id.ReceiverType);
+	type.setText(Phone.getTypeLabel(context.getResources(),
+		cursor.getInt(4), cursor.getString(5)));
     }
 
     @Override
@@ -58,29 +67,40 @@ public class ReceiverAdapter extends ResourceCursorAdapter implements
 	    constraintPath = constraint.toString();
 	}
 
-	Uri queryURI = Uri.withAppendedPath(Phone.CONTENT_FILTER_URI,
-		Uri.encode(constraintPath));
+	Uri queryURI = Uri.withAppendedPath(
+		Phone.CONTENT_FILTER_URI, Uri.encode(constraintPath));
 
-	String[] projection = { Phone._ID, Phone.DISPLAY_NAME, Phone.NUMBER };
+	// TODO filter out SIM contacts 
+	String[] projection = { 
+		Phone._ID,
+		Phone.CONTACT_ID,
+		Phone.DISPLAY_NAME,
+		Phone.NUMBER,
+		Phone.TYPE,
+		Phone.LABEL,
+	};
 
-	String selection = String.format("%s=%s OR %s=%s", 
+	String selection = null;
+	if (preferences.getBoolean("FilterMobile", true)) {
+	    selection = String.format("%s=%s OR %s=%s",
 		Phone.TYPE, Phone.TYPE_MOBILE, 
 		Phone.TYPE, Phone.TYPE_WORK_MOBILE);
+	}
 
 	String sorting = Contacts.TIMES_CONTACTED + " DESC";
 
-	return context.getContentResolver().query(queryURI, projection,
-		selection, null, sorting);
+	return context.getContentResolver().query(
+		queryURI, projection, selection, null, sorting);
     }
 
     @Override
     public CharSequence convertToString(Cursor cursor) {
-	SpannableString receiver = new SpannableString(cursor.getString(1)
-		+ " <" + cursor.getString(2) + ">");
+	SpannableString receiver = new SpannableString(
+		cursor.getString(2) + " <" + cursor.getString(3) + ">");
 
-	receiver.setSpan(new Annotation("receiver", cursor.getString(2)), 0,
+	receiver.setSpan(new Annotation("number", cursor.getString(3)), 0,
 		receiver.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-	receiver.setSpan(new Annotation("receiverName", cursor.getString(1)), 0,
+	receiver.setSpan(new Annotation("name", cursor.getString(2)), 0,
 		receiver.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 
 	return receiver;

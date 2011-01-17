@@ -131,7 +131,7 @@ public class ComposeActivity extends Activity {
     		try {
     		    // schedule the message for sending
     		    WebSMS sms = new WebSMS();
-    		    sms.setReceiver(getReceiver());
+    		    sms.setReceiverNumber(getReceiverNumber());
     		    sms.setReceiverName(getReceiverName());
     		    sms.setMessage(getMessage());
     		    webSenderAsyncTask.send(sms);
@@ -265,13 +265,13 @@ public class ComposeActivity extends Activity {
 	if (always || preference.contains("M")) messageText.setText("");
     }
     
-    private String getReceiver() throws Exception {
+    private String getReceiverNumber() throws Exception {
 	Spannable r = receiverText.getText();
 	String receiver = r.toString();
 	
 	Annotation[] annotations = r.getSpans(0, r.length(), Annotation.class);
 	for (Annotation annotation : annotations) {
-	    if (annotation.getKey().equals("receiver")) {
+	    if (annotation.getKey().equals("number")) {
 		receiver = annotation.getValue();
 	    }
 	}
@@ -290,7 +290,7 @@ public class ComposeActivity extends Activity {
 	
 	Annotation[] annotations = n.getSpans(0, n.length(), Annotation.class);
 	for (Annotation annotation : annotations) {
-	    if (annotation.getKey().equals("receiverName")) {
+	    if (annotation.getKey().equals("name")) {
 		name = annotation.getValue();
 	    }
 	}

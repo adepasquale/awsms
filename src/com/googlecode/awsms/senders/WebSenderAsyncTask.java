@@ -135,7 +135,7 @@ public class WebSenderAsyncTask extends AsyncTask<Void, Object, Void> {
 		
 		if (preferences.getBoolean("SaveSMS", true)) {
 		    ContentValues sent = new ContentValues();
-		    sent.put("address", sms.getReceiver());
+		    sent.put("address", sms.getReceiverNumber());
 		    sent.put("body", sms.getMessage());
 		    context.getContentResolver()
 			.insert(Uri.parse("content://sms/sent"), sent);
@@ -144,7 +144,7 @@ public class WebSenderAsyncTask extends AsyncTask<Void, Object, Void> {
 	    } catch (Exception e) {
 		publishProgress(PROGRESS_ERROR, e.getMessage());
 		ContentValues failed = new ContentValues();
-		failed.put("address", sms.getReceiver());
+		failed.put("address", sms.getReceiverNumber());
 		failed.put("body", sms.getMessage());
 		context.getContentResolver()
 			.insert(Uri.parse("content://sms/failed"), failed);

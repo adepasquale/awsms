@@ -36,6 +36,10 @@
 		<CheckBoxPreference android:title="@string/NotifyStatusPreference"
 			android:key="NotifyStatus" android:defaultValue="true" />
 	</PreferenceCategory>
+	<PreferenceCategory android:title="@string/InterfacePreferenceCategory">
+		<CheckBoxPreference android:title="@string/FilterMobilePreference"
+			android:key="FilterMobile" android:defaultValue="true" />
+	</PreferenceCategory>	
 	<PreferenceCategory android:title="@string/DetailsPreferenceCategory">
 		<Preference android:title="@string/AboutPreference"
 			android:summary="@string/AboutPreferenceSummary" 
