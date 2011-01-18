@@ -70,7 +70,7 @@ public class ReceiverAdapter extends ResourceCursorAdapter
 	Uri queryURI = Uri.withAppendedPath(
 		Phone.CONTENT_FILTER_URI, Uri.encode(constraintPath));
 
-	// TODO filter out SIM contacts 
+	// TODO is it possible to filter out SIM contacts? 
 	String[] projection = { 
 		Phone._ID,
 		Phone.CONTACT_ID,

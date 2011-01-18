@@ -31,7 +31,7 @@ public class WebSMS {
     String receiverName;
     String message;
 
-    // XXX remove
+    // XXX remove when CAPTCHA will be decoded automatically
     byte[] captchaArray;
     String captcha;
 

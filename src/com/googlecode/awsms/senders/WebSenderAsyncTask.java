@@ -50,7 +50,6 @@ import com.googlecode.awsms.ui.ComposeActivity;
  * 
  * @author Andrea De Pasquale
  */
-// TODO better if this becomes a background bindable task
 public class WebSenderAsyncTask extends AsyncTask<Void, Object, Void> {
     
     static final String TAG = "WebSenderAsyncTask";
@@ -62,7 +61,7 @@ public class WebSenderAsyncTask extends AsyncTask<Void, Object, Void> {
     LinkedBlockingQueue<WebSMS> smsQueue;
     VodafoneWebSender vodafoneWebSender;
 
-    // XXX remove
+    // XXX remove when CAPTCHA will be decoded automatically
     LinkedBlockingQueue<String> captchaQueue;
     Dialog captchaDialog;
 
@@ -93,7 +92,7 @@ public class WebSenderAsyncTask extends AsyncTask<Void, Object, Void> {
 	smsQueue.add(sms);
     }
     
-    // XXX remove
+    // XXX remove when CAPTCHA will be decoded automatically
     public void submitCaptcha() {
 	TextView captchaText = (TextView) 
         	captchaDialog.findViewById(R.id.CaptchaDialogText);
