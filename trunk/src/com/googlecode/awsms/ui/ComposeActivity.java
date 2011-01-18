@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+// TODO rename this package to "app" and
+// move everything Android-related inside it
 package com.googlecode.awsms.ui;
 
 import java.net.URLDecoder;
@@ -21,14 +23,17 @@ import java.net.URLDecoder;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.os.AsyncTask.Status;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.preference.PreferenceManager;
 import android.text.Annotation;
 import android.text.Editable;
@@ -49,6 +54,8 @@ import com.googlecode.awsms.R;
 import com.googlecode.awsms.senders.WebSMS;
 import com.googlecode.awsms.senders.WebSenderAsyncTask;
 import com.googlecode.awsms.senders.WebSenderHelper;
+import com.googlecode.awsms.senders.WebSenderService;
+import com.googlecode.awsms.senders.WebSenderService.WebSenderServiceBinder;
 import com.googlecode.awsms.senders.vodafone.VodafoneWebSenderHelper;
 
 /**
@@ -60,6 +67,9 @@ public class ComposeActivity extends Activity {
 
     static final String TAG = "ComposeActivity";
     
+    WebSenderService webSenderService;
+    ServiceConnection webSenderServiceConnection;
+    boolean webSenderServiceIsBound;
     WebSenderAsyncTask webSenderAsyncTask;
     SharedPreferences sharedPreferences;
     WebSenderHelper webSenderHelper;
@@ -80,6 +90,20 @@ public class ComposeActivity extends Activity {
 	super.onCreate(savedInstanceState);
 	setContentView(R.layout.compose);
 
+	webSenderServiceConnection = new ServiceConnection() {
+	    public void onServiceConnected(ComponentName name, IBinder service) {
+		WebSenderServiceBinder binder = 
+		    (WebSenderServiceBinder) service;
+		webSenderService = binder.getService();
+	    }
+	    
+	    public void onServiceDisconnected(ComponentName name) {
+		webSenderService = null;
+	    }
+	};
+	
+	doBindService();
+	
 	webSenderAsyncTask = new WebSenderAsyncTask(ComposeActivity.this);
 	webSenderAsyncTask.execute();
 	
@@ -177,8 +201,15 @@ public class ComposeActivity extends Activity {
 	    }
 	}
     }
+    
+    @Override
+    public void onDestroy() {
+	super.onDestroy();
+	doUnbindService();
+    }
 
     @Override
+    // FIXME save and restore current receiver, message drafts, etc
     public void onBackPressed() {
 	// prevent onDestroy() call
 	moveTaskToBack(true);
@@ -254,6 +285,19 @@ public class ComposeActivity extends Activity {
 	}
     }
 
+    private void doBindService() {
+	bindService(new Intent(ComposeActivity.this, WebSenderService.class), 
+		webSenderServiceConnection, Context.BIND_AUTO_CREATE);
+	webSenderServiceIsBound = true;
+    }
+
+    private void doUnbindService() {
+	if (webSenderServiceIsBound) {
+	    unbindService(webSenderServiceConnection);
+	    webSenderServiceIsBound = false;
+	}
+    }
+    
     private void updateLength(int length) {
 	messageLength.setText(webSenderHelper.calcRemaining(length) + 
 		" / " + webSenderHelper.calcFragments(length));

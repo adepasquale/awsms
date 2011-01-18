@@ -29,12 +29,12 @@ public class VodafoneWebSenderHelper extends WebSenderHelper {
     }
     
     public String getUsername() {
-	// TODO change to VodafoneUsername
+	// TODO change to VodafoneUsername in release 2.0
         return preferences.getString("VodafoneItalyUsername", "");
     }
 
     public String getPassword() {
-	// TODO change to VodafonePassword
+	// TODO change to VodafonePassword in release 2.0
 	return preferences.getString("VodafoneItalyPassword", "");
     }
 
