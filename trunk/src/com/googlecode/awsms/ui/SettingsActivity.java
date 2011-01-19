@@ -30,6 +30,8 @@ import com.googlecode.awsms.R;
  * 
  * @author Andrea De Pasquale
  */
+// TODO create account configuration activity
+// TODO create application information activity
 public class SettingsActivity extends PreferenceActivity {
 
     @Override

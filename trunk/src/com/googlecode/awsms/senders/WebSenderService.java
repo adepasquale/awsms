@@ -28,6 +28,7 @@ import android.util.Log;
  * @author Andrea De Pasquale
  */
 // FIXME use this bindable service to send
+// TODO if no connection available, keep retrying with a timeout
 public class WebSenderService extends Service {
 
     static final String TAG = "WebSenderService";
