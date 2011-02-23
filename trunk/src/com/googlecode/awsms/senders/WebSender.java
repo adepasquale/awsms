@@ -21,9 +21,16 @@ import java.io.FileOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 
+import javax.net.ssl.HttpsURLConnection;
+
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.protocol.ClientContext;
+import org.apache.http.conn.scheme.Scheme;
+import org.apache.http.conn.scheme.SchemeRegistry;
+import org.apache.http.conn.ssl.SSLSocketFactory;
+import org.apache.http.conn.ssl.X509HostnameVerifier;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.conn.SingleClientConnManager;
 import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
 
@@ -39,6 +46,7 @@ public abstract class WebSender {
     static final String TAG = "WebSender";
     
     protected HttpClient httpClient;
+//    protected WebSenderHttpClient httpClient;
     protected HttpContext httpContext;
     protected WebSenderCookieStore cookieStore;
     static final String COOKIES = "cookies";
@@ -53,7 +61,7 @@ public abstract class WebSender {
 	this.context = context;
 	httpClient = new DefaultHttpClient();
 	httpContext = new BasicHttpContext();
-	
+        
 	loadCookies(); // from cookie file
 	httpContext.setAttribute(ClientContext.COOKIE_STORE, cookieStore);
     }

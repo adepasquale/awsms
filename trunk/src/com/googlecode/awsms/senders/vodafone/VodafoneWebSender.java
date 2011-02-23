@@ -90,11 +90,15 @@ public class VodafoneWebSender extends WebSender {
     }
 
     public void preSend() throws Exception {
+	Log.d(TAG, "this.preSend()");
 	if (!isLoggedIn()) doLogin();
     }
     
     public boolean send(WebSMS sms) throws Exception {
+	Log.d(TAG, "this.send()");
+	
 	if (sms.getCaptchaArray() == null) {
+	    Log.d(TAG, "sms.getCaptchaArray() == null");
 	    preSend();
 	    doPrecheck();
 	    if (!doPrepare(sms)) return false; // need CAPTCHA
@@ -112,6 +116,7 @@ public class VodafoneWebSender extends WebSender {
      * @throws Exception
      */
     private boolean isLoggedIn() throws Exception {
+	Log.d(TAG, "this.isLoggedIn()");
 	Document document;
 
 	try {
@@ -122,6 +127,7 @@ public class VodafoneWebSender extends WebSender {
 		    .build(response.getEntity().getContent());
 	    response.getEntity().consumeContent();
 	} catch (Exception e) {
+	    e.printStackTrace();
 	    throw new Exception(
 		    context.getString(R.string.WebSenderNetworkError));
 	}
@@ -137,6 +143,8 @@ public class VodafoneWebSender extends WebSender {
      * @throws Exception
      */
     private void doLogin() throws Exception {
+	Log.d(TAG, "this.doLogin()");
+	
 	try {
 	    HttpPost request = new HttpPost(
 		    "https://widget.vodafone.it/190/trilogy/jsp/login.do");
@@ -173,7 +181,7 @@ public class VodafoneWebSender extends WebSender {
 		    context.getString(R.string.WebSenderReceiverNotAllowed));
 	    
 	case 104: // ?
-	case 109: // Messaggio vuoto
+	case 109: // empty message
 	default:
 	    throw new Exception(
 		    context.getString(R.string.WebSenderUnknownError));
@@ -186,6 +194,7 @@ public class VodafoneWebSender extends WebSender {
      * @throws Exception
      */
     private void doPrecheck() throws Exception {
+	Log.d(TAG, "this.doPrecheck()");
 	Document document = null;
 	
 	// to solve XML header problem
@@ -219,22 +228,21 @@ public class VodafoneWebSender extends WebSender {
 	Element root = document.getRootElement();
 	@SuppressWarnings("unchecked")
 	List<Element> children = root.getChildren("e");
-	Log.i(TAG, "doPrecheck()");
 	int status = 0, errorcode = 0;
 	for (Element child : children) {
-	    Log.i(TAG, child.getAttributeValue("n"));
+	    Log.d(TAG, child.getAttributeValue("n"));
 	    if (child.getAttributeValue("v") != null)
-		Log.i(TAG, child.getAttributeValue("v"));
+		Log.d(TAG, child.getAttributeValue("v"));
 	    if (child.getValue() != null)
-		Log.i(TAG, child.getValue());
+		Log.d(TAG, child.getValue());
 	    if (child.getAttributeValue("n").equals("STATUS"))
 		status = Integer.parseInt(child.getAttributeValue("v"));
 	    if (child.getAttributeValue("n").equals("ERRORCODE"))
 		errorcode = Integer.parseInt(child.getAttributeValue("v"));
 	}
 
-	Log.i(TAG, "status code: " + status);
-	Log.i(TAG, "error code: " + errorcode);
+	Log.d(TAG, "status code: " + status);
+	Log.d(TAG, "error code: " + errorcode);
 	if (status != 1)
 	    parseError(errorcode);
     }
@@ -247,6 +255,7 @@ public class VodafoneWebSender extends WebSender {
      * @returns false if CAPTCHA present
      */
     private boolean doPrepare(WebSMS sms) throws Exception {
+	Log.d(TAG, "this.doPrepare()");
 	Document document;
 
 	try {
@@ -268,14 +277,13 @@ public class VodafoneWebSender extends WebSender {
 	Element root = document.getRootElement();
 	@SuppressWarnings("unchecked")
 	List<Element> children = root.getChildren("e");
-	Log.i(TAG, "doPrepare()");
 	int status = 0, errorcode = 0;
 	for (Element child : children) {
-	    Log.i(TAG, child.getAttributeValue("n"));
+	    Log.d(TAG, child.getAttributeValue("n"));
 	    if (child.getAttributeValue("v") != null)
-		Log.i(TAG, child.getAttributeValue("v"));
+		Log.d(TAG, child.getAttributeValue("v"));
 	    if (child.getValue() != null)
-		Log.i(TAG, child.getValue());
+		Log.d(TAG, child.getValue());
 	    if (child.getAttributeValue("n").equals("STATUS"))
 		status = Integer.parseInt(child.getAttributeValue("v"));
 	    if (child.getAttributeValue("n").equals("ERRORCODE"))
@@ -286,8 +294,8 @@ public class VodafoneWebSender extends WebSender {
 	    }
 	}
 
-	Log.i(TAG, "status code: " + status);
-	Log.i(TAG, "error code: " + errorcode);
+	Log.d(TAG, "status code: " + status);
+	Log.d(TAG, "error code: " + errorcode);
 	if (status != 1)
 	    parseError(errorcode);
 	
@@ -302,6 +310,7 @@ public class VodafoneWebSender extends WebSender {
      * @returns false if CAPTCHA still present
      */
     private boolean doSend(WebSMS sms) throws Exception {
+	Log.d(TAG, "this.doSend()");
 	Document document;
 
 	try {
@@ -324,15 +333,14 @@ public class VodafoneWebSender extends WebSender {
 	Element root = document.getRootElement();
 	@SuppressWarnings("unchecked")
 	List<Element> children = root.getChildren("e");
-	Log.i(TAG, "doSend()");
 	int status = 0, errorcode = 0;
 	String returnmsg = null;
 	for (Element child : children) {
-	    Log.i(TAG, child.getAttributeValue("n"));
+	    Log.d(TAG, child.getAttributeValue("n"));
 	    if (child.getAttributeValue("v") != null)
-		Log.i(TAG, child.getAttributeValue("v"));
+		Log.d(TAG, child.getAttributeValue("v"));
 	    if (child.getValue() != null)
-		Log.i(TAG, child.getValue());
+		Log.d(TAG, child.getValue());
 	    if (child.getAttributeValue("n").equals("STATUS"))
 		status = Integer.parseInt(child.getAttributeValue("v"));
 	    if (child.getAttributeValue("n").equals("ERRORCODE"))
@@ -345,9 +353,9 @@ public class VodafoneWebSender extends WebSender {
 	    }
 	}
 
-	Log.i(TAG, "status code: " + status);
-	Log.i(TAG, "error code: " + errorcode);
-	Log.i(TAG, "return message: " + returnmsg);
+	Log.d(TAG, "status code: " + status);
+	Log.d(TAG, "error code: " + errorcode);
+	Log.d(TAG, "return message: " + returnmsg);
 	if (status != 1)
 	    parseError(errorcode);
 	
