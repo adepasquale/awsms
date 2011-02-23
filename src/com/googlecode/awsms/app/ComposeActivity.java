@@ -38,6 +38,7 @@ import android.text.Annotation;
 import android.text.Editable;
 import android.text.Spannable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -87,6 +88,7 @@ public class ComposeActivity extends Activity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
 	super.onCreate(savedInstanceState);
+	Log.d(TAG, "this.onCreate()");
 	setContentView(R.layout.compose);
 
 	webSenderServiceConnection = new ServiceConnection() {
@@ -136,8 +138,11 @@ public class ComposeActivity extends Activity {
 
 	messageSend.setOnClickListener(new OnClickListener() {
 	    public void onClick(View v) {
+		Log.d(TAG, "messageSend.onClick()");
+		
 		// if for some reason it isn't running, start it again
 		if (webSenderAsyncTask.getStatus() != Status.RUNNING) {
+		    Log.d(TAG, "webSenderAsyncTask.getStatus() != Status.RUNNING");
 		    webSenderAsyncTask = 
 			new WebSenderAsyncTask(ComposeActivity.this);
 		    webSenderAsyncTask.execute();
@@ -145,6 +150,7 @@ public class ComposeActivity extends Activity {
 		
 		// detect if there's no connection available
 		if (connectivityManager.getActiveNetworkInfo() == null) {
+		    Log.d(TAG, "connectivityManager.getActiveNetworkInfo() == null");
 		    Toast.makeText(ComposeActivity.this, 
 	    		R.string.NetworkUnavailable, 
 	    		Toast.LENGTH_LONG).show();
@@ -192,14 +198,17 @@ public class ComposeActivity extends Activity {
 	// check if application was started with an intent
 	Intent intent = getIntent();
 	if (savedInstanceState == null && intent != null) {
+	    Log.d(TAG, "intent != null");
 
 	    if (intent.getAction().equals(Intent.ACTION_SEND)) {
+		Log.d(TAG, "intent.getAction().equals(Intent.ACTION_SEND)");
 		String message = intent.getStringExtra(Intent.EXTRA_TEXT);
 		messageText.setText(message);
 		receiverText.requestFocus();
 	    }
 
 	    if (intent.getAction().equals(Intent.ACTION_SENDTO)) {
+		Log.d(TAG, "intent.getAction().equals(Intent.ACTION_SENDTO)");
 		String receiver = URLDecoder.decode(intent.getDataString())
 			.replaceAll("[^0-9\\+]*", "");
 		Cursor cursor = 
@@ -219,18 +228,21 @@ public class ComposeActivity extends Activity {
     @Override
     public void onDestroy() {
 	super.onDestroy();
+	Log.d(TAG, "this.onDestroy()");
 	doUnbindService();
     }
 
     @Override
     // FIXME save and restore current receiver, message drafts, etc
     public void onBackPressed() {
+	Log.d(TAG, "this.onBackPressed()");
 	// prevent onDestroy() call
 	moveTaskToBack(true);
     }
     
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+	Log.d(TAG, "this.onCreateOptionsMenu()");
 	MenuInflater inflater = getMenuInflater();
 	inflater.inflate(R.layout.menu, menu);
 	return true;
@@ -260,6 +272,7 @@ public class ComposeActivity extends Activity {
     protected Dialog onCreateDialog(int id) {
 	switch (id) {
 	case SETTINGS_DIALOG:
+	    Log.d(TAG, "this.onCreateDialog(SETTINGS_DIALOG)");
 	    AlertDialog.Builder settingsBuilder = new AlertDialog.Builder(this);
 	    settingsBuilder.setTitle(R.string.SettingsDialogTitle);
 	    settingsBuilder.setMessage(R.string.SettingsDialogMessage);
@@ -281,6 +294,7 @@ public class ComposeActivity extends Activity {
 	    return settingsBuilder.create();
 
 	case COUNTER_DIALOG:
+	    Log.d(TAG, "this.onCreateDialog(COUNTER_DIALOG)");
 	    AlertDialog.Builder counterBuilder = new AlertDialog.Builder(this);
 	    counterBuilder.setTitle(R.string.CounterDialogTitle);
 	    counterBuilder.setMessage("Vodafone: " + 

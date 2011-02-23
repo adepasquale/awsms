@@ -33,6 +33,7 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -83,6 +84,8 @@ public class WebSenderAsyncTask extends AsyncTask<Void, Object, Void> {
     }
     
     public void send(WebSMS sms) {
+	Log.d(TAG, "this.send()");
+	
 //	ContentValues outbox = new ContentValues();
 //	outbox.put("address", sms.getReceiver());
 //	outbox.put("body", sms.getMessage());
@@ -103,6 +106,7 @@ public class WebSenderAsyncTask extends AsyncTask<Void, Object, Void> {
 
     @Override
     protected Void doInBackground(Void... params) {
+	Log.d(TAG, "this.doInBackground()");
 	
 	try {
 	    vodafoneWebSender.preSend();
@@ -112,8 +116,8 @@ public class WebSenderAsyncTask extends AsyncTask<Void, Object, Void> {
 	
 	while (true) {
 	    WebSMS sms = null;
-	    try { sms = smsQueue.take(); } 
-	    catch (Exception e) { }
+	    try { sms = smsQueue.take(); }
+	    catch (InterruptedException e) { }
 	    if (sms == null) continue;
 	    
 	    try {

@@ -41,7 +41,7 @@ public class WebSenderService extends Service {
 
     @Override
     public IBinder onBind(Intent intent) {
-	Log.i(TAG, "onBind()");
+	Log.d(TAG, "onBind()");
 	return null;
     }
 
