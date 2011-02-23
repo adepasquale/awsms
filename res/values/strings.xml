@@ -33,12 +33,12 @@
 	<string name="SaveSMSPreference">Salva messaggi inviati</string>
 	<string name="ClearSMSPreference">Cancella dopo l\'invio</string>
 	<string name="NotificationsPreferenceCategory">Notifiche attive</string>
-	<string name="NotifySuccessPreference">Invio riuscito</string>
-	<string name="NotifyStatusPreference">Stato dell\'invio</string>
+	<string name="NotifySuccessPreference">Notifica invio riuscito</string>
+	<string name="NotifyStatusPreference">Notifica stato invio</string>
 	<string name="InterfacePreferenceCategory">Interfaccia grafica</string>
-	<string name="FilterMobilePreference">Filtra soltanto cellulari</string>
+	<string name="FilterReceiverPreference">Filtraggio rubrica</string>
 	<string name="DetailsPreferenceCategory">Dettagli applicazione</string>
-	<string name="AboutPreference">Android Web SMS 1.11</string>
+	<string name="AboutPreference">Android Web SMS 1.12</string>
 	<string name="AboutPreferenceSummary">© 2010-2011 Andrea De Pasquale</string>
 	<string name="AboutURL">http://code.google.com/p/awsms/</string>
 	<string name="FeedbackPreference">Scrivi allo sviluppatore</string>

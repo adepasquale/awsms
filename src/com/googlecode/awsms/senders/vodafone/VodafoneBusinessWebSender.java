@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.googlecode.awsms.senders.tim;
+package com.googlecode.awsms.senders.vodafone;
 
 import android.content.Context;
 
@@ -22,11 +22,11 @@ import com.googlecode.awsms.senders.WebSMS;
 import com.googlecode.awsms.senders.WebSender;
 
 // TODO use gathered information to build the sender
-public class TimWebSender extends WebSender {
+public class VodafoneBusinessWebSender extends WebSender {
     
-    static final String TAG = "TimWebSender";
+    static final String TAG = "VodafoneBusinessWebSender";
 
-    public TimWebSender(Context context) {
+    public VodafoneBusinessWebSender(Context context) {
 	super(context);
     }
 

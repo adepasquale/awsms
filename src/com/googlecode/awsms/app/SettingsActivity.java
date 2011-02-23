@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.googlecode.awsms.ui;
+package com.googlecode.awsms.app;
 
 import android.content.Intent;
 import android.net.Uri;

@@ -37,8 +37,9 @@
 			android:key="NotifyStatus" android:defaultValue="true" />
 	</PreferenceCategory>
 	<PreferenceCategory android:title="@string/InterfacePreferenceCategory">
-		<CheckBoxPreference android:title="@string/FilterMobilePreference"
-			android:key="FilterMobile" android:defaultValue="true" />
+		<ListPreference android:title="@string/FilterReceiverPreference"
+			android:key="FilterReceiver" android:entries="@array/FilterReceiverEntries" 
+			android:entryValues="@array/FilterReceiverValues" />
 	</PreferenceCategory>	
 	<PreferenceCategory android:title="@string/DetailsPreferenceCategory">
 		<Preference android:title="@string/AboutPreference"
