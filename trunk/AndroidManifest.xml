@@ -27,7 +27,7 @@
 	<uses-sdk android:minSdkVersion="7" />
 	<application android:label="@string/ApplicationLabel"
 			android:icon="@drawable/ic_awsms">
-		<activity android:name=".ui.ComposeActivity" 
+		<activity android:name=".app.ComposeActivity" 
 				android:label="@string/ComposeActivityLabel"
 				android:configChanges="keyboardHidden|orientation">
 			<intent-filter>
@@ -54,7 +54,7 @@
 				<data android:mimeType="text/plain" />
 			</intent-filter>
 		</activity>
-		<activity android:name=".ui.SettingsActivity" 
+		<activity android:name=".app.SettingsActivity" 
 				android:label="@string/SettingsActivityLabel" 
 				android:configChanges="keyboardHidden|orientation" />
 		<service android:name=".senders.WebSenderService" />

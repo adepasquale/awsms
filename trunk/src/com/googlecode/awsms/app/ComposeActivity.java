@@ -14,9 +14,7 @@
  * limitations under the License.
  */
 
-// TODO rename this package to "app" and
-// move everything Android-related inside it
-package com.googlecode.awsms.ui;
+package com.googlecode.awsms.app;
 
 import java.net.URLDecoder;
 
@@ -31,6 +29,7 @@ import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.ConnectivityManager;
+import android.os.AsyncTask;
 import android.os.AsyncTask.Status;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -148,7 +147,7 @@ public class ComposeActivity extends Activity {
 		if (connectivityManager.getActiveNetworkInfo() == null) {
 		    Toast.makeText(ComposeActivity.this, 
 	    		R.string.NetworkUnavailable, 
-	    		Toast.LENGTH_SHORT).show();
+	    		Toast.LENGTH_LONG).show();
 		    return;
 		}
 		
@@ -160,11 +159,26 @@ public class ComposeActivity extends Activity {
     		    sms.setMessage(getMessage());
     		    webSenderAsyncTask.send(sms);
     		    Toast.makeText(ComposeActivity.this,
-    			R.string.SMSValid, Toast.LENGTH_SHORT).show();
+    			R.string.SMSValid, Toast.LENGTH_LONG).show();
     		    clearFields(false);
+
+    		    // disable the button and re-enable it after some time
+    		    messageSend.setEnabled(false);
+    		    new AsyncTask<Void, Void, Void>() {
+			protected Void doInBackground(Void... params) {
+			    try { Thread.sleep(3500); } 
+			    catch (InterruptedException e) { }
+			    return null;
+			}
+			
+			protected void onPostExecute(Void result) {
+			    messageSend.setEnabled(true);
+			};
+		    }.execute();
+
     		} catch (Exception e) {
     		    Toast.makeText(ComposeActivity.this, 
-    			e.getMessage(), Toast.LENGTH_SHORT).show();
+    			e.getMessage(), Toast.LENGTH_LONG).show();
     		}
 	    }
 	});

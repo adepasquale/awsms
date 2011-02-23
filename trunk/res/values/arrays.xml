@@ -29,4 +29,14 @@
 		<item>M</item>
 		<item></item>
 	</string-array>
+	<string-array name="FilterReceiverEntries">
+		<item>Mostra solo cellulari</item>
+		<item>Escludi numeri fissi</item>
+		<item>Mostra tutti i numeri</item>
+	</string-array>
+	<string-array name="FilterReceiverValues">
+		<item>M</item>
+		<item>H</item>
+		<item></item>
+	</string-array>
 </resources>

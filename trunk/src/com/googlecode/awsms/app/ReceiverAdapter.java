@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.googlecode.awsms.ui;
+package com.googlecode.awsms.app;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -80,12 +80,18 @@ public class ReceiverAdapter extends ResourceCursorAdapter
 		Phone.LABEL,
 	};
 
-	String selection = null;
-	if (preferences.getBoolean("FilterMobile", true)) {
+	String selection = null; // default: all numbers
+	String filter = preferences.getString("FilterReceiver", "");
+
+	if (filter.contains("M")) { // mobiles only
 	    selection = String.format("%s=%s OR %s=%s",
 		Phone.TYPE, Phone.TYPE_MOBILE, 
 		Phone.TYPE, Phone.TYPE_WORK_MOBILE);
 	}
+        if (filter.contains("H")) { // no home numbers
+            selection = String.format("%s<>%s",
+    		Phone.TYPE, Phone.TYPE_HOME);
+        }
 
 	String sorting = Contacts.TIMES_CONTACTED + " DESC";
 

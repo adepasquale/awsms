@@ -42,8 +42,8 @@ import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 
 import com.googlecode.awsms.R;
+import com.googlecode.awsms.app.ComposeActivity;
 import com.googlecode.awsms.senders.vodafone.VodafoneWebSender;
-import com.googlecode.awsms.ui.ComposeActivity;
 
 /**
  * Asynchronous task which sends an SMS and displays notifications.
