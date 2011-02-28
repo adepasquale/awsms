@@ -81,6 +81,9 @@ public class VodafoneWebSender extends WebSender {
 
 	try {
 	    // to allow self-signed certificate to be accepted
+	    // FIXME issue 9 http://code.google.com/p/awsms/issues/detail?id=9
+	    // see http://blog.crazybob.org/2010/02/android-trusting-ssl-certificates.html
+	    // and http://blog.antoine.li/index.php/2010/10/android-trusting-ssl-certificates/
 	    SSLSocketFactory socketFactory = new SSLSocketFactory(null);
 	    Scheme sch = new Scheme("https", socketFactory, 443);
 	    httpClient.getConnectionManager().getSchemeRegistry().register(sch);
