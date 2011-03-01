@@ -23,7 +23,6 @@ import java.io.ObjectOutputStream;
 
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.protocol.ClientContext;
-import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
 
@@ -51,7 +50,7 @@ public abstract class WebSender {
      */
     public WebSender(Context context) {
 	this.context = context;
-	httpClient = new DefaultHttpClient();
+	httpClient = new WebSenderHttpClient(context);
 	httpContext = new BasicHttpContext();
         
 	loadCookies(); // from cookie file

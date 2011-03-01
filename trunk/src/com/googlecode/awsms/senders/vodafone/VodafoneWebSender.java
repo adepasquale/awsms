@@ -27,8 +27,6 @@ import org.apache.http.NameValuePair;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.conn.scheme.Scheme;
-import org.apache.http.conn.ssl.SSLSocketFactory;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.protocol.HTTP;
 import org.jdom.Document;
@@ -78,18 +76,6 @@ public class VodafoneWebSender extends WebSender {
 	httpClient.getParams().setParameter("http.useragent", "Vodafone_DW");
 	
 	helper = new VodafoneWebSenderHelper(context);
-
-	try {
-	    // to allow self-signed certificate to be accepted
-	    // FIXME issue 9 http://code.google.com/p/awsms/issues/detail?id=9
-	    // see http://blog.crazybob.org/2010/02/android-trusting-ssl-certificates.html
-	    // and http://blog.antoine.li/index.php/2010/10/android-trusting-ssl-certificates/
-	    SSLSocketFactory socketFactory = new SSLSocketFactory(null);
-	    Scheme sch = new Scheme("https", socketFactory, 443);
-	    httpClient.getConnectionManager().getSchemeRegistry().register(sch);
-	} catch (Exception e) {
-	    Log.e(TAG, "SSLSocketFactory exception: " + e.getMessage());
-	}
     }
 
     public void preSend() throws Exception {
