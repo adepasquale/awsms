@@ -38,7 +38,7 @@
 	<string name="InterfacePreferenceCategory">Interfaccia grafica</string>
 	<string name="FilterReceiverPreference">Filtraggio rubrica</string>
 	<string name="DetailsPreferenceCategory">Dettagli applicazione</string>
-	<string name="AboutPreference">Android Web SMS 1.12</string>
+	<string name="AboutPreference">Android Web SMS 1.13</string>
 	<string name="AboutPreferenceSummary">© 2010-2011 Andrea De Pasquale</string>
 	<string name="AboutURL">http://code.google.com/p/awsms/</string>
 	<string name="FeedbackPreference">Scrivi allo sviluppatore</string>
