@@ -22,11 +22,10 @@ package com.googlecode.awsms.senders;
  * @author Andrea De Pasquale
  */
 public class WebSMS {
-    // TODO support multiple receivers
-    // TODO encapsulate status and error/return codes 
-
+ 
     String senderNumber;
     String senderName;
+    // TODO support multiple receivers
     String receiverNumber;
     String receiverName;
     String message;
@@ -34,6 +33,20 @@ public class WebSMS {
     // XXX remove when CAPTCHA will be decoded automatically
     byte[] captchaArray;
     String captcha;
+
+    public enum Error {
+	NETWORK, 
+	RESPONSE, 
+	LOGIN, 
+	RECEIVER, 
+	MESSAGE, 
+	LIMIT, 
+	UNKNOWN 
+    }
+    
+    // TODO use sent status and error codes
+    boolean sent;
+    Error error;
 
     public String getSenderNumber() {
 	return senderNumber;
@@ -89,6 +102,22 @@ public class WebSMS {
 
     public void setCaptcha(String captcha) {
 	this.captcha = captcha;
+    }
+
+    public boolean isSent() {
+        return sent;
+    }
+
+    public void setSent(boolean sent) {
+        this.sent = sent;
+    }
+
+    public Error getError() {
+        return error;
+    }
+
+    public void setError(Error error) {
+        this.error = error;
     }
 
 }
