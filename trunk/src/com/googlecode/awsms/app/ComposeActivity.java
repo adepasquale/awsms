@@ -93,8 +93,7 @@ public class ComposeActivity extends Activity {
 
 	webSenderServiceConnection = new ServiceConnection() {
 	    public void onServiceConnected(ComponentName name, IBinder service) {
-		WebSenderServiceBinder binder = 
-		    (WebSenderServiceBinder) service;
+		WebSenderServiceBinder binder = (WebSenderServiceBinder) service;
 		webSenderService = binder.getService();
 	    }
 	    
@@ -163,6 +162,7 @@ public class ComposeActivity extends Activity {
     		    sms.setReceiverNumber(getReceiverNumber());
     		    sms.setReceiverName(getReceiverName());
     		    sms.setMessage(getMessage());
+//    		    webSenderService.send(sms); // XXX test this
     		    webSenderAsyncTask.send(sms);
     		    Toast.makeText(ComposeActivity.this,
     			R.string.SMSValid, Toast.LENGTH_LONG).show();
@@ -232,13 +232,13 @@ public class ComposeActivity extends Activity {
 	doUnbindService();
     }
 
-    @Override
-    // FIXME save and restore current receiver, message drafts, etc
-    public void onBackPressed() {
-	Log.d(TAG, "this.onBackPressed()");
-	// prevent onDestroy() call
-	moveTaskToBack(true);
-    }
+//    @Override
+//    // FIXME save and restore current receiver, message drafts, etc
+//    public void onBackPressed() {
+//	Log.d(TAG, "this.onBackPressed()");
+//	// prevent onDestroy() call
+//	moveTaskToBack(true);
+//    }
     
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -314,9 +314,10 @@ public class ComposeActivity extends Activity {
     }
 
     private void doBindService() {
-	bindService(new Intent(ComposeActivity.this, WebSenderService.class), 
-		webSenderServiceConnection, Context.BIND_AUTO_CREATE);
-	webSenderServiceIsBound = true;
+	if (bindService(new Intent(ComposeActivity.this, WebSenderService.class), 
+		webSenderServiceConnection, Context.BIND_AUTO_CREATE)) {
+	    webSenderServiceIsBound = true;
+	}
     }
 
     private void doUnbindService() {
