@@ -33,84 +33,84 @@ import android.database.sqlite.SQLiteQueryBuilder;
  */
 public class WebSMSDatabase {
 
-    static final String TAG = "WebSenderDatabase";
-    
-    static final String DB_NAME = "awsms.db";
-    static final int DB_VERSION = 2;
-    static final String TABLE_NAME = "sms";
+  static final String TAG = "WebSenderDatabase";
 
-    public static final String _ID = "_id";
-    public static final String DATE = "date";
-    public static final String SENDER = "sender";
-    public static final String COUNT = "count";
+  static final String DB_NAME = "awsms.db";
+  static final int DB_VERSION = 2;
+  static final String TABLE_NAME = "sms";
 
-    private static class DBOpenHelper extends SQLiteOpenHelper {
+  public static final String _ID = "_id";
+  public static final String DATE = "date";
+  public static final String SENDER = "sender";
+  public static final String COUNT = "count";
 
-	DBOpenHelper(Context context) {
-	    super(context, DB_NAME, null, DB_VERSION);
-	}
+  private static class DBOpenHelper extends SQLiteOpenHelper {
 
-	@Override
-	public void onCreate(SQLiteDatabase db) {
-	    db.execSQL("CREATE TABLE " + TABLE_NAME + " (" + _ID
-		    + " INTEGER PRIMARY KEY," + DATE + " TEXT," + SENDER
-		    + " TEXT," + COUNT + " INTEGER" + ");");
-	}
-
-	@Override
-	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-	    db.execSQL("DROP TABLE IF EXISTS smslog;");
-	    onCreate(db);
-	}
+    DBOpenHelper(Context context) {
+      super(context, DB_NAME, null, DB_VERSION);
     }
 
-    DBOpenHelper dbOpenHelper;
-    SimpleDateFormat dateFormat;
-
-    public WebSMSDatabase(Context context) {
-	dbOpenHelper = new DBOpenHelper(context);
-	dateFormat = new SimpleDateFormat("yyyyMMdd");
-	deleteOld(); // keep the database clean
+    @Override
+    public void onCreate(SQLiteDatabase db) {
+      db.execSQL("CREATE TABLE " + TABLE_NAME + " (" + _ID
+          + " INTEGER PRIMARY KEY," + DATE + " TEXT," + SENDER + " TEXT,"
+          + COUNT + " INTEGER" + ");");
     }
 
-    public int queryToday(String sender) {
-	SQLiteQueryBuilder queryBuilder = new SQLiteQueryBuilder();
-	queryBuilder.setTables(TABLE_NAME);
+    @Override
+    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+      db.execSQL("DROP TABLE IF EXISTS smslog;");
+      onCreate(db);
+    }
+  }
 
-	String[] projection = { _ID, DATE, SENDER, COUNT };
-	String selection = String.format("%s=\'%s\' AND %s=\'%s\'", DATE,
-		dateFormat.format(new Date()), SENDER, sender);
+  DBOpenHelper dbOpenHelper;
+  SimpleDateFormat dateFormat;
 
-	SQLiteDatabase database = dbOpenHelper.getReadableDatabase();
-	Cursor cursor = queryBuilder.query(database, projection, selection,
-		null, null, null, null);
+  public WebSMSDatabase(Context context) {
+    dbOpenHelper = new DBOpenHelper(context);
+    dateFormat = new SimpleDateFormat("yyyyMMdd");
+    deleteOld(); // keep the database clean
+  }
 
-	int size = 0;
-	cursor.moveToFirst();
-	while (!cursor.isAfterLast()) {
-	    size += cursor.getInt(cursor.getColumnIndex(COUNT));
-	    cursor.moveToNext();
-	}
+  public int queryToday(String sender) {
+    SQLiteQueryBuilder queryBuilder = new SQLiteQueryBuilder();
+    queryBuilder.setTables(TABLE_NAME);
 
-	cursor.close();
-	return size;
+    String[] projection = { _ID, DATE, SENDER, COUNT };
+    String selection = String.format("%s=\'%s\' AND %s=\'%s\'", DATE,
+        dateFormat.format(new Date()), SENDER, sender);
+
+    SQLiteDatabase database = dbOpenHelper.getReadableDatabase();
+    Cursor cursor = queryBuilder.query(database, projection, selection, null,
+        null, null, null);
+
+    int size = 0;
+    cursor.moveToFirst();
+    while (!cursor.isAfterLast()) {
+      size += cursor.getInt(cursor.getColumnIndex(COUNT));
+      cursor.moveToNext();
     }
 
-    public void insertNew(String sender, int size) {
-	ContentValues values = new ContentValues();
-	values.put(DATE, dateFormat.format(new Date()));
-	values.put(SENDER, sender);
-	values.put(COUNT, size);
+    cursor.close();
+    return size;
+  }
 
-	SQLiteDatabase database = dbOpenHelper.getWritableDatabase();
-	database.insert(TABLE_NAME, SENDER, values);
-    }
+  public void insertNew(String sender, int size) {
+    ContentValues values = new ContentValues();
+    values.put(DATE, dateFormat.format(new Date()));
+    values.put(SENDER, sender);
+    values.put(COUNT, size);
 
-    public void deleteOld() {
-	SQLiteDatabase database = dbOpenHelper.getWritableDatabase();
-	String whereClause = String.format("%s<>\'%s\'", DATE,
-		dateFormat.format(new Date()));
-	database.delete(TABLE_NAME, whereClause, null);
-    }
+    SQLiteDatabase database = dbOpenHelper.getWritableDatabase();
+    database.insert(TABLE_NAME, SENDER, values);
+  }
+
+  public void deleteOld() {
+    SQLiteDatabase database = dbOpenHelper.getWritableDatabase();
+    String whereClause = String.format("%s<>\'%s\'", DATE,
+        dateFormat.format(new Date()));
+    database.delete(TABLE_NAME, whereClause, null);
+  }
 
 }

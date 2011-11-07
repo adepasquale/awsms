@@ -48,307 +48,301 @@ import com.googlecode.awsms.senders.captcha.Base64;
  * @author Andrea De Pasquale
  */
 public class VodafoneWebSender extends WebSender {
-    
-    static final String TAG = "VodafoneWebSender";
 
-    // URLs used by the widget to login/logout, send SMS, etc.
-    // https://widget.vodafone.it/190/trilogy/jsp/login.do
-    // https://widget.vodafone.it/190/trilogy/jsp/logout.do
-    // https://widget.vodafone.it/190/trilogy/jsp/swapSim.do
-    // https://widget.vodafone.it/190/trilogy/jsp/utility/checkUser.jsp
-    // https://widget.vodafone.it/190/fsms/precheck.do?channel=VODAFONE_DW
-    // https://widget.vodafone.it/190/fsms/prepare.do?channel=VODAFONE_DW
-    // https://widget.vodafone.it/190/fsms/send.do?channel=VODAFONE_DW
-    // https://widget.vodafone.it/190/fast/mx/CreditoResiduoPush.do?hpfdtpri=y
-    // https://widget.vodafone.it/190/jone/mx/SaldoPuntiPush.do?hpfdtpri=y
-    // https://widget.vodafone.it/190/ebwe/mx/PushInfoconto.do?hpfdtpri=y
+  static final String TAG = "VodafoneWebSender";
 
-    // XMLs containing information about the widget itself
-    // http://demos.vodafone.it/dw/getDWConfiguration.xml
-    // http://demos.vodafone.it/dw/updates.xml
-    
-    public VodafoneWebSender(Context context) {
-	
-	super(context);
-	
-	httpClient.getParams().setParameter(
-		"http.protocol.allow-circular-redirects", true);
-	httpClient.getParams().setParameter("http.useragent", "Vodafone_DW");
-	
-	helper = new VodafoneWebSenderHelper(context);
+  // URLs used by the widget to login/logout, send SMS, etc.
+  // https://widget.vodafone.it/190/trilogy/jsp/login.do
+  // https://widget.vodafone.it/190/trilogy/jsp/logout.do
+  // https://widget.vodafone.it/190/trilogy/jsp/swapSim.do
+  // https://widget.vodafone.it/190/trilogy/jsp/utility/checkUser.jsp
+  // https://widget.vodafone.it/190/fsms/precheck.do?channel=VODAFONE_DW
+  // https://widget.vodafone.it/190/fsms/prepare.do?channel=VODAFONE_DW
+  // https://widget.vodafone.it/190/fsms/send.do?channel=VODAFONE_DW
+  // https://widget.vodafone.it/190/fast/mx/CreditoResiduoPush.do?hpfdtpri=y
+  // https://widget.vodafone.it/190/jone/mx/SaldoPuntiPush.do?hpfdtpri=y
+  // https://widget.vodafone.it/190/ebwe/mx/PushInfoconto.do?hpfdtpri=y
+
+  // XMLs containing information about the widget itself
+  // http://demos.vodafone.it/dw/getDWConfiguration.xml
+  // http://demos.vodafone.it/dw/updates.xml
+
+  public VodafoneWebSender(Context context) {
+
+    super(context);
+
+    httpClient.getParams().setParameter(
+        "http.protocol.allow-circular-redirects", true);
+    httpClient.getParams().setParameter("http.useragent", "Vodafone_DW");
+
+    helper = new VodafoneWebSenderHelper(context);
+  }
+
+  public void preSend() throws Exception {
+    Log.d(TAG, "this.preSend()");
+    if (!isLoggedIn())
+      doLogin();
+  }
+
+  public boolean send(WebSMS sms) throws Exception {
+    Log.d(TAG, "this.send()");
+
+    if (sms.getCaptchaArray() == null) {
+      Log.d(TAG, "sms.getCaptchaArray() == null");
+      preSend();
+      doPrecheck();
+      if (!doPrepare(sms))
+        return false; // need CAPTCHA
     }
 
-    public void preSend() throws Exception {
-	Log.d(TAG, "this.preSend()");
-	if (!isLoggedIn()) doLogin();
-    }
-    
-    public boolean send(WebSMS sms) throws Exception {
-	Log.d(TAG, "this.send()");
-	
-	if (sms.getCaptchaArray() == null) {
-	    Log.d(TAG, "sms.getCaptchaArray() == null");
-	    preSend();
-	    doPrecheck();
-	    if (!doPrepare(sms)) return false; // need CAPTCHA
-	}
+    if (!doSend(sms))
+      return false; // still need CAPTCHA
+    helper.addCount(sms.getMessage().length());
+    return true;
+  }
 
-	if (!doSend(sms)) return false; // still need CAPTCHA
-	helper.addCount(sms.getMessage().length());
-	return true;
-    }
+  /**
+   * Check if the user is logged in to www.vodafone.it
+   * 
+   * @return true if the user is logged in, false otherwise
+   * @throws Exception
+   */
+  private boolean isLoggedIn() throws Exception {
+    Log.d(TAG, "this.isLoggedIn()");
+    Document document;
 
-    /**
-     * Check if the user is logged in to www.vodafone.it
-     * 
-     * @return true if the user is logged in, false otherwise
-     * @throws Exception
-     */
-    private boolean isLoggedIn() throws Exception {
-	Log.d(TAG, "this.isLoggedIn()");
-	Document document;
-
-	try {
-	    HttpGet request = new HttpGet(
-		    "https://widget.vodafone.it/190/trilogy/jsp/utility/checkUser.jsp");
-	    HttpResponse response = httpClient.execute(request, httpContext);
-	    document = new SAXBuilder()
-		    .build(response.getEntity().getContent());
-	    response.getEntity().consumeContent();
-	} catch (Exception e) {
-	    e.printStackTrace();
-	    throw new Exception(
-		    context.getString(R.string.WebSenderNetworkError));
-	}
-
-	Element root = document.getRootElement();
-	Element child = root.getChild("logged-in");
-	return child.getValue().equals("true");
+    try {
+      HttpGet request = new HttpGet(
+          "https://widget.vodafone.it/190/trilogy/jsp/utility/checkUser.jsp");
+      HttpResponse response = httpClient.execute(request, httpContext);
+      document = new SAXBuilder().build(response.getEntity().getContent());
+      response.getEntity().consumeContent();
+    } catch (Exception e) {
+      e.printStackTrace();
+      throw new Exception(context.getString(R.string.WebSenderNetworkError));
     }
 
-    /**
-     * Login to www.vodafone.it website
-     * 
-     * @throws Exception
-     */
-    private void doLogin() throws Exception {
-	Log.d(TAG, "this.doLogin()");
-	
-	try {
-	    HttpPost request = new HttpPost(
-		    "https://widget.vodafone.it/190/trilogy/jsp/login.do");
-	    List<NameValuePair> requestData = new ArrayList<NameValuePair>();
-	    requestData.add(
-		    new BasicNameValuePair("username", helper.getUsername()));
-	    requestData.add(
-		    new BasicNameValuePair("password", helper.getPassword()));
-	    request.setEntity(
-		    new UrlEncodedFormEntity(requestData, HTTP.UTF_8));
-	    HttpResponse response = httpClient.execute(request, httpContext);
-	    response.getEntity().consumeContent();
-	} catch (Exception e) {
-	    throw new Exception(
-		    context.getString(R.string.WebSenderNetworkError));
-	}
+    Element root = document.getRootElement();
+    Element child = root.getChild("logged-in");
+    return child.getValue().equals("true");
+  }
 
-	if (!isLoggedIn()) {
-	    throw new Exception(
-		    context.getString(R.string.WebSenderSettingsInvalid));
-	}
-	
-	saveCookies(); // to cookie file
+  /**
+   * Login to www.vodafone.it website
+   * 
+   * @throws Exception
+   */
+  private void doLogin() throws Exception {
+    Log.d(TAG, "this.doLogin()");
+
+    try {
+      HttpPost request = new HttpPost(
+          "https://widget.vodafone.it/190/trilogy/jsp/login.do");
+      List<NameValuePair> requestData = new ArrayList<NameValuePair>();
+      requestData.add(new BasicNameValuePair("username", helper.getUsername()));
+      requestData.add(new BasicNameValuePair("password", helper.getPassword()));
+      request.setEntity(new UrlEncodedFormEntity(requestData, HTTP.UTF_8));
+      HttpResponse response = httpClient.execute(request, httpContext);
+      response.getEntity().consumeContent();
+    } catch (Exception e) {
+      throw new Exception(context.getString(R.string.WebSenderNetworkError));
     }
 
-    private void parseError(int error) throws Exception {
-	switch (error) {
-	case 107:
-	    throw new Exception(
-		    context.getString(R.string.WebSenderLimitReached));
-	
-	case 113:
-	    throw new Exception(
-		    context.getString(R.string.WebSenderReceiverNotAllowed));
-	    
-	case 104: // ?
-	case 109: // empty message
-	default:
-	    throw new Exception(
-		    context.getString(R.string.WebSenderUnknownError));
-	}
+    if (!isLoggedIn()) {
+      throw new Exception(context.getString(R.string.WebSenderSettingsInvalid));
     }
 
-    /**
-     * Page to be visited before sending a message
-     * 
-     * @throws Exception
-     */
-    private void doPrecheck() throws Exception {
-	Log.d(TAG, "this.doPrecheck()");
-	Document document = null;
-	
-	// to solve XML header problem
-	boolean skip = true;
-	boolean done = false;
+    saveCookies(); // to cookie file
+  }
 
-	do {
-	    try {
-		HttpGet request = new HttpGet(
-			"https://widget.vodafone.it/190/fsms/precheck.do?channel=VODAFONE_DW");
-		HttpResponse response = httpClient.execute(request, httpContext);
+  private void parseError(int error) throws Exception {
+    switch (error) {
+    case 107:
+      throw new Exception(context.getString(R.string.WebSenderLimitReached));
 
-		Reader reader = new BufferedReader(new InputStreamReader(
-			response.getEntity().getContent()));
-		if (skip) reader.skip(13);
+    case 113:
+      throw new Exception(
+          context.getString(R.string.WebSenderReceiverNotAllowed));
 
-		document = new SAXBuilder().build(reader);
-		response.getEntity().consumeContent();
-		done = true;
-		
-	    } catch (JDOMException jdom) {
-		if (skip) skip = false;
-		else throw new Exception(
-			context.getString(R.string.WebSenderProtocolError));
-	    } catch (Exception e) {
-		throw new Exception(
-			context.getString(R.string.WebSenderNetworkError));
-	    }
-	} while (!done);
+    case 104: // service unavailable
+    case 109: // empty message
+    default:
+      throw new Exception(context.getString(R.string.WebSenderUnknownError));
+    }
+  }
 
-	Element root = document.getRootElement();
-	@SuppressWarnings("unchecked")
-	List<Element> children = root.getChildren("e");
-	int status = 0, errorcode = 0;
-	for (Element child : children) {
-	    Log.d(TAG, child.getAttributeValue("n"));
-	    if (child.getAttributeValue("v") != null)
-		Log.d(TAG, child.getAttributeValue("v"));
-	    if (child.getValue() != null)
-		Log.d(TAG, child.getValue());
-	    if (child.getAttributeValue("n").equals("STATUS"))
-		status = Integer.parseInt(child.getAttributeValue("v"));
-	    if (child.getAttributeValue("n").equals("ERRORCODE"))
-		errorcode = Integer.parseInt(child.getAttributeValue("v"));
-	}
+  /**
+   * Page to be visited before sending a message
+   * 
+   * @throws Exception
+   */
+  private void doPrecheck() throws Exception {
+    Log.d(TAG, "this.doPrecheck()");
+    Document document = null;
 
-	Log.d(TAG, "status code: " + status);
-	Log.d(TAG, "error code: " + errorcode);
-	if (status != 1)
-	    parseError(errorcode);
+    // to solve XML header problem
+    boolean skip = true;
+    boolean done = false;
+
+    do {
+      try {
+        HttpGet request = new HttpGet(
+            "https://widget.vodafone.it/190/fsms/precheck.do?channel=VODAFONE_DW");
+        HttpResponse response = httpClient.execute(request, httpContext);
+
+        Reader reader = new BufferedReader(new InputStreamReader(response
+            .getEntity().getContent()));
+        if (skip)
+          reader.skip(13);
+
+        document = new SAXBuilder().build(reader);
+        response.getEntity().consumeContent();
+        done = true;
+
+      } catch (JDOMException jdom) {
+        if (skip)
+          skip = false;
+        else
+          throw new Exception(
+              context.getString(R.string.WebSenderProtocolError));
+      } catch (Exception e) {
+        throw new Exception(context.getString(R.string.WebSenderNetworkError));
+      }
+    } while (!done);
+
+    Element root = document.getRootElement();
+    @SuppressWarnings("unchecked")
+    List<Element> children = root.getChildren("e");
+    int status = 0, errorcode = 0;
+    for (Element child : children) {
+//      Log.d(TAG, child.getAttributeValue("n"));
+//      if (child.getAttributeValue("v") != null)
+//        Log.d(TAG, child.getAttributeValue("v"));
+//      if (child.getValue() != null)
+//        Log.d(TAG, child.getValue());
+      if (child.getAttributeValue("n").equals("STATUS"))
+        status = Integer.parseInt(child.getAttributeValue("v"));
+      if (child.getAttributeValue("n").equals("ERRORCODE"))
+        errorcode = Integer.parseInt(child.getAttributeValue("v"));
     }
 
-    /**
-     * Prepare the message to be sent.
-     * 
-     * @param sms
-     * @throws Exception
-     * @returns false if CAPTCHA present
-     */
-    private boolean doPrepare(WebSMS sms) throws Exception {
-	Log.d(TAG, "this.doPrepare()");
-	Document document;
+    Log.d(TAG, "status code: " + status);
+    Log.d(TAG, "error code: " + errorcode);
+    if (status != 1)
+      parseError(errorcode);
+  }
 
-	try {
-	    HttpPost request = new HttpPost(
-		    "https://widget.vodafone.it/190/fsms/prepare.do?channel=VODAFONE_DW");
-	    List<NameValuePair> requestData = new ArrayList<NameValuePair>();
-	    requestData.add(new BasicNameValuePair("receiverNumber", sms.getReceiverNumber()));
-	    requestData.add(new BasicNameValuePair("message", sms.getMessage()));
-	    request.setEntity(new UrlEncodedFormEntity(requestData, HTTP.UTF_8));
-	    HttpResponse response = httpClient.execute(request, httpContext);
-	    document = new SAXBuilder()
-		    .build(response.getEntity().getContent());
-	    response.getEntity().consumeContent();
-	} catch (Exception e) {
-	    throw new Exception(
-		    context.getString(R.string.WebSenderNetworkError));
-	}
+  /**
+   * Prepare the message to be sent.
+   * 
+   * @param sms
+   * @throws Exception
+   * @returns false if CAPTCHA present
+   */
+  private boolean doPrepare(WebSMS sms) throws Exception {
+    Log.d(TAG, "this.doPrepare()");
+    Document document;
 
-	Element root = document.getRootElement();
-	@SuppressWarnings("unchecked")
-	List<Element> children = root.getChildren("e");
-	int status = 0, errorcode = 0;
-	for (Element child : children) {
-	    Log.d(TAG, child.getAttributeValue("n"));
-	    if (child.getAttributeValue("v") != null)
-		Log.d(TAG, child.getAttributeValue("v"));
-	    if (child.getValue() != null)
-		Log.d(TAG, child.getValue());
-	    if (child.getAttributeValue("n").equals("STATUS"))
-		status = Integer.parseInt(child.getAttributeValue("v"));
-	    if (child.getAttributeValue("n").equals("ERRORCODE"))
-		errorcode = Integer.parseInt(child.getAttributeValue("v"));
-	    if (child.getAttributeValue("n").equals("CODEIMG")) {
-		sms.setCaptchaArray(Base64.decode(child.getValue()));
-		return false;
-	    }
-	}
-
-	Log.d(TAG, "status code: " + status);
-	Log.d(TAG, "error code: " + errorcode);
-	if (status != 1)
-	    parseError(errorcode);
-	
-	return true;
+    try {
+      HttpPost request = new HttpPost(
+          "https://widget.vodafone.it/190/fsms/prepare.do?channel=VODAFONE_DW");
+      List<NameValuePair> requestData = new ArrayList<NameValuePair>();
+      requestData.add(new BasicNameValuePair("receiverNumber", sms
+          .getReceiverNumber()));
+      requestData.add(new BasicNameValuePair("message", sms.getMessage()));
+      request.setEntity(new UrlEncodedFormEntity(requestData, HTTP.UTF_8));
+      HttpResponse response = httpClient.execute(request, httpContext);
+      document = new SAXBuilder().build(response.getEntity().getContent());
+      response.getEntity().consumeContent();
+    } catch (Exception e) {
+      throw new Exception(context.getString(R.string.WebSenderNetworkError));
     }
 
-    /**
-     * Send the message (after decoding the CAPTCHA)
-     * 
-     * @param sms
-     * @throws Exception
-     * @returns false if CAPTCHA still present
-     */
-    private boolean doSend(WebSMS sms) throws Exception {
-	Log.d(TAG, "this.doSend()");
-	Document document;
-
-	try {
-	    HttpPost request = new HttpPost(
-		    "https://widget.vodafone.it/190/fsms/send.do?channel=VODAFONE_DW");
-	    List<NameValuePair> requestData = new ArrayList<NameValuePair>();
-	    requestData.add(new BasicNameValuePair("verifyCode", sms.getCaptcha()));
-	    requestData.add(new BasicNameValuePair("receiverNumber", sms.getReceiverNumber()));
-	    requestData.add(new BasicNameValuePair("message", sms.getMessage()));
-	    request.setEntity(new UrlEncodedFormEntity(requestData, HTTP.UTF_8));
-	    HttpResponse response = httpClient.execute(request, httpContext);
-	    document = new SAXBuilder()
-		    .build(response.getEntity().getContent());
-	    response.getEntity().consumeContent();
-	} catch (Exception e) {
-	    throw new Exception(
-		    context.getString(R.string.WebSenderNetworkError));
-	}
-
-	Element root = document.getRootElement();
-	@SuppressWarnings("unchecked")
-	List<Element> children = root.getChildren("e");
-	int status = 0, errorcode = 0;
-	String returnmsg = null;
-	for (Element child : children) {
-	    Log.d(TAG, child.getAttributeValue("n"));
-	    if (child.getAttributeValue("v") != null)
-		Log.d(TAG, child.getAttributeValue("v"));
-	    if (child.getValue() != null)
-		Log.d(TAG, child.getValue());
-	    if (child.getAttributeValue("n").equals("STATUS"))
-		status = Integer.parseInt(child.getAttributeValue("v"));
-	    if (child.getAttributeValue("n").equals("ERRORCODE"))
-		errorcode = Integer.parseInt(child.getAttributeValue("v"));
-	    if (child.getAttributeValue("n").equals("RETURNMSG"))
-		returnmsg = child.getValue();
-	    if (child.getAttributeValue("n").equals("CODEIMG")) {
-		sms.setCaptchaArray(Base64.decode(child.getValue()));
-		return false;
-	    }
-	}
-
-	Log.d(TAG, "status code: " + status);
-	Log.d(TAG, "error code: " + errorcode);
-	Log.d(TAG, "return message: " + returnmsg);
-	if (status != 1)
-	    parseError(errorcode);
-	
-	return true;
+    Element root = document.getRootElement();
+    @SuppressWarnings("unchecked")
+    List<Element> children = root.getChildren("e");
+    int status = 0, errorcode = 0;
+    for (Element child : children) {
+//      Log.d(TAG, child.getAttributeValue("n"));
+//      if (child.getAttributeValue("v") != null)
+//        Log.d(TAG, child.getAttributeValue("v"));
+//      if (child.getValue() != null)
+//        Log.d(TAG, child.getValue());
+      if (child.getAttributeValue("n").equals("STATUS"))
+        status = Integer.parseInt(child.getAttributeValue("v"));
+      if (child.getAttributeValue("n").equals("ERRORCODE"))
+        errorcode = Integer.parseInt(child.getAttributeValue("v"));
+      if (child.getAttributeValue("n").equals("CODEIMG")) {
+        sms.setCaptchaArray(Base64.decode(child.getValue()));
+        return false;
+      }
     }
+
+    Log.d(TAG, "status code: " + status);
+    Log.d(TAG, "error code: " + errorcode);
+    if (status != 1)
+      parseError(errorcode);
+
+    return true;
+  }
+
+  /**
+   * Send the message (after decoding the CAPTCHA)
+   * 
+   * @param sms
+   * @throws Exception
+   * @returns false if CAPTCHA still present
+   */
+  private boolean doSend(WebSMS sms) throws Exception {
+    Log.d(TAG, "this.doSend()");
+    Document document;
+
+    try {
+      HttpPost request = new HttpPost(
+          "https://widget.vodafone.it/190/fsms/send.do?channel=VODAFONE_DW");
+      List<NameValuePair> requestData = new ArrayList<NameValuePair>();
+      requestData.add(new BasicNameValuePair("verifyCode", sms.getCaptcha()));
+      requestData.add(new BasicNameValuePair("receiverNumber", sms
+          .getReceiverNumber()));
+      requestData.add(new BasicNameValuePair("message", sms.getMessage()));
+      request.setEntity(new UrlEncodedFormEntity(requestData, HTTP.UTF_8));
+      HttpResponse response = httpClient.execute(request, httpContext);
+      document = new SAXBuilder().build(response.getEntity().getContent());
+      response.getEntity().consumeContent();
+    } catch (Exception e) {
+      throw new Exception(context.getString(R.string.WebSenderNetworkError));
+    }
+
+    Element root = document.getRootElement();
+    @SuppressWarnings("unchecked")
+    List<Element> children = root.getChildren("e");
+    int status = 0, errorcode = 0;
+    String returnmsg = null;
+    for (Element child : children) {
+//      Log.d(TAG, child.getAttributeValue("n"));
+//      if (child.getAttributeValue("v") != null)
+//        Log.d(TAG, child.getAttributeValue("v"));
+//      if (child.getValue() != null)
+//        Log.d(TAG, child.getValue());
+      if (child.getAttributeValue("n").equals("STATUS"))
+        status = Integer.parseInt(child.getAttributeValue("v"));
+      if (child.getAttributeValue("n").equals("ERRORCODE"))
+        errorcode = Integer.parseInt(child.getAttributeValue("v"));
+      if (child.getAttributeValue("n").equals("RETURNMSG"))
+        returnmsg = child.getValue();
+      if (child.getAttributeValue("n").equals("CODEIMG")) {
+        sms.setCaptchaArray(Base64.decode(child.getValue()));
+        return false;
+      }
+    }
+
+    Log.d(TAG, "status code: " + status);
+    Log.d(TAG, "error code: " + errorcode);
+    Log.d(TAG, "return message: " + returnmsg);
+    if (status != 1)
+      parseError(errorcode);
+
+    return true;
+  }
 
 }

@@ -30,48 +30,45 @@ import com.googlecode.awsms.R;
  * 
  * @author Andrea De Pasquale
  */
-// TODO create account configuration activity
-// TODO create application information activity
 public class SettingsActivity extends PreferenceActivity {
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-	super.onCreate(savedInstanceState);
-	addPreferencesFromResource(R.layout.settings);
+  @Override
+  public void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+    addPreferencesFromResource(R.layout.settings);
 
-	Preference aboutPreference = (Preference) findPreference("About");
-	aboutPreference
-		.setOnPreferenceClickListener(new OnPreferenceClickListener() {
-		    public boolean onPreferenceClick(Preference preference) {
-			Intent intent = new Intent(Intent.ACTION_VIEW);
-			intent.setData(Uri.parse(getString(R.string.AboutURL)));
-			startActivity(intent);
-			return true;
-		    }
-		});
+    Preference aboutPreference = (Preference) findPreference("About");
+    aboutPreference
+        .setOnPreferenceClickListener(new OnPreferenceClickListener() {
+          public boolean onPreferenceClick(Preference preference) {
+            Intent intent = new Intent(Intent.ACTION_VIEW);
+            intent.setData(Uri.parse(getString(R.string.AboutURL)));
+            startActivity(intent);
+            return true;
+          }
+        });
 
-	Preference feedbackPreference = (Preference) findPreference("Feedback");
-	feedbackPreference
-		.setOnPreferenceClickListener(new OnPreferenceClickListener() {
-		    public boolean onPreferenceClick(Preference preference) {
-			Intent intent = new Intent(Intent.ACTION_VIEW);
-			intent.setData(Uri
-				.parse(getString(R.string.FeedbackURL)));
-			startActivity(intent);
-			return true;
-		    }
-		});
+    Preference feedbackPreference = (Preference) findPreference("Feedback");
+    feedbackPreference
+        .setOnPreferenceClickListener(new OnPreferenceClickListener() {
+          public boolean onPreferenceClick(Preference preference) {
+            Intent intent = new Intent(Intent.ACTION_VIEW);
+            intent.setData(Uri.parse(getString(R.string.FeedbackURL)));
+            startActivity(intent);
+            return true;
+          }
+        });
 
-	Preference donatePreference = (Preference) findPreference("Donate");
-	donatePreference
-		.setOnPreferenceClickListener(new OnPreferenceClickListener() {
-		    public boolean onPreferenceClick(Preference preference) {
-			Intent intent = new Intent(Intent.ACTION_VIEW);
-			intent.setData(Uri.parse(getString(R.string.DonateURL)));
-			startActivity(intent);
-			return true;
-		    }
-		});
-    }
+    Preference donatePreference = (Preference) findPreference("Donate");
+    donatePreference
+        .setOnPreferenceClickListener(new OnPreferenceClickListener() {
+          public boolean onPreferenceClick(Preference preference) {
+            Intent intent = new Intent(Intent.ACTION_VIEW);
+            intent.setData(Uri.parse(getString(R.string.DonateURL)));
+            startActivity(intent);
+            return true;
+          }
+        });
+  }
 
 }
