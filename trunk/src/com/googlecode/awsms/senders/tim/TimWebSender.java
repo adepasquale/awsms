@@ -23,20 +23,20 @@ import com.googlecode.awsms.senders.WebSender;
 
 // TODO use gathered information to build the sender
 public class TimWebSender extends WebSender {
-    
-    static final String TAG = "TimWebSender";
 
-    public TimWebSender(Context context) {
-	super(context);
-    }
+  static final String TAG = "TimWebSender";
 
-    @Override
-    public void preSend() throws Exception {
-    }
-    
-    @Override
-    public boolean send(WebSMS sms) throws Exception {
-	return false;
-    }
+  public TimWebSender(Context context) {
+    super(context);
+  }
+
+  @Override
+  public void preSend() throws Exception {
+  }
+
+  @Override
+  public boolean send(WebSMS sms) throws Exception {
+    return false;
+  }
 
 }

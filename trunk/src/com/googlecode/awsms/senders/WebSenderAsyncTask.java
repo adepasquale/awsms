@@ -52,214 +52,215 @@ import com.googlecode.awsms.senders.vodafone.VodafoneWebSender;
  * @author Andrea De Pasquale
  */
 public class WebSenderAsyncTask extends AsyncTask<Void, Object, Void> {
-    
-    static final String TAG = "WebSenderAsyncTask";
 
-    Context context;
-    NotificationManager notificationManager;
-    int notificationID;
-    SharedPreferences preferences;
-    LinkedBlockingQueue<WebSMS> smsQueue;
-    VodafoneWebSender vodafoneWebSender;
+  static final String TAG = "WebSenderAsyncTask";
 
-    // XXX remove when CAPTCHA will be decoded automatically
-    LinkedBlockingQueue<String> captchaQueue;
-    Dialog captchaDialog;
+  Context context;
+  NotificationManager notificationManager;
+  int notificationID;
+  SharedPreferences preferences;
+  LinkedBlockingQueue<WebSMS> smsQueue;
+  VodafoneWebSender vodafoneWebSender;
 
-    static final int PROGRESS_SENDING = 1;
-    static final int PROGRESS_SENT = 2;
-    static final int PROGRESS_CAPTCHA = 3;
-    static final int PROGRESS_SUCCESS = 4;
-    static final int PROGRESS_ERROR = 5;
-    
-    public WebSenderAsyncTask(Context c) {
-	context = c;
-	notificationManager = (NotificationManager) context
-		.getSystemService(Context.NOTIFICATION_SERVICE);
-	preferences = 
-	    PreferenceManager.getDefaultSharedPreferences(context);
-	smsQueue = new LinkedBlockingQueue<WebSMS>(20);
-	captchaQueue = new LinkedBlockingQueue<String>(5);
-	vodafoneWebSender = new VodafoneWebSender(context);
-    }
-    
-    public void send(WebSMS sms) {
-	Log.d(TAG, "this.send()");
-	
-//	ContentValues outbox = new ContentValues();
-//	outbox.put("address", sms.getReceiver());
-//	outbox.put("body", sms.getMessage());
-//	context.getContentResolver()
-//		.insert(Uri.parse("content://sms/outbox"), outbox);
+  // XXX remove when CAPTCHA will be decoded automatically
+  LinkedBlockingQueue<String> captchaQueue;
+  Dialog captchaDialog;
 
-	smsQueue.add(sms);
-    }
-    
-    // XXX remove when CAPTCHA will be decoded automatically
-    public void submitCaptcha() {
-	TextView captchaText = (TextView) 
-        	captchaDialog.findViewById(R.id.CaptchaDialogText);
-        String captcha = captchaText.getText().toString();
-        captchaQueue.add(captcha);
-	captchaDialog.dismiss();
-    }
+  static final int PROGRESS_SENDING = 1;
+  static final int PROGRESS_SENT = 2;
+  static final int PROGRESS_CAPTCHA = 3;
+  static final int PROGRESS_SUCCESS = 4;
+  static final int PROGRESS_ERROR = 5;
 
-    @Override
-    protected Void doInBackground(Void... params) {
-	Log.d(TAG, "this.doInBackground()");
-	
-	try {
-	    vodafoneWebSender.preSend();
-	} catch (Exception e) {
-	    // don't care here
-	}
-	
-	while (true) {
-	    WebSMS sms = null;
-	    try { sms = smsQueue.take(); }
-	    catch (InterruptedException e) { }
-	    if (sms == null) continue;
-	    
-	    try {
-		
-		if (preferences.getBoolean("NotifyStatus", true))
-		    publishProgress(PROGRESS_SENDING, sms.getReceiverName());
+  public WebSenderAsyncTask(Context c) {
+    context = c;
+    notificationManager = (NotificationManager) context
+        .getSystemService(Context.NOTIFICATION_SERVICE);
+    preferences = PreferenceManager.getDefaultSharedPreferences(context);
+    smsQueue = new LinkedBlockingQueue<WebSMS>(20);
+    captchaQueue = new LinkedBlockingQueue<String>(5);
+    vodafoneWebSender = new VodafoneWebSender(context);
+  }
 
-		while (!vodafoneWebSender.send(sms)) {
-		    publishProgress(PROGRESS_CAPTCHA, sms.getCaptchaArray());
-		    sms.setCaptcha(captchaQueue.take());
-		}
-		
-		if (preferences.getBoolean("NotifyStatus", true))
-		    publishProgress(PROGRESS_SENT);
-		
-		if (preferences.getBoolean("NotifySuccess", true))
-		    publishProgress(PROGRESS_SUCCESS, sms.getReceiverName());
-		
-		if (preferences.getBoolean("SaveSMS", true)) {
-		    ContentValues sent = new ContentValues();
-		    sent.put("address", sms.getReceiverNumber());
-		    sent.put("body", sms.getMessage());
-		    context.getContentResolver()
-			.insert(Uri.parse("content://sms/sent"), sent);
-		}
-		
-	    } catch (Exception e) {
-		publishProgress(PROGRESS_ERROR, e.getMessage());
-		ContentValues failed = new ContentValues();
-		failed.put("address", sms.getReceiverNumber());
-		failed.put("body", sms.getMessage());
-		context.getContentResolver()
-			.insert(Uri.parse("content://sms/failed"), failed);
-	    }
-	}
+  public void send(WebSMS sms) {
+    Log.d(TAG, "this.send()");
+
+    // ContentValues outbox = new ContentValues();
+    // outbox.put("address", sms.getReceiver());
+    // outbox.put("body", sms.getMessage());
+    // context.getContentResolver()
+    // .insert(Uri.parse("content://sms/outbox"), outbox);
+
+    smsQueue.add(sms);
+  }
+
+  // XXX remove when CAPTCHA will be decoded automatically
+  public void submitCaptcha() {
+    TextView captchaText = (TextView) captchaDialog
+        .findViewById(R.id.CaptchaDialogText);
+    String captcha = captchaText.getText().toString();
+    captchaQueue.add(captcha);
+    captchaDialog.dismiss();
+  }
+
+  @Override
+  protected Void doInBackground(Void... params) {
+    Log.d(TAG, "this.doInBackground()");
+
+    try {
+      vodafoneWebSender.preSend();
+    } catch (Exception e) {
+      // don't care here
     }
 
-    @Override
-    protected void onProgressUpdate(Object... progress) {
-	if (progress.length == 0) return;
-	
-	switch ((Integer) progress[0]) {
-	case PROGRESS_SENDING:
-	    Notification nSending = createNotification(
-		    "Invio del messaggio per " + 
-		    ((String) progress[1]) + " in corso");
-	    nSending.flags |= Notification.FLAG_ONGOING_EVENT;
-	    nSending.flags |= Notification.FLAG_NO_CLEAR;
-	    int queueSize = smsQueue.size() + 1;
-	    if (queueSize > 1) nSending.number = queueSize;
-	    notificationManager.notify(notificationID, nSending);
-	    break;
-	    
-	case PROGRESS_CAPTCHA:
-	    Notification nCaptcha = createNotification(
-		    context.getString(R.string.CaptchaNotification));
-	    nCaptcha.flags |= Notification.FLAG_AUTO_CANCEL;
-	    nCaptcha.defaults |= Notification.DEFAULT_SOUND;
-	    nCaptcha.defaults |= Notification.DEFAULT_VIBRATE;
-	    notificationManager.notify(notificationID, nCaptcha);
+    while (true) {
+      WebSMS sms = null;
+      try {
+        sms = smsQueue.take();
+      } catch (InterruptedException e) {
+      }
+      if (sms == null)
+        continue;
 
-	    captchaDialog = new Dialog(context);
-	    captchaDialog.setContentView(R.layout.captcha);
-	    captchaDialog.setTitle(R.string.CaptchaDialogTitle);
-	    
-	    ImageView captchaImage = 
-		(ImageView) captchaDialog.findViewById(R.id.CaptchaDialogImage);
-	    byte[] captchaArray = (byte[]) progress[1];
-	    Bitmap captchaBitmap = BitmapFactory.decodeByteArray(
-		    captchaArray, 0, captchaArray.length);
-	    captchaImage.setImageBitmap(captchaBitmap);
-	    
-	    TextView captchaText =
-		(TextView) captchaDialog.findViewById(R.id.CaptchaDialogText);
-	    captchaText.setOnEditorActionListener(new OnEditorActionListener() {
-		public boolean onEditorAction(
-			TextView v, int actionId, KeyEvent event) {
-		    if (event != null) {
-			if (event.getKeyCode() == KeyEvent.KEYCODE_ENTER) {
-			    submitCaptcha();
-	    		}
-		    }
-		    return false;
-		}
-	    });
-	    captchaText.requestFocus();
-	    
-	    Button captchaButton = 
-		(Button) captchaDialog.findViewById(R.id.CaptchaDialogButton);	    
-	    captchaButton.setOnClickListener(new OnClickListener() {
-	        public void onClick(View v) {
-	            submitCaptcha();
-	        }
-	    });
-	    
-	    captchaDialog.setCancelable(true);
-	    captchaDialog.setOnCancelListener(new OnCancelListener() {
-		public void onCancel(DialogInterface dialog) {
-		    submitCaptcha();
-		}
-	    });
-	    
-	    captchaDialog.show();
-	    break;
-	    
-	case PROGRESS_SENT:
-	    notificationManager.cancel(notificationID);
-	    break;
-	    
-	case PROGRESS_SUCCESS:
-	    Notification nSuccess = createNotification(
-		    "Messaggio per " + ((String) progress[1])  + " inviato");
-	    nSuccess.flags |= Notification.FLAG_AUTO_CANCEL;
-	    // TODO notification opens receiver SMS thread 
-	    notificationManager.notify(notificationID++, nSuccess);
-	    break;
-	    
-	case PROGRESS_ERROR:
-	    Notification nError = createNotification((String) progress[1]);
-	    nError.flags |= Notification.FLAG_AUTO_CANCEL;
-	    nError.defaults |= Notification.DEFAULT_SOUND;
-	    nError.defaults |= Notification.DEFAULT_VIBRATE;
-	    // TODO notification opens ComposeActivity
-	    notificationManager.notify(notificationID++, nError);
-	    break;
-	    
-	default:
-	    return;
-	}
+      try {
+
+        if (preferences.getBoolean("NotifyStatus", true))
+          publishProgress(PROGRESS_SENDING, sms.getReceiverName());
+
+        while (!vodafoneWebSender.send(sms)) {
+          publishProgress(PROGRESS_CAPTCHA, sms.getCaptchaArray());
+          sms.setCaptcha(captchaQueue.take());
+        }
+
+        if (preferences.getBoolean("NotifyStatus", true))
+          publishProgress(PROGRESS_SENT);
+
+        if (preferences.getBoolean("NotifySuccess", true))
+          publishProgress(PROGRESS_SUCCESS, sms.getReceiverName());
+
+        if (preferences.getBoolean("SaveSMS", true)) {
+          ContentValues sent = new ContentValues();
+          sent.put("address", sms.getReceiverNumber());
+          sent.put("body", sms.getMessage());
+          context.getContentResolver().insert(Uri.parse("content://sms/sent"),
+              sent);
+        }
+
+      } catch (Exception e) {
+        publishProgress(PROGRESS_ERROR, e.getMessage());
+        ContentValues failed = new ContentValues();
+        failed.put("address", sms.getReceiverNumber());
+        failed.put("body", sms.getMessage());
+        context.getContentResolver().insert(Uri.parse("content://sms/failed"),
+            failed);
+      }
     }
-    
-    private Notification createNotification(String title) {
-	Notification notification = new Notification(R.drawable.ic_notify,
-		title, System.currentTimeMillis());
-	Intent intent = new Intent(context, ComposeActivity.class);
-	intent.setAction(Intent.ACTION_MAIN);
-	intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK |
-		Intent.FLAG_ACTIVITY_SINGLE_TOP |
-		Intent.FLAG_ACTIVITY_CLEAR_TOP);
-	notification.setLatestEventInfo(context, 
-		context.getString(R.string.ApplicationLabel), title, 
-		PendingIntent.getActivity(context, 0, intent, 0));
-	return notification;
+  }
+
+  @Override
+  protected void onProgressUpdate(Object... progress) {
+    if (progress.length == 0)
+      return;
+
+    switch ((Integer) progress[0]) {
+    case PROGRESS_SENDING:
+      Notification nSending = createNotification("Invio del messaggio per "
+          + ((String) progress[1]) + " in corso");
+      nSending.flags |= Notification.FLAG_ONGOING_EVENT;
+      nSending.flags |= Notification.FLAG_NO_CLEAR;
+      int queueSize = smsQueue.size() + 1;
+      if (queueSize > 1)
+        nSending.number = queueSize;
+      notificationManager.notify(notificationID, nSending);
+      break;
+
+    case PROGRESS_CAPTCHA:
+      Notification nCaptcha = createNotification(context
+          .getString(R.string.CaptchaNotification));
+      nCaptcha.flags |= Notification.FLAG_AUTO_CANCEL;
+      nCaptcha.defaults |= Notification.DEFAULT_SOUND;
+      nCaptcha.defaults |= Notification.DEFAULT_VIBRATE;
+      notificationManager.notify(notificationID, nCaptcha);
+
+      captchaDialog = new Dialog(context);
+      captchaDialog.setContentView(R.layout.captcha);
+      captchaDialog.setTitle(R.string.CaptchaDialogTitle);
+
+      ImageView captchaImage = (ImageView) captchaDialog
+          .findViewById(R.id.CaptchaDialogImage);
+      byte[] captchaArray = (byte[]) progress[1];
+      Bitmap captchaBitmap = BitmapFactory.decodeByteArray(captchaArray, 0,
+          captchaArray.length);
+      captchaImage.setImageBitmap(captchaBitmap);
+
+      TextView captchaText = (TextView) captchaDialog
+          .findViewById(R.id.CaptchaDialogText);
+      captchaText.setOnEditorActionListener(new OnEditorActionListener() {
+        public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+          if (event != null) {
+            if (event.getKeyCode() == KeyEvent.KEYCODE_ENTER) {
+              submitCaptcha();
+            }
+          }
+          return false;
+        }
+      });
+      captchaText.requestFocus();
+
+      Button captchaButton = (Button) captchaDialog
+          .findViewById(R.id.CaptchaDialogButton);
+      captchaButton.setOnClickListener(new OnClickListener() {
+        public void onClick(View v) {
+          submitCaptcha();
+        }
+      });
+
+      captchaDialog.setCancelable(true);
+      captchaDialog.setOnCancelListener(new OnCancelListener() {
+        public void onCancel(DialogInterface dialog) {
+          submitCaptcha();
+        }
+      });
+
+      captchaDialog.show();
+      break;
+
+    case PROGRESS_SENT:
+      notificationManager.cancel(notificationID);
+      break;
+
+    case PROGRESS_SUCCESS:
+      Notification nSuccess = createNotification("Messaggio per "
+          + ((String) progress[1]) + " inviato");
+      nSuccess.flags |= Notification.FLAG_AUTO_CANCEL;
+      // TODO notification opens receiver SMS thread
+      notificationManager.notify(notificationID++, nSuccess);
+      break;
+
+    case PROGRESS_ERROR:
+      Notification nError = createNotification((String) progress[1]);
+      nError.flags |= Notification.FLAG_AUTO_CANCEL;
+      nError.defaults |= Notification.DEFAULT_SOUND;
+      nError.defaults |= Notification.DEFAULT_VIBRATE;
+      // TODO notification opens ComposeActivity
+      notificationManager.notify(notificationID++, nError);
+      break;
+
+    default:
+      return;
     }
+  }
+
+  private Notification createNotification(String title) {
+    Notification notification = new Notification(R.drawable.ic_notify, title,
+        System.currentTimeMillis());
+    Intent intent = new Intent(context, ComposeActivity.class);
+    intent.setAction(Intent.ACTION_MAIN);
+    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
+        | Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+    notification.setLatestEventInfo(context,
+        context.getString(R.string.ApplicationLabel), title,
+        PendingIntent.getActivity(context, 0, intent, 0));
+    return notification;
+  }
 }

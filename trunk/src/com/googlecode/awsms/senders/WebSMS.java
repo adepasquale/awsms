@@ -22,102 +22,94 @@ package com.googlecode.awsms.senders;
  * @author Andrea De Pasquale
  */
 public class WebSMS {
- 
-    String senderNumber;
-    String senderName;
-    // TODO support multiple receivers
-    String receiverNumber;
-    String receiverName;
-    String message;
 
-    // XXX remove when CAPTCHA will be decoded automatically
-    byte[] captchaArray;
-    String captcha;
+  String senderNumber;
+  String senderName;
+  String receiverNumber;
+  String receiverName;
+  String message;
 
-    public enum Error {
-	NETWORK, 
-	RESPONSE, 
-	LOGIN, 
-	RECEIVER, 
-	MESSAGE, 
-	LIMIT, 
-	UNKNOWN 
-    }
-    
-    // TODO use sent status and error codes
-    boolean sent;
-    Error error;
+  // XXX remove when CAPTCHA will be decoded automatically
+  byte[] captchaArray;
+  String captcha;
 
-    public String getSenderNumber() {
-	return senderNumber;
-    }
+  public enum Error {
+    NETWORK, RESPONSE, LOGIN, RECEIVER, MESSAGE, LIMIT, UNKNOWN
+  }
 
-    public void setSenderNumber(String senderNumber) {
-	this.senderNumber = senderNumber;
-    }
+  boolean sent;
+  Error error;
 
-    public String getSenderName() {
-	return senderName;
-    }
+  public String getSenderNumber() {
+    return senderNumber;
+  }
 
-    public void setSenderName(String senderName) {
-	this.senderName = senderName;
-    }
+  public void setSenderNumber(String senderNumber) {
+    this.senderNumber = senderNumber;
+  }
 
-    public String getReceiverNumber() {
-	return receiverNumber;
-    }
+  public String getSenderName() {
+    return senderName;
+  }
 
-    public void setReceiverNumber(String receiverNumber) {
-	this.receiverNumber = receiverNumber;
-    }
+  public void setSenderName(String senderName) {
+    this.senderName = senderName;
+  }
 
-    public String getReceiverName() {
-	return receiverName;
-    }
+  public String getReceiverNumber() {
+    return receiverNumber;
+  }
 
-    public void setReceiverName(String receiverName) {
-	this.receiverName = receiverName;
-    }
+  public void setReceiverNumber(String receiverNumber) {
+    this.receiverNumber = receiverNumber;
+  }
 
-    public String getMessage() {
-	return message;
-    }
+  public String getReceiverName() {
+    return receiverName;
+  }
 
-    public void setMessage(String message) {
-	this.message = message;
-    }
+  public void setReceiverName(String receiverName) {
+    this.receiverName = receiverName;
+  }
 
-    public byte[] getCaptchaArray() {
-	return captchaArray;
-    }
+  public String getMessage() {
+    return message;
+  }
 
-    public void setCaptchaArray(byte[] captchaArray) {
-	this.captchaArray = captchaArray;
-    }
+  public void setMessage(String message) {
+    this.message = message;
+  }
 
-    public String getCaptcha() {
-	return captcha;
-    }
+  public byte[] getCaptchaArray() {
+    return captchaArray;
+  }
 
-    public void setCaptcha(String captcha) {
-	this.captcha = captcha;
-    }
+  public void setCaptchaArray(byte[] captchaArray) {
+    this.captchaArray = captchaArray;
+  }
 
-    public boolean isSent() {
-        return sent;
-    }
+  public String getCaptcha() {
+    return captcha;
+  }
 
-    public void setSent(boolean sent) {
-        this.sent = sent;
-    }
+  public void setCaptcha(String captcha) {
+    this.captcha = captcha;
+  }
 
-    public Error getError() {
-        return error;
-    }
+  public boolean isSent() {
+    return sent;
+  }
 
-    public void setError(Error error) {
-        this.error = error;
-    }
+  public void setSent(boolean sent) {
+    this.sent = sent;
+  }
+
+  public Error getError() {
+    return error;
+  }
+
+  public void setError(Error error) {
+    this.error = error;
+  }
 
 }

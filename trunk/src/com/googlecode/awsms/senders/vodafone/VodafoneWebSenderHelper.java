@@ -22,60 +22,58 @@ import com.googlecode.awsms.senders.WebSenderHelper;
 
 public class VodafoneWebSenderHelper extends WebSenderHelper {
 
-    final static String DATABASE_ID = "Vodafone";
-    
-    public VodafoneWebSenderHelper(Context context) {
-	super(context);
-    }
-    
-    public String getUsername() {
-	// TODO change to VodafoneUsername in release 2.0
-        return preferences.getString("VodafoneItalyUsername", "");
-    }
+  final static String DATABASE_ID = "Vodafone";
 
-    public String getPassword() {
-	// TODO change to VodafonePassword in release 2.0
-	return preferences.getString("VodafoneItalyPassword", "");
-    }
+  public VodafoneWebSenderHelper(Context context) {
+    super(context);
+  }
 
-    public int calcRemaining(int length) {
-	if (length == 0) {
-	    return 0;
-	} else if (length <= 160) {
-	    return 160 - length;
-	} else if (length <= 307) {
-	    return 307 - length;
-	} else if (length <= 360) {
-	    return 360 - length;
-	} else {
-	    return 360 - length;
-	}
-    }
+  public String getUsername() {
+    return preferences.getString("VodafoneItalyUsername", "");
+  }
 
-    public int calcFragments(int length) {
-	if (length == 0) {
-	    return 0;
-	} else if (length <= 160) {
-	    return 1;
-	} else if (length <= 307) {
-	    return 2;
-	} else if (length <= 360) {
-	    return 3;
-	} else {
-	    return 0;
-	}
+  public String getPassword() {
+    return preferences.getString("VodafoneItalyPassword", "");
+  }
+
+  public int calcRemaining(int length) {
+    if (length == 0) {
+      return 0;
+    } else if (length <= 160) {
+      return 160 - length;
+    } else if (length <= 307) {
+      return 307 - length;
+    } else if (length <= 360) {
+      return 360 - length;
+    } else {
+      return 360 - length;
     }
-    
-    public void addCount(int length) {
-	database.insertNew(DATABASE_ID, calcFragments(length));
+  }
+
+  public int calcFragments(int length) {
+    if (length == 0) {
+      return 0;
+    } else if (length <= 160) {
+      return 1;
+    } else if (length <= 307) {
+      return 2;
+    } else if (length <= 360) {
+      return 3;
+    } else {
+      return 0;
     }
-    
-    public int getCount() {
-	return database.queryToday(DATABASE_ID);
-    }
-    
-    public int getLimit() {
-	return 10;
-    }
+  }
+
+  public void addCount(int length) {
+    database.insertNew(DATABASE_ID, calcFragments(length));
+  }
+
+  public int getCount() {
+    return database.queryToday(DATABASE_ID);
+  }
+
+  public int getLimit() {
+    return 10;
+  }
 
 }

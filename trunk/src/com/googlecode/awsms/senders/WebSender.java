@@ -35,79 +35,82 @@ import android.content.Context;
  */
 public abstract class WebSender {
 
-    static final String TAG = "WebSender";
-    
-    protected HttpClient httpClient;
-    protected HttpContext httpContext;
-    protected WebSenderCookieStore cookieStore;
-    static final String COOKIES = "cookies";
-    
-    protected Context context;
-    protected WebSenderHelper helper;
+  static final String TAG = "WebSender";
 
-    /**
-     * Default constructor that initializes HTTP connections.
-     */
-    public WebSender(Context context) {
-	this.context = context;
-	httpClient = new WebSenderHttpClient(context);
-	httpContext = new BasicHttpContext();
-        
-	loadCookies(); // from cookie file
-	httpContext.setAttribute(ClientContext.COOKIE_STORE, cookieStore);
+  protected HttpClient httpClient;
+  protected HttpContext httpContext;
+  protected WebSenderCookieStore cookieStore;
+  static final String COOKIES = "cookies";
+
+  protected Context context;
+  protected WebSenderHelper helper;
+
+  /**
+   * Default constructor that initializes HTTP connections.
+   */
+  public WebSender(Context context) {
+    this.context = context;
+    httpClient = new WebSenderHttpClient(context);
+    httpContext = new BasicHttpContext();
+
+    loadCookies(); // from cookie file
+    httpContext.setAttribute(ClientContext.COOKIE_STORE, cookieStore);
+  }
+
+  /**
+   * Call this method to let send() run quicker
+   */
+  public abstract void preSend() throws Exception;
+
+  /**
+   * Call this method to send someone a text message.
+   * 
+   * @param sms
+   *          Text message to be sent
+   * @param captcha
+   *          Captcha text manually decoded by the user.
+   */
+  public abstract boolean send(WebSMS sms) throws Exception;
+
+  /**
+   * Retrieve old saved cookies or get a new cookie store.
+   * 
+   * @return true if successfully loaded, false otherwise
+   */
+  protected boolean loadCookies() {
+    try {
+
+      FileInputStream fileInput = context.openFileInput(COOKIES);
+      ObjectInputStream objectInput = new ObjectInputStream(fileInput);
+      cookieStore = (WebSenderCookieStore) objectInput.readObject();
+      objectInput.close();
+      fileInput.close();
+      return true;
+
+    } catch (Exception e) {
+      cookieStore = new WebSenderCookieStore();
+      return false;
     }
+  }
 
-    /**
-     * Call this method to let send() run quicker 
-     */
-    public abstract void preSend() throws Exception;
+  /**
+   * Save current cookies for future reuse.
+   * 
+   * @return true if successfully saved, false otherwise
+   */
+  protected boolean saveCookies() {
+    try {
 
-    /**
-     * Call this method to send someone a text message.
-     * 
-     * @param sms Text message to be sent
-     * @param captcha Captcha text manually decoded by the user.
-     */
-    public abstract boolean send(WebSMS sms) throws Exception;
+      FileOutputStream fileOutput = context.openFileOutput(COOKIES,
+          Context.MODE_PRIVATE);
+      ObjectOutputStream objectOutput = new ObjectOutputStream(fileOutput);
+      objectOutput.writeObject(cookieStore);
+      objectOutput.close();
+      fileOutput.close();
+      return true;
 
-    /**
-     * Retrieve old saved cookies or get a new cookie store.
-     * @return true if successfully loaded, false otherwise
-     */
-    protected boolean loadCookies() {
-	try {
-	    
-	    FileInputStream fileInput = context.openFileInput(COOKIES);
-	    ObjectInputStream objectInput = new ObjectInputStream(fileInput);
-	    cookieStore = (WebSenderCookieStore) objectInput.readObject();
-	    objectInput.close();
-	    fileInput.close();
-	    return true;
-	    
-	} catch (Exception e) {
-	    cookieStore = new WebSenderCookieStore();
-	    return false; 
-	}
+    } catch (Exception e) {
+      return false;
     }
-    
-    /**
-     * Save current cookies for future reuse.
-     * @return true if successfully saved, false otherwise
-     */
-    protected boolean saveCookies() {
-	try {
-	    
-	    FileOutputStream fileOutput = 
-		context.openFileOutput(COOKIES, Context.MODE_PRIVATE);
-	    ObjectOutputStream objectOutput = 
-		new ObjectOutputStream(fileOutput);
-	    objectOutput.writeObject(cookieStore);
-	    objectOutput.close();
-	    fileOutput.close();
-	    return true;
-	    
-	} catch (Exception e) {
-	    return false;
-	}
-    }
+  }
 }

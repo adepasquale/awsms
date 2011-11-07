@@ -23,20 +23,20 @@ import com.googlecode.awsms.senders.WebSender;
 
 // TODO use gathered information to build the sender
 public class VodafoneBusinessWebSender extends WebSender {
-    
-    static final String TAG = "VodafoneBusinessWebSender";
 
-    public VodafoneBusinessWebSender(Context context) {
-	super(context);
-    }
+  static final String TAG = "VodafoneBusinessWebSender";
 
-    @Override
-    public void preSend() throws Exception {
-    }
-    
-    @Override
-    public boolean send(WebSMS sms) throws Exception {
-	return false;
-    }
+  public VodafoneBusinessWebSender(Context context) {
+    super(context);
+  }
+
+  @Override
+  public void preSend() throws Exception {
+  }
+
+  @Override
+  public boolean send(WebSMS sms) throws Exception {
+    return false;
+  }
 
 }

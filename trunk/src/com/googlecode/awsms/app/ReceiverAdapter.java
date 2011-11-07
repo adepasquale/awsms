@@ -33,83 +33,74 @@ import android.widget.TextView;
 
 import com.googlecode.awsms.R;
 
-public class ReceiverAdapter extends ResourceCursorAdapter 
-	implements Filterable {
+public class ReceiverAdapter extends ResourceCursorAdapter implements
+    Filterable {
 
-    final static String TAG = "ReceiverAdapter";
-    
-    Context context;
-    SharedPreferences preferences;
+  final static String TAG = "ReceiverAdapter";
 
-    public ReceiverAdapter(Context context) {
-	super(context, R.layout.receiver, null, false);
-	this.context = context;
-	preferences = PreferenceManager.getDefaultSharedPreferences(context);
+  Context context;
+  SharedPreferences preferences;
+
+  public ReceiverAdapter(Context context) {
+    super(context, R.layout.receiver, null, false);
+    this.context = context;
+    preferences = PreferenceManager.getDefaultSharedPreferences(context);
+  }
+
+  @Override
+  public void bindView(View view, Context context, Cursor cursor) {
+    TextView name = (TextView) view.findViewById(R.id.ReceiverName);
+    name.setText(cursor.getString(2));
+
+    TextView number = (TextView) view.findViewById(R.id.ReceiverNumber);
+    number.setText(cursor.getString(3));
+
+    TextView type = (TextView) view.findViewById(R.id.ReceiverType);
+    type.setText(Phone.getTypeLabel(context.getResources(), cursor.getInt(4),
+        cursor.getString(5)));
+  }
+
+  @Override
+  public Cursor runQueryOnBackgroundThread(CharSequence constraint) {
+    String constraintPath = null;
+    if (constraint != null) {
+      constraintPath = constraint.toString();
     }
 
-    @Override
-    public void bindView(View view, Context context, Cursor cursor) {
-	TextView name = (TextView) view.findViewById(R.id.ReceiverName);
-	name.setText(cursor.getString(2));
-	
-	TextView number = (TextView) view.findViewById(R.id.ReceiverNumber);
-	number.setText(cursor.getString(3));
-	
-	TextView type = (TextView) view.findViewById(R.id.ReceiverType);
-	type.setText(Phone.getTypeLabel(context.getResources(),
-		cursor.getInt(4), cursor.getString(5)));
+    Uri queryURI = Uri.withAppendedPath(Phone.CONTENT_FILTER_URI,
+        Uri.encode(constraintPath));
+
+    String[] projection = { Phone._ID, Phone.CONTACT_ID, Phone.DISPLAY_NAME,
+        Phone.NUMBER, Phone.TYPE, Phone.LABEL, };
+
+    String selection = null; // default: all numbers
+    String filter = preferences.getString("FilterReceiver", "");
+
+    if (filter.contains("M")) { // mobiles only
+      selection = String.format("%s=%s OR %s=%s", Phone.TYPE,
+          Phone.TYPE_MOBILE, Phone.TYPE, Phone.TYPE_WORK_MOBILE);
+    }
+    if (filter.contains("H")) { // no home numbers
+      selection = String.format("%s<>%s", Phone.TYPE, Phone.TYPE_HOME);
     }
 
-    @Override
-    public Cursor runQueryOnBackgroundThread(CharSequence constraint) {
-	String constraintPath = null;
-	if (constraint != null) {
-	    constraintPath = constraint.toString();
-	}
+    String sorting = Contacts.TIMES_CONTACTED + " DESC";
 
-	Uri queryURI = Uri.withAppendedPath(
-		Phone.CONTENT_FILTER_URI, Uri.encode(constraintPath));
+    return context.getContentResolver().query(queryURI, projection, selection,
+        null, sorting);
+  }
 
-	// TODO is it possible to filter out SIM contacts? 
-	String[] projection = { 
-		Phone._ID,
-		Phone.CONTACT_ID,
-		Phone.DISPLAY_NAME,
-		Phone.NUMBER,
-		Phone.TYPE,
-		Phone.LABEL,
-	};
+  @Override
+  public CharSequence convertToString(Cursor cursor) {
+    SpannableString receiver = new SpannableString(cursor.getString(2) + " <"
+        + cursor.getString(3) + ">");
 
-	String selection = null; // default: all numbers
-	String filter = preferences.getString("FilterReceiver", "");
+    receiver.setSpan(new Annotation("number", cursor.getString(3)), 0,
+        receiver.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+    receiver.setSpan(new Annotation("name", cursor.getString(2)), 0,
+        receiver.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
 
-	if (filter.contains("M")) { // mobiles only
-	    selection = String.format("%s=%s OR %s=%s",
-		Phone.TYPE, Phone.TYPE_MOBILE, 
-		Phone.TYPE, Phone.TYPE_WORK_MOBILE);
-	}
-        if (filter.contains("H")) { // no home numbers
-            selection = String.format("%s<>%s",
-    		Phone.TYPE, Phone.TYPE_HOME);
-        }
-
-	String sorting = Contacts.TIMES_CONTACTED + " DESC";
-
-	return context.getContentResolver().query(
-		queryURI, projection, selection, null, sorting);
-    }
-
-    @Override
-    public CharSequence convertToString(Cursor cursor) {
-	SpannableString receiver = new SpannableString(
-		cursor.getString(2) + " <" + cursor.getString(3) + ">");
-
-	receiver.setSpan(new Annotation("number", cursor.getString(3)), 0,
-		receiver.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-	receiver.setSpan(new Annotation("name", cursor.getString(2)), 0,
-		receiver.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
-
-	return receiver;
-    }
+    return receiver;
+  }
 
 }
