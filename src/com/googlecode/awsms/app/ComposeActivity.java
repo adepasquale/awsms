@@ -114,7 +114,7 @@ public class ComposeActivity extends Activity {
     sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
     sharedPreferencesEditor = sharedPreferences.edit();
     
-    final int TIMES_TO_SHOW = 5;
+    final int TIMES_TO_SHOW = 10;
     final String upgradeDialogKey = "upgrade_dialog";
     int upgradeDialogCounter = sharedPreferences.getInt(upgradeDialogKey, 0);
     if (upgradeDialogCounter == 0) showDialog(UPGRADE_DIALOG);
@@ -333,7 +333,7 @@ public class ComposeActivity extends Activity {
           new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
               Intent intent = new Intent(Intent.ACTION_VIEW);
-              intent.setData(Uri.parse("http://code.google.com/p/esms/"));
+              intent.setData(Uri.parse("http://ermetesms.it/"));
               startActivity(intent);
             }
           });
