@@ -16,9 +16,8 @@
 
 package com.googlecode.awsms.senders.vodafone;
 
-import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.io.Reader;
+import java.io.PushbackReader;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -113,10 +112,23 @@ public class VodafoneWebSender extends WebSender {
 
     try {
       HttpGet request = new HttpGet(
-          "https://widget.vodafone.it/190/trilogy/jsp/utility/checkUser.jsp");
+          "https://www.vodafone.it/190/trilogy/jsp/utility/checkUser.jsp");
       HttpResponse response = httpClient.execute(request, httpContext);
-      document = new SAXBuilder().build(response.getEntity().getContent());
+      
+      PushbackReader reader = new PushbackReader(new InputStreamReader(
+          response.getEntity().getContent()));
+      
+      // fix wrong XML header 
+      int first = reader.read();
+      while (first != 60)
+        first = reader.read();
+      reader.unread(first);
+
+      document = new SAXBuilder().build(reader);
       response.getEntity().consumeContent();
+
+    } catch (JDOMException jdom) {
+      throw new Exception(context.getString(R.string.WebSenderProtocolError));
     } catch (Exception e) {
       e.printStackTrace();
       throw new Exception(context.getString(R.string.WebSenderNetworkError));
@@ -137,7 +149,7 @@ public class VodafoneWebSender extends WebSender {
 
     try {
       HttpPost request = new HttpPost(
-          "https://widget.vodafone.it/190/trilogy/jsp/login.do");
+          "https://www.vodafone.it/190/trilogy/jsp/login.do");
       List<NameValuePair> requestData = new ArrayList<NameValuePair>();
       requestData.add(new BasicNameValuePair("username", helper.getUsername()));
       requestData.add(new BasicNameValuePair("password", helper.getPassword()));
@@ -180,35 +192,28 @@ public class VodafoneWebSender extends WebSender {
     Log.d(TAG, "this.doPrecheck()");
     Document document = null;
 
-    // to solve XML header problem
-    boolean skip = true;
-    boolean done = false;
+    try {
+      HttpGet request = new HttpGet(
+          "https://www.vodafone.it/190/fsms/precheck.do?channel=VODAFONE_DW");
+      HttpResponse response = httpClient.execute(request, httpContext);
 
-    do {
-      try {
-        HttpGet request = new HttpGet(
-            "https://widget.vodafone.it/190/fsms/precheck.do?channel=VODAFONE_DW");
-        HttpResponse response = httpClient.execute(request, httpContext);
+      PushbackReader reader = new PushbackReader(new InputStreamReader(
+          response.getEntity().getContent()));
+      
+      // fix wrong XML header 
+      int first = reader.read();
+      while (first != 60)
+        first = reader.read();
+      reader.unread(first);
 
-        Reader reader = new BufferedReader(new InputStreamReader(response
-            .getEntity().getContent()));
-        if (skip)
-          reader.skip(13);
+      document = new SAXBuilder().build(reader);
+      response.getEntity().consumeContent();
 
-        document = new SAXBuilder().build(reader);
-        response.getEntity().consumeContent();
-        done = true;
-
-      } catch (JDOMException jdom) {
-        if (skip)
-          skip = false;
-        else
-          throw new Exception(
-              context.getString(R.string.WebSenderProtocolError));
-      } catch (Exception e) {
-        throw new Exception(context.getString(R.string.WebSenderNetworkError));
-      }
-    } while (!done);
+    } catch (JDOMException jdom) {
+      throw new Exception(context.getString(R.string.WebSenderProtocolError));
+    } catch (Exception e) {
+      throw new Exception(context.getString(R.string.WebSenderNetworkError));
+    }
 
     Element root = document.getRootElement();
     @SuppressWarnings("unchecked")
@@ -245,15 +250,28 @@ public class VodafoneWebSender extends WebSender {
 
     try {
       HttpPost request = new HttpPost(
-          "https://widget.vodafone.it/190/fsms/prepare.do?channel=VODAFONE_DW");
+          "https://www.vodafone.it/190/fsms/prepare.do?channel=VODAFONE_DW");
       List<NameValuePair> requestData = new ArrayList<NameValuePair>();
       requestData.add(new BasicNameValuePair("receiverNumber", sms
           .getReceiverNumber()));
       requestData.add(new BasicNameValuePair("message", sms.getMessage()));
       request.setEntity(new UrlEncodedFormEntity(requestData, HTTP.UTF_8));
       HttpResponse response = httpClient.execute(request, httpContext);
-      document = new SAXBuilder().build(response.getEntity().getContent());
+      
+      PushbackReader reader = new PushbackReader(new InputStreamReader(
+          response.getEntity().getContent()));
+      
+      // fix wrong XML header 
+      int first = reader.read();
+      while (first != 60)
+        first = reader.read();
+      reader.unread(first);
+
+      document = new SAXBuilder().build(reader);
       response.getEntity().consumeContent();
+
+    } catch (JDOMException jdom) {
+      throw new Exception(context.getString(R.string.WebSenderProtocolError));
     } catch (Exception e) {
       throw new Exception(context.getString(R.string.WebSenderNetworkError));
     }
@@ -299,7 +317,7 @@ public class VodafoneWebSender extends WebSender {
 
     try {
       HttpPost request = new HttpPost(
-          "https://widget.vodafone.it/190/fsms/send.do?channel=VODAFONE_DW");
+          "https://www.vodafone.it/190/fsms/send.do?channel=VODAFONE_DW");
       List<NameValuePair> requestData = new ArrayList<NameValuePair>();
       requestData.add(new BasicNameValuePair("verifyCode", sms.getCaptcha()));
       requestData.add(new BasicNameValuePair("receiverNumber", sms
@@ -307,8 +325,21 @@ public class VodafoneWebSender extends WebSender {
       requestData.add(new BasicNameValuePair("message", sms.getMessage()));
       request.setEntity(new UrlEncodedFormEntity(requestData, HTTP.UTF_8));
       HttpResponse response = httpClient.execute(request, httpContext);
-      document = new SAXBuilder().build(response.getEntity().getContent());
+      
+      PushbackReader reader = new PushbackReader(new InputStreamReader(
+          response.getEntity().getContent()));
+      
+      // fix wrong XML header 
+      int first = reader.read();
+      while (first != 60)
+        first = reader.read();
+      reader.unread(first);
+
+      document = new SAXBuilder().build(reader);
       response.getEntity().consumeContent();
+
+    } catch (JDOMException jdom) {
+      throw new Exception(context.getString(R.string.WebSenderProtocolError));
     } catch (Exception e) {
       throw new Exception(context.getString(R.string.WebSenderNetworkError));
     }
